@@ -191,44 +191,33 @@ Arrange in learning order - easy fundamentals first, then progressively more adv
     question: string,
     conversationHistory: GroqMessage[] = []
   ): Promise<string> {
-    // Check if user has complete profile data
-    const hasProfileData = userProfile.interests.length > 0 && userProfile.skills.length > 0;
-
-    // For very first message with complete profile, greet and ask about their goal
-    if (conversationHistory.length === 0 && hasProfileData) {
-      return `Hi there! 👋 Welcome to Pathfinder AI!
-
-I can see you're interested in **${userProfile.interests.join(", ")}** and have strong skills in **${userProfile.skills.join(", ")}**. With your **${userProfile.experienceLevel}** experience level, there are some great opportunities ahead!
-
-What would you like to explore today? I can help you with:
-- Career path recommendations based on your profile
-- Skill gap analysis for a specific role
-- Learning recommendations
-- Industry insights and salary trends
-- Or answer any career-related questions
-
-What's on your mind?`;
-    }
-
-    // For very first message without profile data, ask them about their interests
-    if (conversationHistory.length === 0 && !hasProfileData) {
-      return `Hi there! 👋 Welcome to Pathfinder AI!
-
-I'm here to help you discover the right career path for you. Since I don't have your profile details yet, let me ask:
-
-**What are your main interests or areas you're passionate about?**
-
-For example: technology, business, creative design, social impact, finance, science, etc.
-
-Tell me what excites you!`;
-    }
-
     // Build user context from their profile
-    const userContext = `User Profile:
+    const userContext = `User Profile (from signup):
 - Interests: ${userProfile.interests.join(", ") || "Not yet specified"}
 - Current Skills: ${userProfile.skills.join(", ") || "Not yet specified"}
 - Experience Level: ${userProfile.experienceLevel || "Not specified"}
-- Target Role: ${userProfile.targetRole || "Open to suggestions"}`;
+- Target Role: ${userProfile.targetRole || "Open to suggestions"}
+
+IMPORTANT: Do NOT ask the user questions about their interests, skills, or experience level - you already have this information from their signup. Use this data to provide personalized recommendations directly.`;
+
+    // For very first message, provide a warm greeting with immediate value
+    if (conversationHistory.length === 0) {
+      const initialMessage = `${userContext}
+
+Greet the user warmly and immediately provide value based on their profile. Do NOT ask for information you already have. Instead:
+1. Acknowledge their interests and skills
+2. Suggest relevant career paths right away
+3. Offer to help with specific next steps
+
+Keep it conversational, brief, and action-oriented.`;
+
+      return this.chat([
+        {
+          role: "user",
+          content: initialMessage,
+        },
+      ]);
+    }
 
     // For subsequent messages, use their profile to contextualize responses
     const messages: GroqMessage[] = [

@@ -176,52 +176,60 @@ export default function DashboardPage() {
 
           {/* MIDDLE COLUMN - AI Chat */}
           <div className="col-span-6 flex flex-col animate-fadeInUp">
-            <Link href="/dashboard/ai-chat" className="group relative rounded-2xl bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-600 p-4 overflow-hidden hover:shadow-2xl transition-all duration-300 flex items-center gap-4">
-              <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -mr-48 -mt-48 group-hover:scale-125 transition-transform duration-700" />
+            <Link href="/dashboard/ai-chat" className="group relative rounded-3xl bg-gradient-to-r from-teal-700 to-teal-600 p-6 overflow-hidden hover:shadow-2xl transition-all duration-300">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -mr-48 -mt-48" />
 
-              {/* Bot Image Section */}
-              <div className="relative z-10 flex-shrink-0">
-                <div className="h-32 w-32 relative">
-                  <Image
-                    src="/bot.png"
-                    alt="Pathfinder AI"
-                    fill
-                    className="object-contain"
-                    priority
-                  />
+              {/* Header with Bot Image */}
+              <div className="relative z-10 flex items-start gap-4 mb-6">
+                {/* Bot Image */}
+                <div className="relative flex-shrink-0">
+                  <div className="h-24 w-24">
+                    <Image
+                      src="/bot.png"
+                      alt="Pathfinder AI"
+                      fill
+                      className="object-contain drop-shadow-lg"
+                      priority
+                    />
+                  </div>
+                </div>
+
+                {/* Title */}
+                <div className="pt-2">
+                  <h3 className="font-bold text-white text-2xl">Ask Pathfinder AI</h3>
+                  <p className="text-sm text-teal-50">Your personal career guide</p>
                 </div>
               </div>
 
-              {/* Content Section */}
-              <div className="relative z-10 flex-1 space-y-4">
-                <div>
-                  <h3 className="font-bold text-white text-lg">Pathfinder AI</h3>
-                  <p className="text-xs text-white/80">Your personal career guide</p>
-                </div>
+              {/* Input Area */}
+              <div className="relative z-10 flex gap-3 mb-5">
+                <input
+                  type="text"
+                  placeholder="What would you like to explore today?"
+                  disabled
+                  className="flex-1 rounded-full bg-white px-6 py-4 text-base text-gray-600 placeholder-gray-400 cursor-pointer hover:bg-gray-50 transition-all font-medium"
+                />
+                <button
+                  disabled
+                  className="flex-shrink-0 rounded-full bg-teal-500 hover:bg-teal-600 p-4 text-white transition-all duration-300 shadow-lg flex items-center justify-center"
+                >
+                  <Send className="h-5 w-5" />
+                </button>
+              </div>
 
-                {/* Quick Actions */}
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="rounded-lg bg-white/20 hover:bg-white/30 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition-all duration-300 hover:shadow-lg text-center">
-                    <Zap className="h-3 w-3 inline mr-1" />
-                    Best Careers
-                  </div>
-                  <div className="rounded-lg bg-white/20 hover:bg-white/30 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition-all duration-300 hover:shadow-lg text-center">
-                    <Star className="h-3 w-3 inline mr-1" />
-                    Skills I Need
-                  </div>
-                  <div className="rounded-lg bg-white/20 hover:bg-white/30 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition-all duration-300 hover:shadow-lg text-center">
-                    <Map className="h-3 w-3 inline mr-1" />
-                    Courses
-                  </div>
-                  <div className="rounded-lg bg-white/20 hover:bg-white/30 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition-all duration-300 hover:shadow-lg text-center">
-                    <ArrowRight className="h-3 w-3 inline mr-1" />
-                    Explore
-                  </div>
-                </div>
-
-                {/* CTA Button */}
-                <button className="w-full rounded-lg bg-white text-teal-600 py-2 text-xs font-bold hover:bg-white/90 transition-all duration-300 hover:shadow-lg">
-                  Start Chat →
+              {/* Quick Action Buttons */}
+              <div className="relative z-10 flex gap-3 flex-wrap">
+                <button className="rounded-full border-2 border-teal-200 bg-transparent hover:bg-teal-500/10 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 flex items-center gap-2">
+                  <span>⚡</span>
+                  Best careers for me
+                </button>
+                <button className="rounded-full border-2 border-teal-200 bg-transparent hover:bg-teal-500/10 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 flex items-center gap-2">
+                  <span>📊</span>
+                  Skills I need
+                </button>
+                <button className="rounded-full border-2 border-teal-200 bg-transparent hover:bg-teal-500/10 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 flex items-center gap-2">
+                  <span>📚</span>
+                  Courses to study
                 </button>
               </div>
             </Link>
@@ -315,42 +323,57 @@ export default function DashboardPage() {
           </div>
 
           {/* Mobile AI Chat */}
-          <Link href="/dashboard/ai-chat" className="group relative rounded-2xl bg-gradient-to-br from-teal-600 to-cyan-600 p-4 overflow-hidden hover:shadow-lg transition-all flex items-center gap-3">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-2xl -mr-24 -mt-24" />
+          <Link href="/dashboard/ai-chat" className="group relative rounded-3xl bg-gradient-to-r from-teal-700 to-teal-600 p-5 overflow-hidden hover:shadow-lg transition-all">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-2xl -mr-24 -mt-24" />
 
-            {/* Bot Image */}
-            <div className="relative z-10 flex-shrink-0">
-              <div className="h-20 w-20 relative">
-                <Image
-                  src="/bot.png"
-                  alt="Pathfinder AI"
-                  fill
-                  className="object-contain"
-                  priority
-                />
+            {/* Header with Bot Image */}
+            <div className="relative z-10 flex items-start gap-3 mb-4">
+              {/* Bot Image */}
+              <div className="relative flex-shrink-0">
+                <div className="h-16 w-16">
+                  <Image
+                    src="/bot.png"
+                    alt="Pathfinder AI"
+                    fill
+                    className="object-contain drop-shadow-lg"
+                    priority
+                  />
+                </div>
+              </div>
+
+              {/* Title */}
+              <div>
+                <h3 className="font-bold text-white text-lg">Ask Pathfinder AI</h3>
+                <p className="text-xs text-teal-50">Your career guide</p>
               </div>
             </div>
 
-            {/* Content */}
-            <div className="relative z-10 flex-1 space-y-3">
-              <div>
-                <h3 className="font-bold text-white text-sm">Pathfinder AI</h3>
-                <p className="text-xs text-white/80">Your career guide</p>
-              </div>
+            {/* Input Area */}
+            <div className="relative z-10 flex gap-2 mb-3">
+              <input
+                type="text"
+                placeholder="What would you like to explore?"
+                disabled
+                className="flex-1 rounded-full bg-white px-4 py-2.5 text-sm text-gray-600 placeholder-gray-400 cursor-pointer hover:bg-gray-50 transition-all font-medium"
+              />
+              <button
+                disabled
+                className="flex-shrink-0 rounded-full bg-teal-500 p-2.5 text-white transition-all"
+              >
+                <Send className="h-4 w-4" />
+              </button>
+            </div>
 
-              <div className="grid grid-cols-2 gap-1.5">
-                <div className="rounded-lg bg-white/20 px-2 py-1.5 text-xs font-semibold text-white backdrop-blur text-center hover:bg-white/30 transition-all">
-                  <Zap className="h-2.5 w-2.5 inline mr-0.5" />
-                  Careers
-                </div>
-                <div className="rounded-lg bg-white/20 px-2 py-1.5 text-xs font-semibold text-white backdrop-blur text-center hover:bg-white/30 transition-all">
-                  <Star className="h-2.5 w-2.5 inline mr-0.5" />
-                  Skills
-                </div>
-              </div>
-
-              <button className="w-full rounded-lg bg-white text-teal-600 py-1.5 text-xs font-bold hover:bg-white/90 transition-all">
-                Chat →
+            {/* Quick Action Buttons */}
+            <div className="relative z-10 flex gap-2 flex-wrap">
+              <button className="rounded-full border-2 border-teal-200 bg-transparent hover:bg-teal-500/10 px-3 py-1.5 text-xs font-semibold text-white transition-all">
+                ⚡ Best careers
+              </button>
+              <button className="rounded-full border-2 border-teal-200 bg-transparent hover:bg-teal-500/10 px-3 py-1.5 text-xs font-semibold text-white transition-all">
+                📊 Skills
+              </button>
+              <button className="rounded-full border-2 border-teal-200 bg-transparent hover:bg-teal-500/10 px-3 py-1.5 text-xs font-semibold text-white transition-all">
+                📚 Courses
               </button>
             </div>
           </Link>
