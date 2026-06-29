@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { ChevronRight, ChevronLeft, CheckCircle2, Zap } from "lucide-react"
+import { ChevronRight, ChevronLeft, CheckCircle2, Zap, Lightbulb, Briefcase, Target, ArrowRight, Sparkles } from "lucide-react"
 
 export interface OnboardingData {
   interests: string[]
@@ -16,14 +16,14 @@ interface OnboardingQuestionnaireProps {
 }
 
 const INTERESTS_OPTIONS = [
-  { id: "tech", label: "Technology" },
-  { id: "business", label: "Business" },
-  { id: "creative", label: "Creative & Design" },
-  { id: "healthcare", label: "Healthcare" },
-  { id: "education", label: "Education" },
-  { id: "finance", label: "Finance" },
-  { id: "sales", label: "Sales & Marketing" },
-  { id: "operations", label: "Operations" },
+  { id: "tech", label: "Technology", icon: Lightbulb },
+  { id: "business", label: "Business", icon: Briefcase },
+  { id: "creative", label: "Creative & Design", icon: Sparkles },
+  { id: "healthcare", label: "Healthcare", icon: Target },
+  { id: "education", label: "Education", icon: Lightbulb },
+  { id: "finance", label: "Finance", icon: Briefcase },
+  { id: "sales", label: "Sales & Marketing", icon: Zap },
+  { id: "operations", label: "Operations", icon: Target },
 ]
 
 const SKILLS_OPTIONS = [
@@ -119,142 +119,174 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-3xl">
-        {/* Header with Logo */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center px-4 py-8 overflow-hidden">
+      {/* Animated background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+      </div>
+
+      <div className="w-full max-w-4xl relative z-10">
+        {/* Header */}
         <div className="mb-12 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-500/10 border border-teal-500/30">
-            <Zap className="h-4 w-4 text-teal-400" />
-            <span className="text-sm font-semibold text-teal-400">Let's get started</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-500/15 border border-teal-500/40 backdrop-blur-md">
+            <Zap className="h-4 w-4 text-teal-400 animate-pulse" />
+            <span className="text-sm font-semibold text-teal-400">Career Discovery</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-white">Build Your Career Path</h1>
           <p className="text-lg text-slate-400">Tell us about yourself so we can provide personalized recommendations</p>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mb-10 space-y-3">
+        {/* Progress */}
+        <div className="mb-10 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-50">{steps[currentStep].title}</h2>
+              <h2 className="text-3xl font-bold text-white">{steps[currentStep].title}</h2>
               <p className="text-sm text-slate-400 mt-2">{steps[currentStep].subtitle}</p>
             </div>
             <div className="text-right">
-              <div className="text-sm font-medium text-teal-400">{currentStep + 1} of {steps.length}</div>
+              <div className="text-3xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
+                {currentStep + 1}/{steps.length}
+              </div>
             </div>
           </div>
 
-          {/* Progress Bar Indicator */}
-          <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+          <div className="h-2 bg-slate-800/50 rounded-full overflow-hidden backdrop-blur-md border border-slate-700/30">
             <div
-              className="h-full bg-gradient-to-r from-teal-500 to-cyan-400 transition-all duration-500"
+              className="h-full bg-gradient-to-r from-teal-500 via-cyan-400 to-teal-400 transition-all duration-700 shadow-lg shadow-teal-500/50"
               style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
             />
           </div>
         </div>
 
         {/* Content */}
-        <div className="rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm p-8 md:p-10 space-y-8">
-          {/* Step 0: Interests */}
+        <div className="rounded-3xl border border-slate-800/50 bg-slate-900/40 backdrop-blur-xl p-8 md:p-12 space-y-8 shadow-2xl shadow-slate-900/50">
           {currentStep === 0 && (
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-              {INTERESTS_OPTIONS.map((option) => (
-                <button
-                  key={option.id}
-                  onClick={() => handleInterestToggle(option.id)}
-                  className={`p-4 md:p-5 rounded-2xl border-2 transition-all duration-300 font-semibold ${data.interests.includes(option.id)
-                      ? "border-teal-500 bg-teal-500/20 text-teal-50 shadow-lg shadow-teal-500/20"
-                      : "border-slate-700 bg-slate-800/40 text-slate-300 hover:border-teal-500/50 hover:bg-slate-800/60"
-                    }`}
-                >
-                  {option.label}
-                </button>
-              ))}
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
+              {INTERESTS_OPTIONS.map((option, idx) => {
+                const Icon = option.icon
+                const isSelected = data.interests.includes(option.id)
+                return (
+                  <button
+                    key={option.id}
+                    onClick={() => handleInterestToggle(option.id)}
+                    className={`group p-6 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 ${isSelected
+                        ? "border-teal-500 bg-gradient-to-br from-teal-500/30 to-cyan-500/20 shadow-lg shadow-teal-500/30"
+                        : "border-slate-700/50 bg-slate-800/30 hover:border-teal-500/50 hover:bg-slate-800/50"
+                      }`}
+                    style={{ animation: `slideInUp 0.6s ease-out ${idx * 0.05}s both` }}
+                  >
+                    <div className="space-y-3 flex flex-col items-center">
+                      <div className={`p-3 rounded-xl transition-all duration-300 ${isSelected ? "bg-teal-500/40 scale-110" : "bg-slate-800/50 group-hover:scale-105"}`}>
+                        <Icon className={`h-6 w-6 ${isSelected ? "text-teal-300 animate-bounce" : "text-slate-400 group-hover:text-teal-400"}`} />
+                      </div>
+                      <span className={`font-semibold text-sm text-center ${isSelected ? "text-teal-50" : "text-slate-300 group-hover:text-slate-100"}`}>
+                        {option.label}
+                      </span>
+                    </div>
+                  </button>
+                )
+              })}
             </div>
           )}
 
-          {/* Step 1: Skills */}
           {currentStep === 1 && (
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              {SKILLS_OPTIONS.map((option) => (
+              {SKILLS_OPTIONS.map((option, idx) => (
                 <button
                   key={option.id}
                   onClick={() => handleSkillToggle(option.id)}
-                  className={`p-4 md:p-5 rounded-2xl border-2 transition-all duration-300 text-left font-semibold flex items-center gap-3 ${data.skills.includes(option.id)
-                      ? "border-teal-500 bg-teal-500/20 text-teal-50 shadow-lg shadow-teal-500/20"
-                      : "border-slate-700 bg-slate-800/40 text-slate-300 hover:border-teal-500/50 hover:bg-slate-800/60"
+                  className={`group p-5 rounded-2xl border-2 transition-all duration-300 text-left font-semibold flex items-center gap-4 transform hover:scale-102 ${data.skills.includes(option.id)
+                      ? "border-teal-500 bg-gradient-to-r from-teal-500/30 to-cyan-500/20 shadow-lg shadow-teal-500/30"
+                      : "border-slate-700/50 bg-slate-800/30 hover:border-teal-500/50 hover:bg-slate-800/50"
                     }`}
+                  style={{ animation: `slideInRight 0.6s ease-out ${idx * 0.05}s both` }}
                 >
-                  <div
-                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${data.skills.includes(option.id)
-                        ? "border-teal-300 bg-teal-500"
-                        : "border-slate-600"
-                      }`}
-                  >
+                  <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center flex-shrink-0 transition-all ${data.skills.includes(option.id)
+                      ? "border-teal-300 bg-gradient-to-br from-teal-500 to-cyan-400"
+                      : "border-slate-600 group-hover:border-teal-400"
+                    }`}>
                     {data.skills.includes(option.id) && <CheckCircle2 className="h-4 w-4 text-white" />}
                   </div>
-                  <span>{option.label}</span>
+                  <span className={data.skills.includes(option.id) ? "text-teal-50" : "text-slate-300 group-hover:text-slate-100"}>
+                    {option.label}
+                  </span>
                 </button>
               ))}
             </div>
           )}
 
-          {/* Step 2: Experience Level */}
           {currentStep === 2 && (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              {EXPERIENCE_OPTIONS.map((option) => (
+              {EXPERIENCE_OPTIONS.map((option, idx) => (
                 <button
                   key={option.id}
                   onClick={() => handleExperienceSelect(option.id as "beginner" | "intermediate" | "advanced")}
-                  className={`p-6 rounded-2xl border-2 transition-all duration-300 text-center space-y-2 ${data.experienceLevel === option.id
-                      ? "border-teal-500 bg-teal-500/20 shadow-lg shadow-teal-500/20"
-                      : "border-slate-700 bg-slate-800/40 hover:border-teal-500/50 hover:bg-slate-800/60"
+                  className={`group p-7 rounded-2xl border-2 transition-all duration-300 text-center space-y-3 transform hover:scale-105 ${data.experienceLevel === option.id
+                      ? "border-teal-500 bg-gradient-to-br from-teal-500/30 to-cyan-500/20 shadow-lg shadow-teal-500/30"
+                      : "border-slate-700/50 bg-slate-800/30 hover:border-teal-500/50 hover:bg-slate-800/50"
                     }`}
+                  style={{ animation: `scaleIn 0.6s ease-out ${idx * 0.1}s both` }}
                 >
-                  <div className={`font-semibold text-base ${data.experienceLevel === option.id ? "text-teal-50" : "text-slate-200"}`}>
-                    {option.label}
-                  </div>
-                  <div className={`text-sm ${data.experienceLevel === option.id ? "text-teal-200/80" : "text-slate-400"}`}>
-                    {option.description}
+                  <div className="space-y-3">
+                    <div className={`inline-flex p-3 rounded-xl transition-all ${data.experienceLevel === option.id ? "bg-teal-500/40 scale-110" : "bg-slate-800/50 group-hover:scale-105"}`}>
+                      <Target className={`h-6 w-6 ${data.experienceLevel === option.id ? "text-teal-300 animate-bounce" : "text-slate-400 group-hover:text-teal-400"}`} />
+                    </div>
+                    <div>
+                      <div className={`font-bold text-lg ${data.experienceLevel === option.id ? "text-teal-50" : "text-slate-200 group-hover:text-slate-100"}`}>
+                        {option.label}
+                      </div>
+                      <div className={`text-sm ${data.experienceLevel === option.id ? "text-teal-200/80" : "text-slate-400 group-hover:text-slate-300"}`}>
+                        {option.description}
+                      </div>
+                    </div>
                   </div>
                 </button>
               ))}
             </div>
           )}
 
-          {/* Step 3: Target Role */}
           {currentStep === 3 && (
             <div className="space-y-6">
-              <div className="space-y-3">
-                <label className="block text-sm font-semibold text-slate-200">Target Role</label>
+              <div className="space-y-4">
+                <label className="block text-sm font-bold text-slate-200 flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-teal-400" />
+                  Target Role
+                </label>
                 <input
                   type="text"
                   value={data.targetRole}
                   onChange={handleRoleChange}
                   placeholder="e.g., Product Manager, Data Analyst, UX Designer..."
-                  className="w-full px-5 py-4 rounded-2xl border-2 border-slate-700 bg-slate-800/40 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/30 transition-all outline-none text-base font-medium"
+                  className="w-full px-6 py-4 rounded-2xl border-2 border-slate-700/50 bg-slate-800/30 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/30 transition-all outline-none text-base font-medium backdrop-blur-sm hover:border-slate-600/70"
                 />
-                <p className="text-sm text-slate-400">Be specific about the role you're interested in. This helps us give you better recommendations.</p>
+                <p className="text-sm text-slate-400 px-2 flex items-center gap-2">
+                  <Lightbulb className="h-4 w-4 text-teal-400" />
+                  Be specific about the role you're interested in.
+                </p>
               </div>
 
-              {/* Preview Summary */}
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border border-teal-500/30 space-y-4">
-                <h3 className="text-base font-semibold text-teal-300">Your Profile Summary</h3>
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <p className="text-slate-400 text-xs mb-1">Interests</p>
-                    <p className="text-slate-200 font-semibold">{data.interests.length} selected</p>
+              <div className="p-6 rounded-2xl bg-gradient-to-br from-teal-500/15 to-cyan-500/15 border border-teal-500/40 backdrop-blur-md space-y-5">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-teal-400 animate-pulse" />
+                  <h3 className="text-base font-bold text-teal-300">Your Profile Summary</h3>
+                </div>
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                  <div className="p-4 rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
+                    <p className="text-xs text-slate-400 font-semibold mb-2 uppercase tracking-wider">Interests</p>
+                    <p className="text-2xl font-bold text-teal-400">{data.interests.length}</p>
                   </div>
-                  <div>
-                    <p className="text-slate-400 text-xs mb-1">Skills</p>
-                    <p className="text-slate-200 font-semibold">{data.skills.length} selected</p>
+                  <div className="p-4 rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
+                    <p className="text-xs text-slate-400 font-semibold mb-2 uppercase tracking-wider">Skills</p>
+                    <p className="text-2xl font-bold text-cyan-400">{data.skills.length}</p>
                   </div>
-                  <div>
-                    <p className="text-slate-400 text-xs mb-1">Experience</p>
-                    <p className="text-slate-200 font-semibold capitalize">{data.experienceLevel}</p>
+                  <div className="p-4 rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
+                    <p className="text-xs text-slate-400 font-semibold mb-2 uppercase tracking-wider">Experience</p>
+                    <p className="text-lg font-bold text-teal-300 capitalize">{data.experienceLevel}</p>
                   </div>
-                  <div>
-                    <p className="text-slate-400 text-xs mb-1">Target Role</p>
-                    <p className="text-slate-200 font-semibold">{data.targetRole || "Not set"}</p>
+                  <div className="p-4 rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
+                    <p className="text-xs text-slate-400 font-semibold mb-2 uppercase tracking-wider">Role</p>
+                    <p className="text-lg font-bold text-cyan-300">{data.targetRole ? "✓" : "-"}</p>
                   </div>
                 </div>
               </div>
@@ -262,21 +294,21 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
           )}
         </div>
 
-        {/* Navigation Buttons */}
+        {/* Navigation */}
         <div className="mt-10 flex gap-4 justify-between">
           <button
             onClick={handlePrev}
             disabled={currentStep === 0}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800/50 hover:border-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-semibold text-base"
+            className="flex items-center gap-3 px-6 py-3 rounded-xl border-2 border-slate-700/50 text-slate-300 hover:border-slate-600 hover:bg-slate-800/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-semibold text-base backdrop-blur-sm group"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
             <span>Previous</span>
           </button>
 
           <button
             onClick={handleNext}
             disabled={!canProceed() || isLoading}
-            className="flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-all text-base shadow-lg shadow-teal-500/30"
+            className="flex items-center gap-3 px-8 py-3 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-500 hover:from-teal-700 hover:to-cyan-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold transition-all text-base shadow-lg shadow-teal-500/40 hover:shadow-teal-500/60 backdrop-blur-sm group transform hover:scale-105 active:scale-95"
           >
             {isLoading ? (
               <>
@@ -286,33 +318,48 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
             ) : currentStep === steps.length - 1 ? (
               <>
                 <span>Complete Setup</span>
-                <CheckCircle2 className="h-5 w-5" />
+                <CheckCircle2 className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </>
             ) : (
               <>
                 <span>Next</span>
-                <ChevronRight className="h-5 w-5" />
+                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </>
             )}
           </button>
         </div>
 
         {/* Step Indicators */}
-        <div className="mt-8 flex justify-center gap-2">
+        <div className="mt-8 flex justify-center gap-3">
           {steps.map((_, idx) => (
             <button
               key={idx}
               onClick={() => idx < currentStep && setCurrentStep(idx)}
-              className={`rounded-full transition-all duration-300 ${idx === currentStep
-                  ? "w-8 h-3 bg-gradient-to-r from-teal-500 to-cyan-400"
+              className={`rounded-full transition-all duration-500 ${idx === currentStep
+                  ? "w-10 h-3 bg-gradient-to-r from-teal-500 to-cyan-400 shadow-lg shadow-teal-500/50"
                   : idx < currentStep
-                    ? "w-3 h-3 bg-teal-500/60"
-                    : "w-3 h-3 bg-slate-700"
+                    ? "w-3 h-3 bg-teal-500/60 hover:bg-teal-500"
+                    : "w-3 h-3 bg-slate-700 hover:bg-slate-600"
                 }`}
             />
           ))}
         </div>
       </div>
+
+      <style>{`
+        @keyframes slideInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(-20px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes scaleIn {
+          from { opacity: 0; transform: scale(0.9); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
     </div>
   )
 }
