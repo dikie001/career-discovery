@@ -18,7 +18,7 @@ interface GroqResponse {
 class GroqService {
   private apiKey: string;
   private baseURL: string = "https://api.groq.com/openai/v1";
-  private model: string = "mixtral-8x7b-32768";
+  private model: string = "openai/gpt-oss-20b";
 
   private systemPrompt = `You are Pathfinder AI, an expert career guidance and mentoring assistant. Your role is to help users discover suitable careers, develop skills, and create actionable learning paths.
 
@@ -67,33 +67,45 @@ When users ask about specific career paths, provide:
 
   async chat(messages: GroqMessage[]): Promise<string> {
     try {
+      if (!this.apiKey) {
+        throw new Error("GROQ_API_KEY is not configured");
+      }
+
+      const payload = {
+        model: this.model,
+        messages: [
+          {
+            role: "system" as const,
+            content: this.systemPrompt,
+          },
+          ...messages,
+        ],
+        temperature: 0.7,
+        max_tokens: 1024,
+      };
+
+      console.log("Sending request to Groq API with model:", this.model);
+
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          model: this.model,
-          messages: [
-            {
-              role: "system" as const,
-              content: this.systemPrompt,
-            },
-            ...messages,
-          ],
-          temperature: 0.7,
-          max_tokens: 1024,
-        }),
+        body: JSON.stringify(payload),
       });
 
+      const responseText = await response.text();
+
       if (!response.ok) {
-        const error = await response.text();
-        console.error("Groq API error:", error);
-        throw new Error(`Groq API error: ${response.statusText}`);
+        console.error("Groq API error response:", responseText);
+        console.error("Response status:", response.status);
+        throw new Error(
+          `Groq API error: ${response.status} - ${responseText || response.statusText}`
+        );
       }
 
-      const data: GroqResponse = await response.json();
+      const data: GroqResponse = JSON.parse(responseText);
       return data.choices[0]?.message.content || "Unable to generate response";
     } catch (error) {
       console.error("Error calling Groq API:", error);

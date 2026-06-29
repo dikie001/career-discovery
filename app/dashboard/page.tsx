@@ -175,7 +175,7 @@ export default function DashboardPage() {
 
           {/* MIDDLE COLUMN - AI Chat */}
           <div className="col-span-6 flex flex-col animate-fadeInUp">
-            <div className="group relative rounded-3xl bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-600 p-8 space-y-6 flex-1 flex flex-col overflow-hidden">
+            <Link href="/dashboard/ai-chat" className="group relative rounded-3xl bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-600 p-8 space-y-6 flex-1 flex flex-col overflow-hidden hover:shadow-2xl transition-all duration-300">
               <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -mr-48 -mt-48 group-hover:scale-125 transition-transform duration-700" />
 
               <div className="relative z-10">
@@ -192,18 +192,18 @@ export default function DashboardPage() {
 
               {/* Quick Actions */}
               <div className="relative z-10 grid grid-cols-3 gap-2">
-                <button className="group/btn rounded-xl bg-white/20 hover:bg-white/30 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition-all duration-300 hover:shadow-lg">
+                <div className="group/btn rounded-xl bg-white/20 hover:bg-white/30 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition-all duration-300 hover:shadow-lg">
                   <Zap className="h-3.5 w-3.5 inline mr-1" />
                   Best Careers
-                </button>
-                <button className="group/btn rounded-xl bg-white/20 hover:bg-white/30 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition-all duration-300 hover:shadow-lg">
+                </div>
+                <div className="group/btn rounded-xl bg-white/20 hover:bg-white/30 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition-all duration-300 hover:shadow-lg">
                   <Star className="h-3.5 w-3.5 inline mr-1" />
                   Skills I Need
-                </button>
-                <button className="group/btn rounded-xl bg-white/20 hover:bg-white/30 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition-all duration-300 hover:shadow-lg">
+                </div>
+                <div className="group/btn rounded-xl bg-white/20 hover:bg-white/30 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition-all duration-300 hover:shadow-lg">
                   <Map className="h-3.5 w-3.5 inline mr-1" />
                   Courses
-                </button>
+                </div>
               </div>
 
               {/* Messages Area */}
@@ -222,41 +222,24 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 ))}
-                {sending && (
-                  <div className="flex justify-start animate-fadeInUp">
-                    <div className="bg-white/15 backdrop-blur px-4 py-3 rounded-2xl">
-                      <div className="flex gap-2">
-                        {[0, 1, 2].map((i) => (
-                          <div
-                            key={i}
-                            className="h-2.5 w-2.5 bg-white/70 rounded-full animate-bounce"
-                            style={{ animationDelay: `${i * 0.2}s` }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
 
-              {/* Input Form */}
-              <form onSubmit={handleSendMessage} className="relative z-10 flex gap-3">
+              {/* Input Placeholder - Click to navigate */}
+              <div className="relative z-10 flex gap-3">
                 <input
                   type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask me anything about careers..."
-                  className="flex-1 rounded-full bg-white/20 backdrop-blur px-5 py-3 text-sm text-white placeholder-white/60 focus:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                  placeholder="Click to chat with Pathfinder AI..."
+                  disabled
+                  className="flex-1 rounded-full bg-white/20 backdrop-blur px-5 py-3 text-sm text-white placeholder-white/60 cursor-pointer hover:bg-white/30 transition-all"
                 />
                 <button
-                  type="submit"
-                  disabled={sending || !input.trim()}
-                  className="rounded-full bg-white px-4 py-3 text-teal-600 hover:bg-white/90 disabled:opacity-50 transition-all duration-300 hover:shadow-lg font-semibold"
+                  disabled
+                  className="rounded-full bg-white px-4 py-3 text-teal-600 hover:bg-white/90 transition-all duration-300 hover:shadow-lg font-semibold"
                 >
                   <Send className="h-4 w-4" />
                 </button>
-              </form>
-            </div>
+              </div>
+            </Link>
           </div>
 
           {/* RIGHT COLUMN - Recommended Careers */}
@@ -347,7 +330,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Mobile AI Chat */}
-          <div className="group relative rounded-2xl bg-gradient-to-br from-teal-600 to-cyan-600 p-4 space-y-4 overflow-hidden">
+          <Link href="/dashboard/ai-chat" className="group relative rounded-2xl bg-gradient-to-br from-teal-600 to-cyan-600 p-4 space-y-4 overflow-hidden hover:shadow-lg transition-all">
             <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-2xl -mr-24 -mt-24" />
 
             <div className="relative z-10">
@@ -367,8 +350,8 @@ export default function DashboardPage() {
               {messages.slice(-3).map((msg) => (
                 <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div className={`max-w-xs px-3 py-2 rounded-lg text-xs ${msg.role === "user"
-                      ? "bg-white/25 text-white"
-                      : "bg-white/15 text-white/90"
+                    ? "bg-white/25 text-white"
+                    : "bg-white/15 text-white/90"
                     }`}>
                     {msg.content}
                   </div>
@@ -376,20 +359,19 @@ export default function DashboardPage() {
               ))}
             </div>
 
-            {/* Input */}
-            <form onSubmit={handleSendMessage} className="relative z-10 flex gap-2">
+            {/* Input - Disabled, navigates on click */}
+            <div className="relative z-10 flex gap-2">
               <input
                 type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
                 placeholder="What would you like to explore?"
-                className="flex-1 rounded-full bg-white/20 backdrop-blur px-4 py-2.5 text-sm text-white placeholder-white/60 focus:bg-white/30 focus:outline-none"
+                disabled
+                className="flex-1 rounded-full bg-white/20 backdrop-blur px-4 py-2.5 text-sm text-white placeholder-white/60 hover:bg-white/30 transition-all cursor-pointer"
               />
-              <button type="submit" disabled={sending || !input.trim()} className="rounded-full bg-white p-2.5 text-teal-600 hover:bg-white/90 disabled:opacity-50 transition-all">
+              <button disabled className="rounded-full bg-white p-2.5 text-teal-600 hover:bg-white/90 transition-all">
                 <Send className="h-4 w-4" />
               </button>
-            </form>
-          </div>
+            </div>
+          </Link>
 
           {/* Mobile Progress */}
           {progress && (
@@ -433,10 +415,10 @@ export default function DashboardPage() {
                 {progress.stages.map((stage) => (
                   <div key={stage.id} className="flex flex-col items-center gap-1 flex-1">
                     <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${stage.status === "completed"
-                        ? "bg-gradient-to-r from-teal-600 to-teal-500 text-white"
-                        : stage.status === "in_progress"
-                          ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-white"
-                          : "bg-slate-700 text-slate-400"
+                      ? "bg-gradient-to-r from-teal-600 to-teal-500 text-white"
+                      : stage.status === "in_progress"
+                        ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-white"
+                        : "bg-slate-700 text-slate-400"
                       }`}>
                       {stage.status === "completed" ? "✓" : stage.order}
                     </div>
@@ -519,8 +501,8 @@ export default function DashboardPage() {
 function NavItem({ icon: Icon, label, active }: any) {
   return (
     <button className={`flex flex-col items-center justify-center py-2.5 px-2 rounded-lg transition-all duration-300 ${active
-        ? "text-teal-400"
-        : "text-slate-400 hover:text-slate-200"
+      ? "text-teal-400"
+      : "text-slate-400 hover:text-slate-200"
       }`}>
       <Icon className="h-5 w-5 mb-1" />
       <span className="text-xs font-semibold">{label}</span>
