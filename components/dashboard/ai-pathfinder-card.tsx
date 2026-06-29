@@ -183,24 +183,24 @@ export function AiPathfinderCard({
       </div>
 
       {/* Messages Container */}
-      <div className="h-80 space-y-4 overflow-y-auto p-4 sm:h-96">
+      <div className="h-80 space-y-3 overflow-y-auto p-4 sm:h-96 scrollbar-thin scrollbar-thumb-teal-500/30 scrollbar-track-transparent">
         {messages.map((message, idx) => (
           <div
             key={message.id}
-            className="animate-fadeInUp space-y-3"
+            className="animate-fadeInUp space-y-2"
             style={{ animationDelay: `${idx * 0.05}s` }}
           >
             {/* Question/Response */}
             {(message.type === "question" || message.type === "response") && (
               <div className="flex justify-start">
-                <div className="max-w-xs rounded-2xl bg-white/95 px-4 py-3 text-sm text-slate-900 shadow-lg lg:max-w-md">
+                <div className="max-w-xs rounded-2xl bg-slate-800 border border-slate-700 px-4 py-3 text-sm shadow-lg lg:max-w-md">
                   {message.type === "response" ? (
                     <MarkdownRenderer
                       content={message.content}
                       className="prose prose-sm"
                     />
                   ) : (
-                    <p className="font-medium">{message.content}</p>
+                    <p className="font-medium text-white">{message.content}</p>
                   )}
                 </div>
               </div>
@@ -209,7 +209,7 @@ export function AiPathfinderCard({
             {/* User Input */}
             {message.type === "user_input" && (
               <div className="flex justify-end">
-                <div className="max-w-xs rounded-2xl bg-gradient-to-r from-teal-400 to-teal-500 px-4 py-3 text-sm font-medium text-white shadow-lg lg:max-w-md">
+                <div className="max-w-xs rounded-2xl bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-3 text-sm font-medium text-white shadow-lg lg:max-w-md">
                   {message.content}
                 </div>
               </div>
@@ -223,14 +223,14 @@ export function AiPathfinderCard({
                     key={option.id}
                     onClick={() => handleSendSelection(option.id)}
                     disabled={sending || externalLoading}
-                    className="w-full rounded-xl border-2 border-teal-300 bg-teal-500/10 px-3 py-2 text-left text-xs font-medium text-white backdrop-blur-sm transition-all hover:border-teal-200 hover:bg-teal-500/20 disabled:opacity-50 sm:text-sm"
+                    className="w-full rounded-xl border-2 border-slate-600 bg-slate-800/80 hover:bg-slate-700 px-3 py-2.5 text-left text-xs font-medium text-white backdrop-blur-sm transition-all hover:border-teal-400 disabled:opacity-50 sm:text-sm"
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{option.icon}</span>
                       <div>
                         <p className="font-semibold">{option.label}</p>
                         {option.description && (
-                          <p className="text-xs text-teal-100 opacity-75">
+                          <p className="text-xs text-slate-300 opacity-85">
                             {option.description}
                           </p>
                         )}
@@ -244,12 +244,12 @@ export function AiPathfinderCard({
             {/* Loading indicator */}
             {message.isLoading && (
               <div className="flex justify-start">
-                <div className="rounded-2xl bg-white/95 px-4 py-3">
+                <div className="rounded-2xl bg-slate-800 border border-slate-700 px-4 py-3">
                   <div className="flex gap-2">
                     {[0, 1, 2].map((i) => (
                       <div
                         key={i}
-                        className="h-2 w-2 animate-bounce rounded-full bg-teal-500"
+                        className="h-2 w-2 animate-bounce rounded-full bg-teal-400"
                         style={{ animationDelay: `${i * 0.2}s` }}
                       />
                     ))}
@@ -262,12 +262,12 @@ export function AiPathfinderCard({
 
         {sending && (
           <div className="flex justify-start animate-fadeInUp">
-            <div className="rounded-2xl bg-white/95 px-4 py-3">
+            <div className="rounded-2xl bg-slate-800 border border-slate-700 px-4 py-3">
               <div className="flex gap-2">
                 {[0, 1, 2].map((i) => (
                   <div
                     key={i}
-                    className="h-2 w-2 animate-bounce rounded-full bg-teal-500"
+                    className="h-2 w-2 animate-bounce rounded-full bg-teal-400"
                     style={{ animationDelay: `${i * 0.2}s` }}
                   />
                 ))}

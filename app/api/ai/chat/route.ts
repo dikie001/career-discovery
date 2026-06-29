@@ -45,11 +45,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       )
     }
 
-    // Get conversation history
+    // Get conversation history (last 20 messages for context)
     const history = await prisma.chatMessage.findMany({
       where: { userId },
       orderBy: { timestamp: "desc" },
-      take: 10,
+      take: 20,
     })
 
     const conversationHistory = history
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         content: msg.content,
       }))
 
-    // Get AI response
+    // Get AI response with full conversation context
     const aiResponse = await groqService.answerCareerQuestion(
       {
         interests: profile.interests,
