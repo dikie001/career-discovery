@@ -1,41 +1,43 @@
-import { db } from "@/lib/db";
-import { verifyToken } from "@/lib/auth";
-import { ApiResponse, Career } from "@/lib/types";
-import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma"
+import { verifyToken } from "@/lib/auth-prisma"
+import { ApiResponse, Career } from "@/lib/types"
+import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    const authHeader = request.headers.get("authorization");
+    const authHeader = request.headers.get("authorization")
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" } as ApiResponse<null>,
         { status: 401 }
-      );
+      )
     }
 
-    const token = authHeader.substring(7);
-    const userId = verifyToken(token);
+    const token = authHeader.substring(7)
+    const userId = verifyToken(token)
     if (!userId) {
       return NextResponse.json(
         { success: false, error: "Invalid token" } as ApiResponse<null>,
         { status: 401 }
-      );
+      )
     }
 
-    const careers = await db.getCareers();
+    const careers = await prisma.career.findMany({
+      take: 10,
+    })
 
     return NextResponse.json(
       { success: true, data: careers } as ApiResponse<Career[]>,
       { status: 200 }
-    );
+    )
   } catch (error) {
-    console.error("Get careers error:", error);
+    console.error("Get careers error:", error)
     return NextResponse.json(
       {
         success: false,
         error: error instanceof Error ? error.message : "Failed to get careers",
       } as ApiResponse<null>,
       { status: 500 }
-    );
+    )
   }
 }

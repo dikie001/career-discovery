@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  password          String
+  name              String
+  location          String?
+  avatar            String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  profile           UserProfile?
+  messages          ChatMessage[]
+  favorites         Favorite[]
+  progress          CareerProgress?
+}
+
+model UserProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interests         String[]
+  skills            String[]
+  experienceLevel   String   @default("beginner")
+  targetRole        String?
+  careerGoal        String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Career {
+  id                String   @id @default(cuid())
+  title             String
+  description       String
+  category          String
+  salaryMin         Int
+  salaryMax         Int
+  salaryCurrency    String   @default("KSH")
+  matchPercentage   Int      @default(0)
+  icon              String?
+  color             String?
+  createdAt         DateTime @default(now())
+
+  favorites         Favorite[]
+}
+
+model Course {
+  id                String   @id @default(cuid())
+  title             String
+  description       String
+  category          String
+  level             String
+  duration          Int
+  price             Int?
+  provider          String?
+  matchScore        Int?
+  skills            String[]
+  createdAt         DateTime @default(now())
+
+  favorites         Favorite[]
+}
+
+model ChatMessage {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role              String
+  content           String    @db.Text
+  timestamp         DateTime @default(now())
+}
+
+model Favorite {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  careerId          String?
+  career            Career?  @relation(fields: [careerId], references: [id], onDelete: Cascade)
+  courseId          String?
+  course            Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+
+  @@unique([userId, careerId, courseId])
+}
+
+model CareerProgress {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  overallProgress   Int      @default(0)
+  stages            ProgressStage[]
+  lastUpdated       DateTime @updatedAt
+}
+
+model ProgressStage {
+  id                String   @id @default(cuid())
+  progressId        String
+  progress          CareerProgress @relation(fields: [progressId], references: [id], onDelete: Cascade)
+  title             String
+  description       String
+  status            String
+  order             Int
+}

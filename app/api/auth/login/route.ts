@@ -1,10 +1,10 @@
-import { login } from "@/lib/auth";
-import { LoginRequest, ApiResponse, User } from "@/lib/types";
-import { NextRequest, NextResponse } from "next/server";
+import { loginPrisma } from "@/lib/auth-prisma"
+import { LoginRequest, ApiResponse, User } from "@/lib/types"
+import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    const body: LoginRequest = await request.json();
+    const body: LoginRequest = await request.json()
 
     // Validate input
     if (!body.email || !body.password) {
@@ -14,24 +14,24 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           error: "Email and password are required",
         } as ApiResponse<null>,
         { status: 400 }
-      );
+      )
     }
 
-    const result = await login(body);
+    const result = await loginPrisma(body)
 
     if (!result.success) {
-      return NextResponse.json(result as ApiResponse<null>, { status: 401 });
+      return NextResponse.json(result as ApiResponse<null>, { status: 401 })
     }
 
-    return NextResponse.json(result as ApiResponse<User>, { status: 200 });
+    return NextResponse.json(result as ApiResponse<User>, { status: 200 })
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("Login error:", error)
     return NextResponse.json(
       {
         success: false,
         error: "Internal server error",
       } as ApiResponse<null>,
       { status: 500 }
-    );
+    )
   }
 }

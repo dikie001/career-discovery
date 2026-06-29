@@ -12,6 +12,11 @@ const fontMono = Geist_Mono({
   variable: "--font-mono",
 })
 
+export const metadata = {
+  title: "Pathfinder - Discover Your Perfect Career",
+  description: "AI-powered career discovery and learning platform",
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,9 +26,9 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", figtree.variable)}
+      className={cn("antialiased dark", fontMono.variable, "font-sans", figtree.variable)}
     >
-      <body>
+      <body className="bg-slate-950 text-slate-50">
         <ThemeProvider>
           <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>
