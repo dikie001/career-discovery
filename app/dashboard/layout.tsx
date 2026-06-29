@@ -35,9 +35,7 @@ export default function DashboardLayout({
 
   return (
     <DashboardProvider>
-      <div className="min-h-screen bg-white max-w-md mx-auto relative">
-        {children}
-      </div>
+      {children}
     </DashboardProvider>
   );
 }

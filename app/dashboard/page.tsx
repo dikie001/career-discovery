@@ -52,7 +52,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900">
       {/* Desktop Header */}
-      <header className="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/95 backdrop-blur supports-[backdrop-filter]:bg-slate-950/60 px-6 py-4 hidden md:block">
+      <header className="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/95 backdrop-blur supports-[backdrop-filter]:bg-slate-950/60 px-6 py-4 hidden lg:block">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-600">
@@ -70,16 +70,14 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* Desktop Layout - 3 Column Grid */}
-      <div className="hidden md:grid md:grid-cols-3 gap-6 p-6 max-w-7xl mx-auto min-h-screen">
-        {/* Left Column */}
-        <div className="md:col-span-1 space-y-6">
+      {/* Desktop 3-Column Layout (lg and above) */}
+      <div className="hidden lg:grid lg:grid-cols-3 gap-6 p-6 min-h-screen max-w-7xl mx-auto">
+        {/* LEFT COLUMN */}
+        <div className="space-y-6">
           {/* Welcome Card */}
           <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 space-y-3">
-            <div>
-              <h2 className="text-2xl font-bold text-slate-50">Hey {user?.name?.split(" ")[0]}! 👋</h2>
-              <p className="text-sm text-slate-400 mt-2">Ready to build a career that fits you?</p>
-            </div>
+            <h2 className="text-2xl font-bold text-slate-50">Hey {user?.name?.split(" ")[0]}! 👋</h2>
+            <p className="text-sm text-slate-400">Ready to build a career that fits you?</p>
             {user?.location && (
               <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
                 <span className="text-lg">📍</span>
@@ -94,24 +92,14 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-slate-50">Your Progress</h3>
                 <Link href="#" className="text-xs text-teal-400 hover:text-teal-300">
-                  View report
+                  Report
                 </Link>
               </div>
               <div className="flex justify-center py-4">
                 <div className="relative h-32 w-32">
                   <svg className="h-full w-full" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="40" fill="none" stroke="#1e293b" strokeWidth="4" />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      fill="none"
-                      stroke="#14b8a6"
-                      strokeWidth="4"
-                      strokeDasharray={`${(progress.overallProgress / 100) * 251.2} 251.2`}
-                      strokeLinecap="round"
-                      style={{ transform: "rotate(-90deg)", transformOrigin: "50% 50%" }}
-                    />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#14b8a6" strokeWidth="4" strokeDasharray={`${(progress.overallProgress / 100) * 251.2} 251.2`} strokeLinecap="round" style={{ transform: "rotate(-90deg)", transformOrigin: "50% 50%" }} />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="text-3xl font-bold text-teal-400">{progress.overallProgress}%</span>
@@ -122,14 +110,7 @@ export default function DashboardPage() {
               <div className="space-y-2">
                 {progress.stages.map((stage) => (
                   <div key={stage.id} className="flex items-center gap-3">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold flex-shrink-0 ${stage.status === "completed"
-                        ? "bg-teal-600 text-white"
-                        : stage.status === "in_progress"
-                          ? "bg-yellow-500 text-white"
-                          : "bg-slate-700 text-slate-400"
-                        }`}
-                    >
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold flex-shrink-0 ${stage.status === "completed" ? "bg-teal-600 text-white" : stage.status === "in_progress" ? "bg-yellow-500 text-white" : "bg-slate-700 text-slate-400"}`}>
                       {stage.status === "completed" ? "✓" : stage.order}
                     </div>
                     <div className="flex-1">
@@ -143,8 +124,8 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Middle Column - AI Chat */}
-        <div className="md:col-span-1 space-y-6 flex flex-col">
+        {/* MIDDLE COLUMN - AI Chat */}
+        <div className="flex flex-col">
           <div className="rounded-2xl bg-gradient-to-br from-teal-600 to-teal-700 p-6 space-y-4 flex-1 flex flex-col">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
@@ -171,7 +152,8 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-3 mb-4 min-h-[200px]">
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto space-y-3 mb-4 min-h-[300px]">
               {messages.map((msg) => (
                 <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div className={`max-w-xs px-4 py-2 rounded-lg text-sm ${msg.role === "user" ? "bg-white/20 text-white" : "bg-white/10 text-white/90"}`}>
@@ -200,21 +182,17 @@ export default function DashboardPage() {
                 placeholder="Type your question..."
                 className="flex-1 rounded-full bg-white/20 px-4 py-2.5 text-sm text-white placeholder-white/60 focus:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white"
               />
-              <button
-                type="submit"
-                disabled={sending || !input.trim()}
-                className="rounded-full bg-white p-2.5 text-teal-600 hover:bg-white/90 disabled:opacity-50 transition-colors"
-              >
+              <button type="submit" disabled={sending || !input.trim()} className="rounded-full bg-white p-2.5 text-teal-600 hover:bg-white/90 disabled:opacity-50 transition-colors">
                 <MessageCircle className="h-5 w-5" />
               </button>
             </form>
           </div>
         </div>
 
-        {/* Right Column - Careers */}
-        <div className="md:col-span-1 space-y-6">
+        {/* RIGHT COLUMN - Careers */}
+        <div className="space-y-6 flex flex-col">
           {careers.length > 0 && (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 space-y-4">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 space-y-4 flex-1">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-slate-50">Recommended for you</h3>
                 <Link href="#" className="text-xs text-teal-400 hover:text-teal-300">
@@ -222,8 +200,8 @@ export default function DashboardPage() {
                 </Link>
               </div>
 
-              <div className="space-y-3">
-                {careers.slice(0, 3).map((career) => (
+              <div className="space-y-3 overflow-y-auto max-h-96">
+                {careers.slice(0, 5).map((career) => (
                   <div key={career.id} className="rounded-xl border border-slate-800 bg-slate-800/30 p-4 space-y-3 hover:border-teal-600/50 transition-colors">
                     <div className="flex items-start justify-between gap-2">
                       <div>
@@ -246,6 +224,7 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {/* Bottom CTA */}
           <div className="rounded-2xl bg-gradient-to-r from-teal-600 to-teal-700 p-6 space-y-3">
             <div className="space-y-1">
               <h3 className="font-bold text-white text-sm">Keep going! 🏆</h3>
@@ -258,8 +237,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Mobile Layout */}
-      <div className="md:hidden pb-24">
+      {/* MOBILE LAYOUT (below lg) */}
+      <div className="lg:hidden pb-24">
+        {/* Mobile Header */}
         <header className="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/95 backdrop-blur px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -284,6 +264,7 @@ export default function DashboardPage() {
             <p className="text-sm text-slate-400">Ready to build a career that fits you?</p>
           </div>
 
+          {/* Mobile AI Chat */}
           <div className="rounded-2xl bg-gradient-to-br from-teal-600 to-teal-700 p-4 space-y-3">
             <div className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
@@ -321,15 +302,10 @@ export default function DashboardPage() {
             </form>
           </div>
 
+          {/* Mobile Progress */}
           {progress && (
             <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-slate-50 text-sm">Your Career Progress</h3>
-                <Link href="#" className="text-xs text-teal-400 hover:text-teal-300">
-                  View full report
-                </Link>
-              </div>
-
+              <h3 className="font-semibold text-slate-50 text-sm">Your Career Progress</h3>
               <div className="flex justify-center py-2">
                 <div className="relative h-20 w-20">
                   <svg className="h-full w-full" viewBox="0 0 100 100">
@@ -342,7 +318,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </div>
-
               <div className="flex justify-between gap-1 text-xs">
                 {progress.stages.map((stage) => (
                   <div key={stage.id} className="flex flex-col items-center gap-1">
@@ -356,15 +331,10 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {/* Mobile Careers */}
           {careers.length > 0 && (
             <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-slate-50 text-sm">Recommended for you</h3>
-                <Link href="#" className="text-xs text-teal-400 hover:text-teal-300">
-                  See all
-                </Link>
-              </div>
-
+              <h3 className="font-semibold text-slate-50 text-sm">Recommended for you</h3>
               <div className="space-y-2">
                 {careers.slice(0, 3).map((career) => (
                   <div key={career.id} className="rounded-xl border border-slate-800 bg-slate-800/30 p-3 space-y-2">
@@ -387,6 +357,7 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {/* Mobile CTA */}
           <div className="rounded-2xl bg-gradient-to-r from-teal-600 to-teal-700 p-4 space-y-3">
             <div className="space-y-1">
               <h3 className="font-bold text-white text-sm">Keep going, {user?.name?.split(" ")[0]}! 🏆</h3>
@@ -398,6 +369,7 @@ export default function DashboardPage() {
           </div>
         </main>
 
+        {/* Mobile Bottom Nav */}
         <nav className="fixed bottom-0 left-0 right-0 border-t border-slate-800 bg-slate-950/95 backdrop-blur px-4 py-2">
           <div className="flex justify-around max-w-2xl mx-auto">
             <NavItem icon={Home} label="Dashboard" active />
