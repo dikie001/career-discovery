@@ -164,43 +164,45 @@ export function AiPathfinderCard({
     lastMessage?.selectionOptions && lastMessage.selectionOptions.length > 0;
 
   return (
-    <div className="w-full overflow-hidden rounded-3xl bg-gradient-to-b from-teal-600 to-teal-700 shadow-2xl">
-      {/* Header */}
-      <div className="flex items-center gap-4 border-b border-teal-500/30 px-6 py-4">
-        <div className="relative h-14 w-14 flex-shrink-0">
-          <Image
-            src="/bot.png"
-            alt="Pathfinder AI"
-            fill
-            className="object-contain"
-            priority
-          />
-        </div>
-        <div>
-          <h3 className="font-semibold text-white">Ask Pathfinder AI</h3>
-          <p className="text-xs text-teal-100">Your personal career guide</p>
+    <div className="w-full overflow-hidden rounded-2xl bg-gradient-to-b from-teal-600 to-teal-700 shadow-xl">
+      {/* Header - Compact */}
+      <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="relative h-12 w-12 flex-shrink-0">
+            <Image
+              src="/bot.png"
+              alt="Pathfinder AI"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+          <div className="min-w-0">
+            <h3 className="font-semibold text-white text-sm sm:text-base truncate">Pathfinder AI</h3>
+            <p className="text-xs text-teal-100">Career guidance</p>
+          </div>
         </div>
       </div>
 
-      {/* Messages Container */}
-      <div className="h-80 space-y-3 overflow-y-auto p-4 sm:h-96 scrollbar-thin scrollbar-thumb-teal-500/30 scrollbar-track-transparent">
+      {/* Messages Container - Compact */}
+      <div className="h-56 space-y-2 overflow-y-auto p-3 sm:p-4 scrollbar-thin scrollbar-thumb-teal-500/30 scrollbar-track-transparent">
         {messages.map((message, idx) => (
           <div
             key={message.id}
-            className="animate-fadeInUp space-y-2"
+            className="animate-fadeInUp space-y-1.5"
             style={{ animationDelay: `${idx * 0.05}s` }}
           >
             {/* Question/Response */}
             {(message.type === "question" || message.type === "response") && (
               <div className="flex justify-start">
-                <div className="max-w-xs rounded-2xl bg-slate-800 border border-slate-700 px-4 py-3 text-sm shadow-lg lg:max-w-md">
+                <div className="max-w-[85%] rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 text-xs sm:text-sm shadow-lg">
                   {message.type === "response" ? (
                     <MarkdownRenderer
                       content={message.content}
                       className="prose prose-sm"
                     />
                   ) : (
-                    <p className="font-medium text-white">{message.content}</p>
+                    <p className="font-medium text-white text-xs sm:text-sm">{message.content}</p>
                   )}
                 </div>
               </div>
@@ -209,28 +211,28 @@ export function AiPathfinderCard({
             {/* User Input */}
             {message.type === "user_input" && (
               <div className="flex justify-end">
-                <div className="max-w-xs rounded-2xl bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-3 text-sm font-medium text-white shadow-lg lg:max-w-md">
+                <div className="max-w-[85%] rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-3 py-2 text-xs sm:text-sm font-medium text-white shadow-lg">
                   {message.content}
                 </div>
               </div>
             )}
 
-            {/* Selection Options */}
+            {/* Selection Options - Compact */}
             {message.selectionOptions && message.selectionOptions.length > 0 && (
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {message.selectionOptions.map((option) => (
                   <button
                     key={option.id}
                     onClick={() => handleSendSelection(option.id)}
                     disabled={sending || externalLoading}
-                    className="w-full rounded-xl border-2 border-slate-600 bg-slate-800/80 hover:bg-slate-700 px-3 py-2.5 text-left text-xs font-medium text-white backdrop-blur-sm transition-all hover:border-teal-400 disabled:opacity-50 sm:text-sm"
+                    className="w-full rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 px-2.5 py-2 text-left text-xs font-medium text-white backdrop-blur-sm transition-all hover:border-teal-400 disabled:opacity-50"
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">{option.icon}</span>
-                      <div>
-                        <p className="font-semibold">{option.label}</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base flex-shrink-0">{option.icon}</span>
+                      <div className="min-w-0">
+                        <p className="font-semibold truncate">{option.label}</p>
                         {option.description && (
-                          <p className="text-xs text-slate-300 opacity-85">
+                          <p className="text-xs text-slate-300 opacity-85 truncate">
                             {option.description}
                           </p>
                         )}
@@ -244,12 +246,12 @@ export function AiPathfinderCard({
             {/* Loading indicator */}
             {message.isLoading && (
               <div className="flex justify-start">
-                <div className="rounded-2xl bg-slate-800 border border-slate-700 px-4 py-3">
-                  <div className="flex gap-2">
+                <div className="rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+                  <div className="flex gap-1.5">
                     {[0, 1, 2].map((i) => (
                       <div
                         key={i}
-                        className="h-2 w-2 animate-bounce rounded-full bg-teal-400"
+                        className="h-1.5 w-1.5 animate-bounce rounded-full bg-teal-400"
                         style={{ animationDelay: `${i * 0.2}s` }}
                       />
                     ))}
@@ -262,12 +264,12 @@ export function AiPathfinderCard({
 
         {sending && (
           <div className="flex justify-start animate-fadeInUp">
-            <div className="rounded-2xl bg-slate-800 border border-slate-700 px-4 py-3">
-              <div className="flex gap-2">
+            <div className="rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+              <div className="flex gap-1.5">
                 {[0, 1, 2].map((i) => (
                   <div
                     key={i}
-                    className="h-2 w-2 animate-bounce rounded-full bg-teal-400"
+                    className="h-1.5 w-1.5 animate-bounce rounded-full bg-teal-400"
                     style={{ animationDelay: `${i * 0.2}s` }}
                   />
                 ))}
@@ -279,31 +281,31 @@ export function AiPathfinderCard({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
-      <div className="border-t border-teal-500/30 px-4 py-3 sm:px-6">
+      {/* Input Area - Compact */}
+      <div className="border-t border-teal-500/30 px-3 py-2.5 sm:px-4">
         {hasSelectionOptions && !sending ? (
           <div className="text-center text-xs text-teal-100">
-            Select an option above or type your own question
+            Select above or type
           </div>
         ) : (
-          <form onSubmit={handleSendText} className="flex gap-2">
+          <form onSubmit={handleSendText} className="flex gap-1.5">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask me anything..."
+              placeholder="Ask..."
               disabled={sending || externalLoading}
-              className="flex-1 rounded-full bg-white/20 px-4 py-2.5 text-sm text-white placeholder-white/60 backdrop-blur-sm focus:bg-white/30 focus:outline-none sm:text-base"
+              className="flex-1 rounded-full bg-white/20 px-3 py-2 text-xs sm:text-sm text-white placeholder-white/60 backdrop-blur-sm focus:bg-white/30 focus:outline-none"
             />
             <button
               type="submit"
               disabled={sending || externalLoading || !input.trim()}
-              className="flex-shrink-0 rounded-full bg-white p-2.5 text-teal-600 transition-all hover:bg-white/90 disabled:opacity-50 sm:p-3"
+              className="flex-shrink-0 rounded-full bg-white p-2 text-teal-600 transition-all hover:bg-white/90 disabled:opacity-50"
             >
               {sending || externalLoading ? (
-                <Loader className="h-4 w-4 animate-spin sm:h-5 sm:w-5" />
+                <Loader className="h-3.5 w-3.5 animate-spin sm:h-4 sm:w-4" />
               ) : (
-                <Send className="h-4 w-4 sm:h-5 sm:w-5" />
+                <Send className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               )}
             </button>
           </form>
