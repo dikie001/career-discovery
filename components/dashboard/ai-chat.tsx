@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
+import { Send, Loader } from "lucide-react";
+import { MarkdownRenderer } from "./markdown-renderer";
 
 interface Message {
   id: string;
@@ -11,21 +11,13 @@ interface Message {
   timestamp: Date;
 }
 
-interface AIChatProps {
+interface AiChatProps {
   onSendMessage: (message: string) => Promise<string>;
   isLoading?: boolean;
 }
 
-export function AIChat({ onSendMessage, isLoading = false }: AIChatProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content:
-        "Hey! 👋 I'm Pathfinder AI, your personal career guide. What would you like to explore today?",
-      timestamp: new Date(),
-    },
-  ]);
+export function AiChat({ onSendMessage, isLoading: externalLoading = false }: AiChatProps) {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -38,7 +30,7 @@ export function AIChat({ onSendMessage, isLoading = false }: AIChatProps) {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || sending) return;
 
@@ -67,7 +59,7 @@ export function AIChat({ onSendMessage, isLoading = false }: AIChatProps) {
       const errorMessage: Message = {
         id: `msg_${Date.now() + 1}`,
         role: "assistant",
-        content: "Sorry, I encountered an error. Please try again later.",
+        content: "Sorry, I encountered an error. Please try again.",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -77,68 +69,86 @@ export function AIChat({ onSendMessage, isLoading = false }: AIChatProps) {
   };
 
   return (
-    <div className="flex h-full flex-col rounded-lg bg-gradient-to-b from-teal-500 to-teal-600 p-4 text-white shadow-lg">
-      <div className="mb-3 flex items-start justify-between">
-        <div>
-          <h3 className="font-semibold text-sm">Ask Pathfinder AI</h3>
-          <p className="text-xs opacity-90">Your personal career guide</p>
+    <div className="flex h-screen flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+          {messages.length === 0 && (
+            <div className="flex h-full items-center justify-center text-center">
+              <div className="space-y-3">
+                <h2 className="text-3xl font-bold text-white">Pathfinder AI</h2>
+                <p className="text-slate-400">Your personal career guide</p>
+                <p className="text-slate-500 text-sm max-w-md">
+                  Ask me anything about careers, skills, learning paths, and recommendations
+                </p>
+              </div>
+            </div>
+          )}
+
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-fadeIn`}
+            >
+              <div
+                className={`max-w-2xl ${message.role === "user"
+                    ? "rounded-2xl bg-teal-600 px-4 py-3 text-white"
+                    : "w-full"
+                  }`}
+              >
+                {message.role === "assistant" ? (
+                  <div className="prose prose-invert prose-sm max-w-none">
+                    <MarkdownRenderer content={message.content} />
+                  </div>
+                ) : (
+                  <p className="text-sm">{message.content}</p>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {sending && (
+            <div className="flex justify-start animate-fadeIn">
+              <div className="flex gap-2 px-4 py-3">
+                {[0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="h-2 w-2 rounded-full bg-teal-500 animate-bounce"
+                    style={{ animationDelay: `${i * 0.2}s` }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
         </div>
       </div>
 
-      <div className="mb-3 flex-1 space-y-3 overflow-y-auto rounded-lg bg-white/10 p-3 backdrop-blur-sm">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.role === "user" ? "justify-end" : "justify-start"
-              }`}
+      {/* Input Area */}
+      <div className="border-t border-slate-800 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 p-4 sm:p-6">
+        <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto flex gap-3">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask me anything about careers, skills, or learning paths..."
+            disabled={sending || externalLoading}
+            className="flex-1 rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500/50 transition-all disabled:opacity-50"
+          />
+          <button
+            type="submit"
+            disabled={sending || externalLoading || !input.trim()}
+            className="rounded-lg bg-teal-600 p-3 text-white hover:bg-teal-700 disabled:opacity-50 transition-colors flex-shrink-0"
           >
-            <div
-              className={`max-w-xs rounded-lg px-3 py-2 text-xs ${message.role === "user"
-                  ? "bg-white/20 text-white"
-                  : "bg-white/95 text-gray-800"
-                }`}
-            >
-              {message.content}
-            </div>
-          </div>
-        ))}
-        {sending && (
-          <div className="flex justify-start">
-            <div className="rounded-lg bg-white/95 px-3 py-2 text-xs text-gray-800">
-              <div className="flex gap-1">
-                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400"></div>
-                <div
-                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400"
-                  style={{ animationDelay: "0.1s" }}
-                ></div>
-                <div
-                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400"
-                  style={{ animationDelay: "0.2s" }}
-                ></div>
-              </div>
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
+            {sending || externalLoading ? (
+              <Loader className="h-5 w-5 animate-spin" />
+            ) : (
+              <Send className="h-5 w-5" />
+            )}
+          </button>
+        </form>
       </div>
-
-      <form onSubmit={handleSend} className="flex gap-2">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask me..."
-          disabled={sending || isLoading}
-          className="flex-1 rounded-full bg-white/20 px-3 py-2 text-xs text-white placeholder-white/60 focus:bg-white/30 focus:outline-none"
-        />
-        <button
-          type="submit"
-          disabled={sending || isLoading || !input.trim()}
-          className="rounded-full bg-white p-2 text-teal-600 hover:bg-white/90 disabled:opacity-50"
-        >
-          <Send className="h-3 w-3" />
-        </button>
-      </form>
     </div>
   );
 }

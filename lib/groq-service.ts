@@ -199,19 +199,29 @@ Arrange in learning order - easy fundamentals first, then progressively more adv
     question: string,
     conversationHistory: GroqMessage[] = []
   ): Promise<string> {
+    // If this is the very first message, ask for their name
+    if (conversationHistory.length === 0) {
+      return `Hi! I'm excited to help you discover your ideal career path! 👋\n\nTo get started, could you tell me your name?`;
+    }
+
+    // Build a better context message
     const userContext = `User Profile:
-- Interests: ${userProfile.interests.join(", ") || "Not specified"}
-- Current Skills: ${userProfile.skills.join(", ") || "Exploring"}
-- Experience Level: ${userProfile.experienceLevel}
+- Interests: ${userProfile.interests.join(", ") || "Not yet specified"}
+- Current Skills: ${userProfile.skills.join(", ") || "Not yet specified"}
+- Experience Level: ${userProfile.experienceLevel || "Not specified"}
 - Target Role: ${userProfile.targetRole || "Exploring options"}
 
-Tailor your response to this specific user's background and goals. If they're a beginner, use simpler language and more foundational concepts. If they're advanced, go deeper into strategy and nuance.`;
+Remember to:
+1. Ask ONE clear question at a time when gathering information
+2. Be conversational and encouraging
+3. If they give you incomplete info, ask for clarification naturally
+4. Format responses in clean, minimal markdown`;
 
     const messages: GroqMessage[] = [
       ...conversationHistory,
       {
         role: "user",
-        content: `${userContext}\n\nQuestion: ${question}`,
+        content: `${userContext}\n\nUser message: ${question}`,
       },
     ];
 
