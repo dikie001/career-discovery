@@ -42,7 +42,7 @@ model UserProfile {
 model Career {
   id                String   @id @default(cuid())
   title             String
-  description       String
+  description       String   @db.Text
   category          String
   salaryMin         Int
   salaryMax         Int
@@ -58,7 +58,7 @@ model Career {
 model Course {
   id                String   @id @default(cuid())
   title             String
-  description       String
+  description       String   @db.Text
   category          String
   level             String
   duration          Int
