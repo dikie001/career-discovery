@@ -110,11 +110,12 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to send message");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to send message (${response.status})`);
       }
 
       const data = await response.json();
-      return data.data.message;
+      return data.data?.message || "Sorry, I couldn't generate a response. Please try again.";
     },
     [token]
   );
