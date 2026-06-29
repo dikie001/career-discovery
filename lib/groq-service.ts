@@ -204,6 +204,67 @@ Arrange in learning order - easy fundamentals first, then progressively more adv
       return `Hi! I'm excited to help you discover your ideal career path! 👋\n\nTo get started, could you tell me your name?`;
     }
 
+    // Check if we're at a stage where we should offer multiple choice options
+    // Count the messages to determine the conversation stage
+    const messageCount = conversationHistory.length;
+
+    let promptPrefix = "";
+    if (messageCount === 2) {
+      // After name, ask about education with options
+      promptPrefix = `Now that I know their name, ask them about their education level. Provide the options in a structured format as shown below. Format your response like this:
+
+Your educational background helps me tailor recommendations. What's your highest level of education?
+
+\`\`\`json
+{
+  "message": "Your educational background helps me tailor recommendations.",
+  "options": [
+    { "id": "highschool", "label": "High School / Secondary", "description": "Currently in or completed high school" },
+    { "id": "bachelor", "label": "Bachelor's Degree", "description": "Completed undergraduate degree" },
+    { "id": "master", "label": "Master's Degree", "description": "Completed master's degree" },
+    { "id": "phd", "label": "PhD / Postgraduate", "description": "Advanced research qualification" },
+    { "id": "selftaught", "label": "Self-taught / Online", "description": "Primarily self-taught or online courses" }
+  ]
+}
+\`\`\`
+
+Only provide the text and JSON, nothing else.`;
+    } else if (messageCount === 4) {
+      // After education, ask about interests
+      promptPrefix = `The user has told us about their education. Now ask about their interests in a structured way with options:
+
+\`\`\`json
+{
+  "message": "Great! Now I'd like to know what excites you most. What are your primary interests?",
+  "options": [
+    { "id": "tech", "label": "Technology & Software", "description": "Building apps, coding, automation" },
+    { "id": "business", "label": "Business & Entrepreneurship", "description": "Strategy, management, startups" },
+    { "id": "creative", "label": "Creative & Design", "description": "Art, design, content creation" },
+    { "id": "social", "label": "Social Impact", "description": "Helping people, community work" },
+    { "id": "finance", "label": "Finance & Economics", "description": "Money, investments, analysis" },
+    { "id": "science", "label": "Science & Research", "description": "Exploration, discovery, data" }
+  ]
+}
+\`\`\``;
+    } else if (messageCount === 6) {
+      // After interests, ask about experience level
+      promptPrefix = `Now ask about their experience level in their chosen interest area:
+
+\`\`\`json
+{
+  "message": "How would you describe your experience level in this area?",
+  "options": [
+    { "id": "beginner", "label": "Complete Beginner", "description": "Just starting out in this area" },
+    { "id": "intermediate", "label": "Intermediate", "description": "Some knowledge and experience" },
+    { "id": "advanced", "label": "Advanced", "description": "Significant experience and skills" }
+  ]
+}
+\`\`\``;
+    } else if (messageCount >= 8) {
+      // After gathering info, provide recommendations
+      promptPrefix = `Based on all the information gathered, now provide 3 personalized career recommendations. Be concise and actionable. Format as markdown with the recommendations clearly structured.`;
+    }
+
     // Build a better context message
     const userContext = `User Profile:
 - Interests: ${userProfile.interests.join(", ") || "Not yet specified"}
@@ -211,11 +272,13 @@ Arrange in learning order - easy fundamentals first, then progressively more adv
 - Experience Level: ${userProfile.experienceLevel || "Not specified"}
 - Target Role: ${userProfile.targetRole || "Exploring options"}
 
-Remember to:
-1. Ask ONE clear question at a time when gathering information
-2. Be conversational and encouraging
-3. If they give you incomplete info, ask for clarification naturally
-4. Format responses in clean, minimal markdown`;
+${promptPrefix}
+
+Remember:
+1. Be conversational and encouraging
+2. When providing options, use ONLY the JSON format shown
+3. Keep messages concise and focused
+4. Ask ONE question at a time`;
 
     const messages: GroqMessage[] = [
       ...conversationHistory,

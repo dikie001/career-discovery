@@ -115,7 +115,10 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       }
 
       const data = await response.json();
-      return data.data?.message || "Sorry, I couldn't generate a response. Please try again.";
+      const responseText = data.data?.message || "Sorry, I couldn't generate a response. Please try again.";
+
+      // Return the full response including any structured data for options
+      return responseText;
     },
     [token]
   );

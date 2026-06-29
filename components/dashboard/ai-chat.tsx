@@ -3,12 +3,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Send, Loader } from "lucide-react";
 import { MarkdownRenderer } from "./markdown-renderer";
+import { ChatOptions, ChatOption } from "./chat-options";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  options?: ChatOption[];
+  selectedOption?: string;
 }
 
 interface AiChatProps {
@@ -30,6 +33,83 @@ export function AiChat({ onSendMessage, isLoading: externalLoading = false }: Ai
     scrollToBottom();
   }, [messages]);
 
+  const handleSelectOption = async (optionId: string) => {
+    const lastMessage = messages[messages.length - 1];
+    if (!lastMessage?.options) return;
+
+    const selectedOption = lastMessage.options.find((opt) => opt.id === optionId);
+    if (!selectedOption) return;
+
+    // Update the last message to show selected option
+    setMessages((prev) => {
+      const updated = [...prev];
+      updated[updated.length - 1] = {
+        ...updated[updated.length - 1],
+        selectedOption: optionId,
+      };
+      return updated;
+    });
+
+    // Send the selected option as a message
+    const userMessage: Message = {
+      id: `msg_${Date.now()}`,
+      role: "user",
+      content: selectedOption.label,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setSending(true);
+
+    try {
+      const response = await onSendMessage(selectedOption.label);
+
+      // Parse the response for options
+      const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/);
+      let assistantMessage: Message = {
+        id: `msg_${Date.now() + 1}`,
+        role: "assistant",
+        content: response,
+        timestamp: new Date(),
+      };
+
+      if (jsonMatch) {
+        try {
+          const parsed = JSON.parse(jsonMatch[1]);
+          if (parsed.options && Array.isArray(parsed.options)) {
+            const textBeforeJson = response.substring(0, jsonMatch.index || 0).trim();
+            assistantMessage = {
+              id: `msg_${Date.now() + 1}`,
+              role: "assistant",
+              content: textBeforeJson || parsed.message || "",
+              timestamp: new Date(),
+              options: parsed.options.map((opt: any) => ({
+                id: opt.id || opt.label.toLowerCase().replace(/\s+/g, "_"),
+                label: opt.label,
+                description: opt.description,
+              })),
+            };
+          }
+        } catch (e) {
+          console.error("Failed to parse JSON:", e);
+        }
+      }
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      const errorMessage: Message = {
+        id: `msg_${Date.now() + 1}`,
+        role: "assistant",
+        content: "Sorry, I encountered an error. Please try again.",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setSending(false);
+    }
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || sending) return;
@@ -47,12 +127,38 @@ export function AiChat({ onSendMessage, isLoading: externalLoading = false }: Ai
 
     try {
       const response = await onSendMessage(input);
-      const assistantMessage: Message = {
+
+      // Parse the response for options
+      const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/);
+      let assistantMessage: Message = {
         id: `msg_${Date.now() + 1}`,
         role: "assistant",
         content: response,
         timestamp: new Date(),
       };
+
+      if (jsonMatch) {
+        try {
+          const parsed = JSON.parse(jsonMatch[1]);
+          if (parsed.options && Array.isArray(parsed.options)) {
+            const textBeforeJson = response.substring(0, jsonMatch.index || 0).trim();
+            assistantMessage = {
+              id: `msg_${Date.now() + 1}`,
+              role: "assistant",
+              content: textBeforeJson || parsed.message || "",
+              timestamp: new Date(),
+              options: parsed.options.map((opt: any) => ({
+                id: opt.id || opt.label.toLowerCase().replace(/\s+/g, "_"),
+                label: opt.label,
+                description: opt.description,
+              })),
+            };
+          }
+        } catch (e) {
+          console.error("Failed to parse JSON:", e);
+        }
+      }
+
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -86,24 +192,39 @@ export function AiChat({ onSendMessage, isLoading: externalLoading = false }: Ai
           )}
 
           {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-fadeIn`}
-            >
+            <div key={message.id} className="animate-fadeIn space-y-2">
+              {/* Message Content */}
               <div
-                className={`max-w-2xl ${message.role === "user"
+                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-2xl ${message.role === "user"
                     ? "rounded-2xl bg-teal-600 px-4 py-3 text-white"
                     : "w-full"
-                  }`}
-              >
-                {message.role === "assistant" ? (
-                  <div className="prose prose-invert prose-sm max-w-none">
-                    <MarkdownRenderer content={message.content} />
-                  </div>
-                ) : (
-                  <p className="text-sm">{message.content}</p>
-                )}
+                    }`}
+                >
+                  {message.role === "assistant" ? (
+                    <div className="prose prose-invert prose-sm max-w-none">
+                      <MarkdownRenderer content={message.content} />
+                    </div>
+                  ) : (
+                    <p className="text-sm">{message.content}</p>
+                  )}
+                </div>
               </div>
+
+              {/* Options (if present) */}
+              {message.options && message.options.length > 0 && !message.selectedOption && (
+                <div className="flex justify-start">
+                  <div className="w-full max-w-2xl">
+                    <ChatOptions
+                      options={message.options}
+                      onSelect={handleSelectOption}
+                      isLoading={sending}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           ))}
 
