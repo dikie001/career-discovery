@@ -1,4 +1,4 @@
-import { Career, Course, APIResponse } from "./types";
+import { Career, Course } from "./types";
 
 interface GroqMessage {
   role: "user" | "assistant";

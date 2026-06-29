@@ -8,6 +8,7 @@ import { AIChat } from "@/components/dashboard/ai-chat";
 import { CourseCards } from "@/components/dashboard/course-cards";
 import { CareerTools } from "@/components/dashboard/career-tools";
 import Image from "next/image";
+import { Bell } from "lucide-react";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -34,82 +35,123 @@ export default function DashboardPage() {
 
   if (isLoading && !progress) {
     return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-64px)] bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-white">
         <div className="text-center">
           <div className="h-12 w-12 animate-spin rounded-full border-4 border-teal-200 border-t-teal-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Welcome Section */}
-      <div className="mb-8 flex items-start justify-between rounded-lg bg-gradient-to-r from-teal-50 to-blue-50 p-6 shadow-sm">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            {getGreeting()}, {user?.name?.split(" ")[0]}! 👋
-          </h1>
-          <p className="mt-1 text-gray-700">
-            Ready to build a career that fits you?
-          </p>
-          {user?.location && (
-            <p className="mt-2 flex items-center gap-2 text-sm text-gray-600">
-              <span className="inline-block">📍</span> {user.location}
-            </p>
-          )}
+    <main className="min-h-screen bg-white pb-24">
+      {/* Mobile Header */}
+      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="text-lg font-bold text-teal-600">P</div>
+            <span className="font-semibold text-gray-900">Pathfinder</span>
+          </div>
+          <button className="relative p-2 text-gray-600">
+            <Bell className="h-5 w-5" />
+            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
+          </button>
         </div>
-        <div className="hidden h-24 w-24 sm:block">
-          <Image
-            src="/bot.png"
-            alt="Pathfinder"
-            width={96}
-            height={96}
-            className="h-full w-full object-contain"
-          />
+      </header>
+
+      {/* Welcome Section */}
+      <div className="px-4 py-4 space-y-2">
+        <h1 className="text-2xl font-bold text-gray-900">
+          {getGreeting()}, {user?.name?.split(" ")[0]}! 👋
+        </h1>
+        <p className="text-sm text-gray-600">
+          Ready to build a career that fits you?
+        </p>
+        {user?.location && (
+          <p className="flex items-center gap-2 text-xs text-gray-600">
+            📍 {user.location}
+          </p>
+        )}
+      </div>
+
+      {/* User Profile Quick Card */}
+      <div className="mx-4 rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 p-4 text-white flex items-center gap-3 mb-6">
+        <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
+          <span className="text-lg font-bold">
+            {user?.name?.charAt(0).toUpperCase()}
+          </span>
+        </div>
+        <div className="flex-1">
+          <p className="font-semibold text-sm">{user?.name}</p>
+          <p className="text-xs opacity-90">{user?.email}</p>
         </div>
       </div>
 
-      {/* Main Grid Layout */}
-      <div className="grid gap-8 lg:grid-cols-3">
-        {/* Left Column - Main Content */}
-        <div className="space-y-8 lg:col-span-2">
-          {/* Career Progress */}
-          {progress && <CareerProgressComponent progress={progress} />}
+      <div className="space-y-6 px-4">
+        {/* Career Progress */}
+        {progress && <CareerProgressComponent progress={progress} />}
 
-          {/* Recommended Courses */}
-          {courses.length > 0 && (
-            <CourseCards
-              courses={courses.slice(0, 4)}
-              onFavorite={(id) => console.log("Favorited:", id)}
-            />
-          )}
-
-          {/* Career Tools */}
-          <CareerTools />
-        </div>
-
-        {/* Right Column - Chat */}
-        <div className="h-fit sticky top-20 lg:col-span-1">
+        {/* AI Chat Section */}
+        <div className="h-64 rounded-lg overflow-hidden">
           <AIChat onSendMessage={sendChatMessage} isLoading={isLoading} />
         </div>
-      </div>
 
-      {/* Bottom CTA Section */}
-      <div className="mt-8 rounded-lg bg-gradient-to-r from-teal-600 to-teal-700 p-6 text-white shadow-lg">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold">Keep going, {user?.name?.split(" ")[0]}! 🏆</h2>
-            <p className="mt-2 opacity-90">
-              You&apos;re 40% closer to your career goal.
-            </p>
-          </div>
-          <button className="rounded-lg bg-white px-6 py-2 font-medium text-teal-600 hover:bg-gray-50 transition-colors">
+        {/* Career Tools */}
+        <CareerTools />
+
+        {/* Recommended Courses */}
+        {courses.length > 0 && (
+          <CourseCards
+            courses={courses.slice(0, 4)}
+            onFavorite={(id) => console.log("Favorited:", id)}
+          />
+        )}
+
+        {/* Bottom CTA */}
+        <div className="rounded-lg bg-gradient-to-r from-teal-600 to-teal-700 p-4 text-white">
+          <h3 className="font-bold">Keep going, {user?.name?.split(" ")[0]}! 🏆</h3>
+          <p className="text-xs mt-1 opacity-90">
+            You&apos;re 40% closer to your career goal.
+          </p>
+          <button className="mt-3 w-full rounded-lg bg-white text-teal-600 py-2 text-sm font-medium hover:bg-gray-100">
             Continue Roadmap
           </button>
         </div>
       </div>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white px-4 py-2 flex justify-around">
+        <NavItem icon="🏠" label="Dashboard" active href="/dashboard" />
+        <NavItem icon="💬" label="Chat" href="/dashboard/chat" />
+        <NavItem icon="➕" label="Plan" href="/dashboard/plan" />
+        <NavItem icon="📋" label="Explore" href="/dashboard/explore" />
+        <NavItem icon="👤" label="Profile" href="/dashboard/profile" />
+      </nav>
     </main>
+  );
+}
+
+function NavItem({
+  icon,
+  label,
+  active,
+  href,
+}: {
+  icon: string;
+  label: string;
+  active?: boolean;
+  href: string;
+}) {
+  return (
+    <a
+      href={href}
+      className={`flex flex-col items-center py-2 px-3 text-xs font-medium ${active
+          ? "text-teal-600"
+          : "text-gray-600 hover:text-gray-900"
+        }`}
+    >
+      <span className="text-xl">{icon}</span>
+      <span className="mt-1">{label}</span>
+    </a>
   );
 }
