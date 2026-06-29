@@ -4,6 +4,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { Send, Loader } from "lucide-react";
 import { MarkdownRenderer } from "./markdown-renderer";
 import { ChatOptions, ChatOption } from "./chat-options";
+import { ConsentModal } from "./consent-modal";
+import { ChatStarters } from "./chat-starters";
 
 interface Message {
   id: string;
@@ -17,13 +19,29 @@ interface Message {
 interface AiChatProps {
   onSendMessage: (message: string) => Promise<string>;
   isLoading?: boolean;
+  userConsent?: boolean | null;
+  onConsentChange?: (consented: boolean) => Promise<void>;
 }
 
-export function AiChat({ onSendMessage, isLoading: externalLoading = false }: AiChatProps) {
+export function AiChat({
+  onSendMessage,
+  isLoading: externalLoading = false,
+  userConsent = null,
+  onConsentChange,
+}: AiChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [consentLoading, setConsentLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Show consent modal on first message if not consented
+  useEffect(() => {
+    if (messages.length === 0 && userConsent === false) {
+      setShowConsentModal(true);
+    }
+  }, [messages.length, userConsent]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -32,6 +50,20 @@ export function AiChat({ onSendMessage, isLoading: externalLoading = false }: Ai
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const handleConsentResponse = async (agreed: boolean) => {
+    setConsentLoading(true);
+    try {
+      if (onConsentChange) {
+        await onConsentChange(agreed);
+      }
+      setShowConsentModal(false);
+    } catch (error) {
+      console.error("Failed to update consent:", error);
+    } finally {
+      setConsentLoading(false);
+    }
+  };
 
   const handleSelectOption = async (optionId: string) => {
     const lastMessage = messages[messages.length - 1];
@@ -110,23 +142,39 @@ export function AiChat({ onSendMessage, isLoading: externalLoading = false }: Ai
     }
   };
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || sending) return;
+  const handleStarterSelect = async (prompt: string) => {
+    // If user hasn't consented and this is the first message, show consent modal
+    if (messages.length === 0 && userConsent === false) {
+      setShowConsentModal(true);
+      return;
+    }
+
+    await handleSendMessage(null, prompt);
+  };
+
+  const handleSendMessage = async (e?: React.FormEvent | null, messageOverride?: string) => {
+    if (e) {
+      e.preventDefault();
+    }
+
+    const messageText = messageOverride || input;
+    if (!messageText.trim() || sending) return;
 
     const userMessage: Message = {
       id: `msg_${Date.now()}`,
       role: "user",
-      content: input,
+      content: messageText,
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInput("");
+    if (!messageOverride) {
+      setInput("");
+    }
     setSending(true);
 
     try {
-      const response = await onSendMessage(input);
+      const response = await onSendMessage(messageText);
 
       // Parse the response for options
       const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/);
@@ -176,17 +224,31 @@ export function AiChat({ onSendMessage, isLoading: externalLoading = false }: Ai
 
   return (
     <div className="flex h-screen flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      {/* Consent Modal */}
+      <ConsentModal
+        isOpen={showConsentModal}
+        onConsent={handleConsentResponse}
+        isLoading={consentLoading}
+      />
+
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
           {messages.length === 0 && (
             <div className="flex h-full items-center justify-center text-center">
-              <div className="space-y-3">
-                <h2 className="text-3xl font-bold text-white">Pathfinder AI</h2>
-                <p className="text-slate-400">Your personal career guide</p>
-                <p className="text-slate-500 text-sm max-w-md">
-                  Ask me anything about careers, skills, learning paths, and recommendations
-                </p>
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-3xl font-bold text-white">Pathfinder AI</h2>
+                  <p className="text-slate-400 mt-2">Your personal career guide</p>
+                  <p className="text-slate-500 text-sm max-w-md mx-auto mt-3">
+                    Ask me anything about careers, skills, learning paths, and recommendations
+                  </p>
+                </div>
+
+                {/* Chat Starters */}
+                <div className="pt-4">
+                  <ChatStarters onSelect={handleStarterSelect} isLoading={sending} />
+                </div>
               </div>
             </div>
           )}

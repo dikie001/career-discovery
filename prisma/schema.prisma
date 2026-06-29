@@ -24,6 +24,7 @@ model User {
   messages          ChatMessage[]
   favorites         Favorite[]
   progress          CareerProgress?
+  consent           UserConsent?
 }
 
 model UserProfile {
@@ -110,4 +111,13 @@ model ProgressStage {
   description       String
   status            String
   order             Int
+}
+
+model UserConsent {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  useProfileDataForAI Boolean @default(false)
+  consentedAt       DateTime?
+  updatedAt         DateTime @updatedAt
 }
