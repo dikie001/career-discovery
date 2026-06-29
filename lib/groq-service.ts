@@ -43,6 +43,8 @@ COMMUNICATION STYLE:
 - Break complex topics into clear, digestible points
 - Ask clarifying questions when user intent is unclear
 - Use positive framing even when discussing challenges
+- Format responses in clean, minimal, professional markdown
+- Use proper markdown formatting with headers, lists, and emphasis
 
 RECOMMENDATIONS SHOULD INCLUDE:
 - Why it matches the user's profile
@@ -56,7 +58,17 @@ When users ask about specific career paths, provide:
 2. Required vs. nice-to-have skills
 3. Career progression options
 4. Industry salary ranges (if in Kenya, use KES; otherwise USD)
-5. Companies/industries hiring for this role`;
+5. Companies/industries hiring for this role
+
+INITIAL DISCOVERY FLOW:
+When starting a new conversation about career discovery or recommendations:
+1. First, gather basic info: Ask for their name
+2. Then ask: What's your current education level? (Provide clear options)
+3. Then ask: What are your main interests or passions?
+4. Then ask: What's your current experience level? (Beginner/Intermediate/Advanced)
+5. Then provide personalized recommendations based on their answers
+
+Ask ONE QUESTION AT A TIME, and format responses minimally and professionally in markdown.`;
 
   constructor() {
     this.apiKey = process.env.GROQ_API_KEY || "";
@@ -270,6 +282,115 @@ Include:
 - Realistic salary expectations after completing roadmap`;
 
     return this.chat([{ role: "user", content: prompt }]);
+  }
+
+  async startCareerDiscovery(userName: string): Promise<string> {
+    const prompt = `A new user named "${userName}" wants to discover suitable career paths for them.
+    
+Ask them: "What's your highest level of education?" and provide these clear options in markdown format with a numbered list:
+1. High School / Secondary
+2. Bachelor's Degree
+3. Master's Degree
+4. PhD / Postgraduate
+5. Self-taught / Online Courses
+6. No formal education yet
+
+Format the response minimally and professionally. Ask only this one question for now.`;
+
+    return this.chat([{ role: "user", content: prompt }]);
+  }
+
+  async askEducationLevel(): Promise<string> {
+    const prompt = `Ask the user about their education level with these options clearly presented in markdown format:
+    
+1. High School / Secondary
+2. Bachelor's Degree
+3. Master's Degree  
+4. PhD / Postgraduate
+5. Self-taught / Online Courses
+6. No formal education yet
+
+Keep it professional and minimal.`;
+
+    return this.chat([{ role: "user", content: prompt }]);
+  }
+
+  async askInterestsAndSkills(
+    educationLevel: string,
+    conversationHistory: GroqMessage[] = []
+  ): Promise<string> {
+    const prompt = `User's education level: ${educationLevel}
+
+Now ask them: "What are your main interests or passions?" with some examples they can relate to (tech, business, creative, social impact, etc.). Keep it conversational, minimal, and professional in markdown format.`;
+
+    const messages: GroqMessage[] = [
+      ...conversationHistory,
+      {
+        role: "user",
+        content: prompt,
+      },
+    ];
+
+    return this.chat(messages);
+  }
+
+  async askExperienceLevel(
+    interests: string,
+    conversationHistory: GroqMessage[] = []
+  ): Promise<string> {
+    const prompt = `User's interests: ${interests}
+
+Now ask them: "What's your current experience level in your field of interest?" with these clear options in markdown:
+1. Complete Beginner (just starting out)
+2. Intermediate (some knowledge/projects)
+3. Advanced (extensive experience)
+
+Keep responses minimal and professional.`;
+
+    const messages: GroqMessage[] = [
+      ...conversationHistory,
+      {
+        role: "user",
+        content: prompt,
+      },
+    ];
+
+    return this.chat(messages);
+  }
+
+  async generatePersonalizedRecommendations(
+    userName: string,
+    educationLevel: string,
+    interests: string,
+    experienceLevel: string,
+    conversationHistory: GroqMessage[] = []
+  ): Promise<string> {
+    const prompt = `Based on the following user profile, provide 3-4 personalized career recommendations:
+
+**User Profile:**
+- Name: ${userName}
+- Education Level: ${educationLevel}
+- Interests: ${interests}
+- Experience Level: ${experienceLevel}
+
+For each recommendation, provide:
+1. **Career Title** - Clear and specific
+2. **Why It Fits** - Brief explanation based on their profile
+3. **Key Skills Needed** - 3-4 essential skills
+4. **Timeline** - Realistic timeframe to enter this role
+5. **Next Steps** - 2-3 immediate actions
+
+Format in clean, minimal, professional markdown. Be encouraging and specific.`;
+
+    const messages: GroqMessage[] = [
+      ...conversationHistory,
+      {
+        role: "user",
+        content: prompt,
+      },
+    ];
+
+    return this.chat(messages);
   }
 }
 
