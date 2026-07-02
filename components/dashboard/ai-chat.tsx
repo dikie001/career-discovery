@@ -721,32 +721,23 @@ export function AiChat({
       {/* MAIN CHAT AREA */}
       <div className="flex flex-1 flex-col overflow-hidden bg-slate-950/20">
         {/* Chat Header */}
-        <header className={`sticky top-0 z-30 flex items-center justify-between border-b ${activeTheme.header} px-4 py-3 sm:px-6 backdrop-blur-md`}>
+        <header className={`sticky top-0 z-30 flex items-center justify-between border-b ${activeTheme.header} px-4 py-2.5 sm:px-6 backdrop-blur-md`}>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 transition-colors"
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-4.5 w-4.5" />
             </button>
             <div className="flex items-center gap-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
-              </span>
-              <div className="flex items-center gap-2">
-                <div className={`p-1.5 rounded-lg bg-gradient-to-br ${activePersonality.color} text-white shadow-sm`}>
-                  {activePersonality.icon}
-                </div>
-                <div>
-                  <h2 className="text-xs font-bold text-slate-100">{activePersonality.name}</h2>
-                  <span className="block text-[9px] text-slate-500">{activePersonality.description}</span>
-                </div>
+              <div className={`p-1.5 rounded-lg bg-gradient-to-br ${activePersonality.color} text-white shadow-sm`}>
+                {activePersonality.icon}
+              </div>
+              <div>
+                <h2 className="text-xs font-bold text-slate-100">{activePersonality.name}</h2>
+                <span className="block text-[9px] text-slate-500 font-medium">{activePersonality.description}</span>
               </div>
             </div>
-          </div>
-          <div className={`text-[9px] font-bold tracking-wider ${activeTheme.accentText} uppercase bg-slate-900 border ${activeTheme.accentBorder} px-3 py-1 rounded-full`}>
-            {activeTheme.name}
           </div>
         </header>
 
