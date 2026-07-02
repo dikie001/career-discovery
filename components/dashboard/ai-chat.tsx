@@ -29,6 +29,7 @@ interface Message {
   timestamp: Date;
   options?: ChatOption[];
   selectedOption?: string;
+  sessionStart?: boolean;
 }
 
 interface AiChatProps {
@@ -162,7 +163,7 @@ const getSessionsFromMessages = (allMsgs: Message[]): ChatSession[] => {
     const prevMsg = filteredMsgs[idx - 1];
     const timeDiff = msg.timestamp.getTime() - prevMsg.timestamp.getTime();
 
-    if (timeDiff > 30 * 60 * 1000) {
+    if (msg.sessionStart || timeDiff > 30 * 60 * 1000) {
       // Start a new session
       const firstUserMsg = currentSessionMsgs.find((m) => m.role === "user");
       chatSessions.push({
@@ -496,6 +497,7 @@ export function AiChat({
       role: "user",
       content: messageText,
       timestamp: new Date(),
+      sessionStart: activeSessionId === "new",
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -611,7 +613,7 @@ export function AiChat({
             </div>
             <div>
               <span className="font-bold text-sm tracking-tight text-slate-100">Pathfinder AI</span>
-              <span className="block text-sm text-slate-400 font-medium">Enterprise Assistant</span>
+              <span className="block text-xs text-slate-400 font-medium">Enterprise Assistant</span>
             </div>
           </div>
           <button
@@ -627,7 +629,7 @@ export function AiChat({
           {/* New Chat Button */}
           <button
             onClick={handleNewChat}
-            className={`w-full rounded-xl ${activeTheme.accentBg} text-white py-2.5 px-4 flex items-center justify-center gap-2 font-bold text-sm transition-all shadow-md active:scale-98`}
+            className={`w-full rounded-xl ${activeTheme.accentBg} text-white py-2.5 px-4 flex items-center justify-center gap-2 font-bold text-xs transition-all shadow-md active:scale-98`}
           >
             <Plus className="h-4 w-4" />
             New Chat
@@ -635,7 +637,7 @@ export function AiChat({
 
           {/* Theme Selector swatch list */}
           <div className="space-y-2 px-1">
-            <span className="text-sm font-bold text-slate-500">Choose Theme</span>
+            <span className="text-xs font-bold text-slate-500">Choose Theme</span>
             <div className="flex items-center gap-2 pt-1">
               {THEMES.map((theme) => (
                 <button
@@ -655,7 +657,7 @@ export function AiChat({
           {/* AI Personality Selection */}
           <div className="space-y-2.5">
             <div className="px-1">
-              <span className="text-sm font-bold text-slate-500 ">AI Persona Model</span>
+              <span className="text-xs font-bold text-slate-500 ">AI Persona Model</span>
             </div>
             <div className="grid grid-cols-2 gap-2">
               {PERSONALITIES.map((pers) => (
@@ -672,7 +674,7 @@ export function AiChat({
                   <div className={`p-1.5 rounded-lg w-fit ${pers.color} text-white shadow-sm`}>
                     {pers.icon}
                   </div>
-                  <span className="text-sm font-bold text-slate-100 leading-tight mt-1">{pers.name}</span>
+                  <span className="text-xs font-bold text-slate-100 leading-tight mt-1">{pers.name}</span>
                 </button>
               ))}
             </div>
@@ -682,11 +684,11 @@ export function AiChat({
           <div className="space-y-1">
             <div className="flex items-center gap-2 px-1 py-1">
               <History className="h-3.5 w-3.5 text-slate-500" />
-              <span className="text-sm font-bold text-slate-500 ">Conversation History</span>
+              <span className="text-xs font-bold text-slate-500 ">Conversation History</span>
             </div>
             <div className="space-y-3">
               {sessions.length === 0 ? (
-                <div className="p-4 text-center text-sm text-slate-500 border border-dashed border-slate-800 rounded-xl mt-2">
+                <div className="p-4 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl mt-2">
                   No past discussions saved.
                 </div>
               ) : (
@@ -704,7 +706,7 @@ export function AiChat({
         {/* Sidebar Footer - Back to Dashboard */}
         <div className="p-4 border-t border-slate-800/80 bg-slate-900/20">
           <Link href="/dashboard">
-            <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-800 hover:bg-slate-800 hover:border-slate-700 hover:text-white text-sm font-bold text-slate-400 transition-all">
+            <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-800 hover:bg-slate-800 hover:border-slate-700 hover:text-white text-xs font-bold text-slate-400 transition-all">
               <ArrowLeft className="h-3.5 w-3.5" />
               Return to Hub
             </button>
@@ -737,7 +739,7 @@ export function AiChat({
               </div>
               <div>
                 <h2 className="text-sm font-bold text-slate-100">{activePersonality.name}</h2>
-                <span className="block text-sm text-slate-500 font-medium">{activePersonality.description}</span>
+                <span className="block text-xs text-slate-500 font-medium">{activePersonality.description}</span>
               </div>
             </div>
           </div>
@@ -753,7 +755,7 @@ export function AiChat({
                     <div className="absolute inset-0 rounded-full border border-slate-800"></div>
                     <div className="absolute inset-0 rounded-full border border-transparent border-t-sky-500 border-r-sky-500 animate-spin"></div>
                   </div>
-                  <p className="text-sm text-slate-500 font-bold uppercase tracking-wider">Syncing Secure History...</p>
+                  <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Syncing Secure History...</p>
                 </div>
               </div>
             ) : activeMessages.length === 0 ? (
@@ -783,7 +785,7 @@ export function AiChat({
               if (message.role === "system") {
                 return (
                   <div key={message.id} className="flex justify-center my-2.5">
-                    <span className="px-3.5 py-1.5 rounded-full bg-slate-900/60 border border-slate-800/80 text-sm text-slate-400 font-bold uppercase tracking-wider">
+                    <span className="px-3.5 py-1.5 rounded-full bg-slate-900/60 border border-slate-800/80 text-xs text-slate-400 font-bold uppercase tracking-wider">
                       {message.content}
                     </span>
                   </div>
@@ -827,7 +829,7 @@ export function AiChat({
                   </div>
 
                   {/* Message Timestamp */}
-                  <div className={`flex text-sm text-slate-600 font-bold px-10 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div className={`flex text-xs text-slate-650 font-bold px-10 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                     {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </div>
 
@@ -891,7 +893,7 @@ export function AiChat({
               )}
             </button>
           </form>
-          <div className="max-w-3xl mx-auto mt-2 text-center text-sm text-slate-500 font-medium">
+          <div className="max-w-3xl mx-auto mt-2 text-center text-xs text-slate-500 font-medium">
             Pathfinder Console • Enterprise Mode • Styled as <span className="font-semibold text-slate-400">{activePersonality.name}</span>
           </div>
         </div>
