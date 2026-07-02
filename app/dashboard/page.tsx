@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react"
 import Image from "next/image"
 import { useDashboard } from "@/contexts/dashboard-context"
 import { useAuth } from "@/contexts/auth-context"
-import { Bell, Send, Home, MessageSquare, Plus, BookOpen, User, Zap, Map, Heart, TrendingUp, Star, ArrowRight, Sparkles } from "lucide-react"
+import { Bell, Send, Home, MessageSquare, Plus, BookOpen, User, Zap, Map, Heart, TrendingUp, Star, ArrowRight, Sparkles, Compass } from "lucide-react"
 import Link from "next/link"
 
 export default function DashboardPage() {
@@ -46,502 +46,464 @@ export default function DashboardPage() {
 
   if (isLoading && !progress) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <div className="flex h-screen items-center justify-center bg-slate-50">
         <div className="text-center animate-fadeInUp">
           <div className="relative w-16 h-16 mx-auto mb-6">
             <div className="absolute inset-0 rounded-full border-4 border-teal-600/30"></div>
-            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-teal-400 border-r-teal-400 animate-spin"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-teal-600 border-r-teal-600 animate-spin"></div>
           </div>
-          <p className="text-slate-300 font-medium">Loading your career journey...</p>
-          <p className="text-slate-500 text-sm mt-2">Preparing personalized insights</p>
+          <p className="text-slate-650 font-bold">Loading your career journey...</p>
+          <p className="text-slate-450 text-xs mt-2">Preparing personalized insights</p>
         </div>
       </div>
     )
   }
 
+  // Fallback data matching user mockups
+  const mockupCareers = [
+    {
+      id: "car_1",
+      title: "Data Analyst",
+      description: "High demand in Kenya",
+      salary: "KSh 120K+ /month",
+      matchPercentage: 92,
+      badge: "Top Match",
+      badgeColor: "bg-teal-150 text-teal-700",
+      accentColor: "teal",
+      illustration: (
+        <svg viewBox="0 0 120 90" className="w-full h-24 object-contain">
+          <rect x="15" y="10" width="90" height="70" rx="8" fill="#F0FDFA" stroke="#CCFBF1" strokeWidth="1" />
+          <rect x="25" y="20" width="70" height="40" rx="4" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="1" />
+          <rect x="32" y="44" width="6" height="12" rx="1" fill="#14B8A6" />
+          <rect x="42" y="37" width="6" height="19" rx="1" fill="#06B6D4" />
+          <rect x="52" y="28" width="6" height="28" rx="1" fill="#0EA5E9" />
+          <rect x="62" y="40" width="6" height="16" rx="1" fill="#3B82F6" />
+          <path d="M 35 44 L 45 34 L 55 26 L 65 32" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="65" cy="32" r="2" fill="#F59E0B" />
+          <circle cx="85" cy="36" r="6" fill="#CBD5E1" />
+          <path d="M 75 52 C 75 46 80 44 85 44 C 90 44 95 46 95 52 Z" fill="#CBD5E1" />
+        </svg>
+      )
+    },
+    {
+      id: "car_2",
+      title: "Software Developer",
+      description: "High growth career",
+      salary: "KSh 150K+ /month",
+      matchPercentage: 87,
+      badge: "High Growth",
+      badgeColor: "bg-indigo-100 text-indigo-700",
+      accentColor: "indigo",
+      illustration: (
+        <svg viewBox="0 0 120 90" className="w-full h-24 object-contain">
+          <rect x="15" y="10" width="90" height="70" rx="8" fill="#F5F3FF" stroke="#EDE9FE" strokeWidth="1" />
+          <rect x="25" y="20" width="70" height="40" rx="4" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="1" />
+          <rect x="32" y="27" width="18" height="3" rx="1" fill="#8B5CF6" />
+          <rect x="32" y="34" width="30" height="3" rx="1" fill="#A78BFA" />
+          <rect x="32" y="41" width="15" height="3" rx="1" fill="#C4B5FD" />
+          <rect x="32" y="48" width="22" height="3" rx="1" fill="#C4B5FD" />
+          <text x="70" y="42" fill="#6D28D9" fontSize="11" fontWeight="bold" fontFamily="monospace">&lt;/&gt;</text>
+          <rect x="45" y="65" width="30" height="4" rx="1.5" fill="#E2E8F0" />
+        </svg>
+      )
+    },
+    {
+      id: "car_3",
+      title: "Clinical Officer",
+      description: "Make a difference",
+      salary: "KSh 70K+ /month",
+      matchPercentage: 81,
+      badge: "Make Impact",
+      badgeColor: "bg-orange-100 text-orange-700",
+      accentColor: "orange",
+      illustration: (
+        <svg viewBox="0 0 120 90" className="w-full h-24 object-contain">
+          <rect x="15" y="10" width="90" height="70" rx="8" fill="#FFF7ED" stroke="#FFEDD5" strokeWidth="1" />
+          <circle cx="60" cy="40" r="22" fill="#FFE0C2" opacity="0.3" />
+          <path d="M 60 48 C 55 42 48 42 48 47 C 48 53 60 62 60 62 C 60 62 72 53 72 47 C 72 42 65 42 60 48 Z" fill="#EF4444" />
+          <path d="M 45 25 Q 60 18 75 25" fill="none" stroke="#94A3B8" strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M 50 25 L 50 35 C 50 42 70 42 70 35 L 70 25" fill="none" stroke="#94A3B8" strokeWidth="2" />
+          <circle cx="60" cy="42" r="5" fill="#EF4444" stroke="#FFFFFF" strokeWidth="1.5" />
+          <line x1="60" y1="37" x2="60" y2="47" stroke="#FFFFFF" strokeWidth="1.5" />
+          <line x1="55" y1="42" x2="65" y2="42" stroke="#FFFFFF" strokeWidth="1.5" />
+        </svg>
+      )
+    }
+  ]
+
+  const activeCareers = careers.length > 0 ? careers.slice(0, 3).map((c, idx) => ({
+    ...c,
+    salary: idx === 0 ? "KSh 120K+ /month" : idx === 1 ? "KSh 150K+ /month" : "KSh 70K+ /month",
+    badge: idx === 0 ? "Top Match" : idx === 1 ? "High Growth" : "Make Impact",
+    badgeColor: idx === 0 ? "bg-teal-50 text-teal-700" : idx === 1 ? "bg-purple-100 text-purple-700" : "bg-orange-100 text-orange-700",
+    accentColor: idx === 0 ? "teal" : idx === 1 ? "purple" : "orange",
+    illustration: mockupCareers[idx % 3].illustration,
+    description: c.description || mockupCareers[idx % 3].description
+  })) : mockupCareers
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      {/* DESKTOP VIEW */}
-      <div className="hidden lg:block">
-        {/* Premium Header */}
-        <header className="sticky top-0 z-40 glass border-b border-slate-800">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-4 animate-slideInLeft">
-              <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-teal-600 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity blur-lg" />
-                <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-teal-600 to-teal-700">
-                  <span className="text-lg font-bold text-white">P</span>
-                </div>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">Pathfinder</h1>
-                <p className="text-xs text-slate-400">Discover. Plan. Succeed</p>
-              </div>
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 pb-24 font-sans antialiased">
+      {/* HEADER SECTION */}
+      <header className="sticky top-0 z-40 bg-white border-b border-slate-100 shadow-sm">
+        <div className="max-w-md md:max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-teal-50 border border-teal-100/80 shadow-sm text-teal-650 font-black text-xl">
+              P
             </div>
-            <button className="relative p-2.5 text-slate-400 hover:text-teal-400 transition-colors group">
+            <div>
+              <h1 className="text-base font-black text-slate-900 leading-tight">Pathfinder</h1>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Discover. Plan. Succeed.</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="relative p-2 rounded-xl text-slate-400 hover:text-slate-600 transition-colors">
               <Bell className="h-5 w-5" />
-              <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-red-500 animate-pulse"></span>
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
             </button>
-          </div>
-        </header>
-
-        {/* 3-Column Desktop Layout */}
-        <div className="grid grid-cols-12 gap-6 p-6 max-w-7xl mx-auto">
-          {/* LEFT COLUMN - User Profile & Progress */}
-          <div className="col-span-3 space-y-6">
-            {/* Welcome Card */}
-            <div className="group relative rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-800 p-6 hover-lift animate-slideInLeft overflow-hidden">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-teal-500/10 rounded-full -mr-20 -mt-20 group-hover:scale-150 transition-transform duration-500" />
-              <div className="relative z-10 space-y-3">
-                <h2 className="text-3xl font-bold text-white">Hey, {user?.name?.split(" ")[0] || "User"}! 👋</h2>
-                <p className="text-sm text-slate-400">Ready to build a career that fits you?</p>
-                {user?.location && (
-                  <div className="flex items-center gap-2 pt-3 border-t border-slate-700">
-                    <span className="text-lg">📍</span>
-                    <p className="text-xs font-medium text-slate-300">{user.location}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Progress Card */}
-            {progress && (
-              <div className="group rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-800 p-6 hover-lift animate-slideInLeft overflow-hidden" style={{ animationDelay: "0.1s" }}>
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="font-semibold text-white flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-teal-400" />
-                    Career Progress
-                  </h3>
-                  <Link href="#" className="text-xs text-teal-400 hover:text-teal-300 transition-colors flex items-center gap-1">
-                    Report <ArrowRight className="h-3 w-3" />
-                  </Link>
-                </div>
-
-                {/* Circular Progress */}
-                <div className="flex justify-center py-6">
-                  <div className="relative h-40 w-40">
-                    <svg className="h-full w-full transform -rotate-90" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(30, 41, 59, 0.8)" strokeWidth="3" />
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        fill="none"
-                        stroke="url(#tealGradient)"
-                        strokeWidth="3"
-                        strokeDasharray={`${(progress.overallProgress / 100) * 251.2} 251.2`}
-                        strokeLinecap="round"
-                        className="transition-all duration-1000"
-                      />
-                      <defs>
-                        <linearGradient id="tealGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#14b8a6" />
-                          <stop offset="100%" stopColor="#06b6d4" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-4xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">{progress.overallProgress}%</span>
-                      <span className="text-xs text-slate-400 mt-1">Complete</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Stages */}
-                <div className="space-y-3 mt-6">
-                  {progress.stages.map((stage, idx) => (
-                    <div
-                      key={stage.id}
-                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-700/30 transition-colors"
-                      style={{ animationDelay: `${idx * 0.1}s` }}
-                    >
-                      <div className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold flex-shrink-0 transition-all ${stage.status === "completed"
-                        ? "bg-gradient-to-r from-teal-600 to-teal-500 text-white"
-                        : stage.status === "in_progress"
-                          ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-white animate-pulse-soft"
-                          : "bg-slate-700 text-slate-400"
-                        }`}>
-                        {stage.status === "completed" ? "✓" : stage.order}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-slate-200 truncate">{stage.title}</p>
-                        <p className="text-xs text-slate-500 line-clamp-1">{stage.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* MIDDLE COLUMN - AI Chat */}
-          <div className="col-span-6 flex flex-col animate-fadeInUp">
-            <Link href="/dashboard/ai-chat" className="group relative rounded-3xl bg-gradient-to-r from-teal-700 to-teal-600 p-6 overflow-hidden hover:shadow-2xl transition-all duration-300">
-              <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -mr-48 -mt-48" />
-
-              {/* Header with Bot Image */}
-              <div className="relative z-10 flex items-start gap-4 mb-6">
-                {/* Bot Image */}
-                <div className="relative flex-shrink-0">
-                  <div className="h-24 w-24">
-                    <Image
-                      src="/bot.png"
-                      alt="Pathfinder AI"
-                      fill
-                      className="object-contain drop-shadow-lg"
-                      priority
-                    />
-                  </div>
-                </div>
-
-                {/* Title */}
-                <div className="pt-2">
-                  <h3 className="font-bold text-white text-2xl">Ask Pathfinder AI</h3>
-                  <p className="text-sm text-teal-50">Your personal career guide</p>
-                </div>
-              </div>
-
-              {/* Input Area */}
-              <div className="relative z-10 flex gap-3 mb-5">
-                <input
-                  type="text"
-                  placeholder="What would you like to explore today?"
-                  disabled
-                  className="flex-1 rounded-full bg-white px-6 py-4 text-base text-gray-600 placeholder-gray-400 cursor-pointer hover:bg-gray-50 transition-all font-medium"
-                />
-                <button
-                  disabled
-                  className="flex-shrink-0 rounded-full bg-teal-500 hover:bg-teal-600 p-4 text-white transition-all duration-300 shadow-lg flex items-center justify-center"
-                >
-                  <Send className="h-5 w-5" />
-                </button>
-              </div>
-
-              {/* Quick Action Buttons */}
-              <div className="relative z-10 flex gap-3 flex-wrap">
-                <button className="rounded-full border-2 border-teal-200 bg-transparent hover:bg-teal-500/10 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 flex items-center gap-2">
-                  <span>⚡</span>
-                  Best careers for me
-                </button>
-                <button className="rounded-full border-2 border-teal-200 bg-transparent hover:bg-teal-500/10 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 flex items-center gap-2">
-                  <span>📊</span>
-                  Skills I need
-                </button>
-                <button className="rounded-full border-2 border-teal-200 bg-transparent hover:bg-teal-500/10 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 flex items-center gap-2">
-                  <span>📚</span>
-                  Courses to study
-                </button>
-              </div>
-            </Link>
-          </div>
-
-          {/* RIGHT COLUMN - Recommended Careers */}
-          <div className="col-span-3 space-y-6 flex flex-col">
-            {careers.length > 0 && (
-              <div className="group rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-800 p-6 hover-lift flex-1 animate-slideInRight overflow-hidden">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="font-bold text-white flex items-center gap-2">
-                    <Star className="h-5 w-5 text-teal-400" />
-                    Recommended
-                  </h3>
-                  <Link href="#" className="text-xs text-teal-400 hover:text-teal-300 transition-colors flex items-center gap-1">
-                    See all <ArrowRight className="h-3 w-3" />
-                  </Link>
-                </div>
-
-                <div className="space-y-3 overflow-y-auto max-h-96 pr-2 custom-scrollbar stagger-children">
-                  {careers.slice(0, 5).map((career, idx) => (
-                    <div
-                      key={career.id}
-                      className="rounded-xl border border-slate-700 bg-slate-700/20 hover:bg-slate-700/40 p-4 space-y-3 hover-lift transition-all duration-300 cursor-pointer animate-slideInRight"
-                      style={{ animationDelay: `${idx * 0.1}s` }}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1">
-                          <h4 className="font-bold text-slate-50 text-sm">{career.title}</h4>
-                          <p className="text-xs text-slate-400 line-clamp-2 mt-1">{career.description}</p>
-                        </div>
-                        <button className="text-slate-400 hover:text-red-400 flex-shrink-0 transition-colors">
-                          <Heart className="h-4 w-4" />
-                        </button>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-slate-700 rounded-full h-2 overflow-hidden">
-                          <div
-                            className="bg-gradient-to-r from-teal-500 to-cyan-400 h-full rounded-full transition-all duration-1000"
-                            style={{ width: `${career.matchPercentage}%` }}
-                          />
-                        </div>
-                        <span className="text-xs font-bold text-teal-400 whitespace-nowrap">{career.matchPercentage}%</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* CTA Card */}
-            <div className="group rounded-2xl bg-gradient-to-br from-teal-600 to-cyan-600 p-6 space-y-4 hover-lift animate-slideInRight overflow-hidden" style={{ animationDelay: "0.2s" }}>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16" />
-              <div className="relative z-10">
-                <h3 className="font-bold text-white text-lg">Keep going! 🚀</h3>
-                <p className="text-sm text-white/90 mt-1">You're {progress?.overallProgress || 0}% closer to your goal.</p>
-              </div>
-              <button className="relative z-10 w-full rounded-xl bg-white text-teal-600 py-3 text-sm font-bold hover:bg-slate-100 transition-all duration-300 hover:shadow-lg">
-                Continue Roadmap <ArrowRight className="h-4 w-4 inline ml-2" />
-              </button>
+            <div className="relative h-9 w-9 rounded-full overflow-hidden border border-slate-200 bg-slate-105 shadow-sm">
+              <Image
+                src="/bot.png"
+                alt="Profile"
+                fill
+                className="object-cover"
+              />
             </div>
           </div>
         </div>
-      </div>
-      {/* MOBILE VIEW */}
-      <div className="lg:hidden pb-24">
-        {/* Mobile Header */}
-        <header className="sticky top-0 z-40 glass border-b border-slate-800">
-          <div className="px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-3 animate-slideInLeft">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-teal-600 to-teal-700">
-                <span className="text-base font-bold text-white">P</span>
-              </div>
-              <div>
-                <h1 className="text-base font-bold text-white">Pathfinder</h1>
-                <p className="text-xs text-slate-400">Discover. Plan. Succeed</p>
-              </div>
+      </header>
+
+      {/* DASHBOARD HERO */}
+      <main className="max-w-md md:max-w-4xl mx-auto px-4 pt-5 space-y-6">
+        
+        {/* GREETING & LOCATION ROW */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Hey {user?.name?.split(" ")[0] || "Brian"}! 👋</h2>
+            <p className="text-xs font-semibold text-slate-400">Ready to build a career that fits you?</p>
+          </div>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-150 shadow-sm text-xs font-bold text-slate-700 cursor-pointer hover:bg-slate-50 transition-colors">
+            <span>🇰🇪</span>
+            <span>{user?.location || "Nairobi, Kenya"}</span>
+            <span className="text-[10px] text-slate-450">▼</span>
+          </div>
+        </div>
+
+        {/* ASK PATHFINDER AI GRADIENT CARD */}
+        <Link href="/dashboard/ai-chat" className="block group relative rounded-3xl bg-gradient-to-br from-teal-850 via-[#07594F] to-[#044039] p-5 overflow-hidden hover:shadow-xl transition-all duration-300 border border-teal-900/10 shadow-inner">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16" />
+          
+          <div className="relative z-10 flex items-center gap-4 mb-4.5">
+            {/* Robot head */}
+            <div className="flex-shrink-0 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 border border-white/20 p-1.5 shadow-inner">
+              <svg viewBox="0 0 100 100" className="w-11 h-11 object-contain drop-shadow-md">
+                <rect x="25" y="30" width="50" height="40" rx="15" fill="#FFFFFF" />
+                <rect x="30" y="35" width="40" height="30" rx="10" fill="#0D1117" />
+                <circle cx="42" cy="50" r="4.5" fill="#14B8A6" />
+                <circle cx="58" cy="50" r="4.5" fill="#14B8A6" />
+                <rect x="45" y="70" width="10" height="8" rx="2" fill="#E2E8F0" />
+                <circle cx="50" cy="18" r="4" fill="#14B8A6" />
+                <line x1="50" y1="22" x2="50" y2="30" stroke="#E2E8F0" strokeWidth="3" />
+                <path d="M 35 48 Q 28 48 28 58" fill="none" stroke="#E2E8F0" strokeWidth="3" />
+                <path d="M 65 48 Q 72 48 72 58" fill="none" stroke="#E2E8F0" strokeWidth="3" />
+              </svg>
             </div>
-            <button className="relative p-2 text-slate-400 hover:text-teal-400 transition-colors">
-              <Bell className="h-5 w-5" />
-              <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+
+            <div>
+              <h3 className="font-extrabold text-white text-base tracking-tight leading-tight">Ask Pathfinder AI</h3>
+              <p className="text-xs text-teal-200/90 font-medium mt-0.5">Your personal career guide</p>
+            </div>
+          </div>
+
+          {/* Search bar overlay */}
+          <div className="relative z-10 flex gap-2.5 mb-4">
+            <div className="flex-1 rounded-xl bg-white px-4 py-3 text-xs text-slate-400 font-semibold flex items-center gap-2 shadow-inner">
+              <span>What would you like to explore today?</span>
+            </div>
+            <button
+              disabled
+              className="flex-shrink-0 rounded-xl bg-[#0EA5E9] p-3 text-white transition-all shadow-md flex items-center justify-center"
+            >
+              <Send className="h-3.5 w-3.5 fill-white" />
             </button>
           </div>
-        </header>
 
-        <main className="px-4 py-4 space-y-4 animate-fadeInUp">
-          {/* Welcome Section */}
+          {/* Quick pill options */}
+          <div className="relative z-10 flex gap-2 flex-wrap">
+            <span className="rounded-full bg-white/10 border border-white/15 px-4 py-2 text-[10px] font-bold text-white transition-all flex items-center gap-1.5">
+              <span>⚡</span> Best careers for me
+            </span>
+            <span className="rounded-full bg-white/10 border border-white/15 px-4 py-2 text-[10px] font-bold text-white transition-all flex items-center gap-1.5">
+              <span>📊</span> Skills I need
+            </span>
+            <span className="rounded-full bg-white/10 border border-white/15 px-4 py-2 text-[10px] font-bold text-white transition-all flex items-center gap-1.5">
+              <span>📚</span> Courses to study
+            </span>
+          </div>
+        </Link>
+
+        {/* YOUR CAREER PROGRESS CARD */}
+        <div className="rounded-3xl border border-slate-100 bg-white p-5 space-y-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <h2 className="text-2xl font-black text-white tracking-tight">Hey, {user?.name?.split(" ")[0] || "User"}! 👋</h2>
-              <p className="text-xs text-slate-400 font-semibold tracking-wide uppercase">Build a career that fits you</p>
-            </div>
-            <div className="h-10 w-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-sm font-extrabold text-teal-400 shadow-md">
-              {user?.name ? user.name.charAt(0) : "U"}
-            </div>
+            <h3 className="font-extrabold text-slate-900 text-sm tracking-tight">Your Career Progress</h3>
+            <Link href="#" className="text-xs font-bold text-teal-650 hover:text-teal-700 transition-colors">
+              View full report
+            </Link>
           </div>
 
-          {/* Mobile AI Chat Card */}
-          <Link href="/dashboard/ai-chat" className="block group relative rounded-3xl bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 border border-slate-800/80 p-5 overflow-hidden hover:shadow-lg transition-all shadow-inner">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-teal-500/20 transition-all" />
-
-            {/* Header with Bot Image */}
-            <div className="relative z-10 flex items-center gap-4 mb-4">
-              {/* Bot Image Container */}
-              <div className="relative flex-shrink-0 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500/20 to-cyan-500/10 border border-teal-500/30 p-2 shadow-inner">
-                <Image
-                  src="/bot.png"
-                  alt="Pathfinder AI"
-                  width={36}
-                  height={36}
-                  className="object-contain drop-shadow-md"
-                  priority
+          {/* Connected timeline and progress ring layout */}
+          <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+            {/* Overall Ring */}
+            <div className="relative h-20 w-20 flex-shrink-0 flex items-center justify-center">
+              <svg className="absolute h-full w-full transform -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#E2E8F0" strokeWidth="6" />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="none"
+                  stroke="#14B8A6"
+                  strokeWidth="6"
+                  strokeDasharray="170 251.2"
+                  strokeLinecap="round"
+                  className="transition-all duration-1000"
                 />
-              </div>
-
-              {/* Title */}
-              <div>
-                <h3 className="font-extrabold text-white text-base tracking-tight">Ask Pathfinder AI</h3>
-                <p className="text-xs text-slate-400 font-medium">Your interactive career mentor</p>
+              </svg>
+              <div className="flex flex-col items-center justify-center">
+                <span className="text-base font-black text-slate-900 leading-none">68%</span>
+                <span className="text-[8px] font-bold text-slate-400 mt-1 uppercase leading-none">Progress</span>
               </div>
             </div>
 
-            {/* Simulated Input Area */}
-            <div className="relative z-10 flex gap-2.5 mb-4">
-              <div className="flex-1 rounded-xl bg-slate-950/60 border border-slate-800/80 px-4 py-3 text-xs text-slate-400 font-medium flex items-center gap-2">
-                <Sparkles className="h-3.5 w-3.5 text-teal-400 animate-pulse" />
-                <span>What would you like to explore?</span>
+            {/* Stages Track */}
+            <div className="relative flex items-start justify-between flex-1 w-full gap-2">
+              {/* Timeline Connector Line */}
+              <div className="absolute left-8 right-8 top-4 border-t-2 border-dashed border-slate-200/80 -z-10" />
+
+              {/* Node 1: Completed */}
+              <div className="flex flex-col items-center gap-1.5 flex-1 z-10">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 text-white font-bold text-xs shadow-md">
+                  ✓
+                </div>
+                <span className="text-[10px] font-black text-slate-900 text-center leading-tight">Self Discovery</span>
+                <span className="text-[8px] font-bold text-teal-650 uppercase">Completed</span>
               </div>
-              <button
-                disabled
-                className="flex-shrink-0 rounded-xl bg-teal-650 p-3 text-white transition-all shadow-md flex items-center justify-center"
+
+              {/* Node 2: Completed */}
+              <div className="flex flex-col items-center gap-1.5 flex-1 z-10">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 text-white font-bold text-xs shadow-md">
+                  ✓
+                </div>
+                <span className="text-[10px] font-black text-slate-900 text-center leading-tight">Interests & Strengths</span>
+                <span className="text-[8px] font-bold text-teal-650 uppercase">Completed</span>
+              </div>
+
+              {/* Node 3: Active */}
+              <div className="flex flex-col items-center gap-1.5 flex-1 z-10">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-teal-600 bg-white text-teal-600 font-extrabold text-xs shadow-md">
+                  3
+                </div>
+                <span className="text-[10px] font-black text-slate-900 text-center leading-tight">Skill Gap Analysis</span>
+                <span className="text-[8px] font-bold text-amber-500 uppercase">In Progress</span>
+              </div>
+
+              {/* Node 4: Unstarted */}
+              <div className="flex flex-col items-center gap-1.5 flex-1 z-10">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-400 font-bold text-xs">
+                  4
+                </div>
+                <span className="text-[10px] font-black text-slate-900 text-center leading-tight">Career Roadmap</span>
+                <span className="text-[8px] font-bold text-slate-455 uppercase">Pending</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* RECOMMENDED FOR YOU SECTION */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-extrabold text-slate-900 text-sm tracking-tight">Recommended for you</h3>
+            <Link href="#" className="text-xs font-bold text-teal-650 hover:text-teal-700 transition-colors">
+              See all
+            </Link>
+          </div>
+
+          {/* Cards carousel - horizontal scrolling on mobile, grid on desktop */}
+          <div className="flex gap-4 overflow-x-auto pb-3 pt-1 px-1 -mx-1 scroll-smooth snap-x snap-mandatory custom-scrollbar md:grid md:grid-cols-3 md:overflow-x-visible md:pb-0 md:mx-0">
+            {activeCareers.map((career) => (
+              <div
+                key={career.id}
+                className="flex-shrink-0 w-72 md:w-auto bg-white rounded-3xl border border-slate-100 p-4 space-y-4 shadow-sm snap-start hover:shadow-md transition-all duration-300 flex flex-col justify-between"
               >
-                <Send className="h-3.5 w-3.5" />
-              </button>
-            </div>
+                {/* Header elements */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${
+                      career.badge === "Top Match"
+                        ? "bg-teal-55 text-teal-750"
+                        : career.badge === "High Growth"
+                          ? "bg-indigo-50 text-indigo-650"
+                          : "bg-orange-50 text-orange-650"
+                    }`}>
+                      {career.badge}
+                    </span>
+                    <button className="text-slate-400 hover:text-red-400 transition-colors">
+                      <Heart className="h-4.5 w-4.5" />
+                    </button>
+                  </div>
 
-            {/* Quick Action Pills */}
-            <div className="relative z-10 flex gap-2 flex-wrap">
-              <span className="rounded-full bg-slate-950 border border-slate-800/60 px-3.5 py-1.5 text-[10px] font-bold text-slate-300 transition-all flex items-center gap-1">
-                ⚡ Best careers
-              </span>
-              <span className="rounded-full bg-slate-950 border border-slate-800/60 px-3.5 py-1.5 text-[10px] font-bold text-slate-300 transition-all flex items-center gap-1">
-                📊 Skills
-              </span>
-              <span className="rounded-full bg-slate-950 border border-slate-800/60 px-3.5 py-1.5 text-[10px] font-bold text-slate-300 transition-all flex items-center gap-1">
-                📚 Courses
-              </span>
-            </div>
-          </Link>
+                  {/* SVG illustration */}
+                  <div className="flex justify-center py-2 bg-slate-50/50 rounded-2xl border border-slate-100/50">
+                    {career.illustration}
+                  </div>
 
-          {/* Mobile Progress Tracker */}
-          {progress && (
-            <div className="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 p-5 space-y-4 animate-slideInLeft shadow-inner">
-              <h3 className="font-extrabold text-slate-100 flex items-center gap-2 text-sm tracking-tight">
-                <TrendingUp className="h-4 w-4 text-teal-400" />
-                Your Progress Tracker
-              </h3>
-
-              {/* Progress Summary Card */}
-              <div className="flex items-center gap-5 bg-slate-950/40 p-4 rounded-2xl border border-slate-850/60">
-                <div className="relative h-14 w-14 flex-shrink-0">
-                  <svg className="h-full w-full transform -rotate-90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(30, 41, 59, 0.6)" strokeWidth="4" />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      fill="none"
-                      stroke="url(#mobileTealGradient)"
-                      strokeWidth="4"
-                      strokeDasharray={`${(progress.overallProgress / 100) * 251.2} 251.2`}
-                      strokeLinecap="round"
-                    />
-                    <defs>
-                      <linearGradient id="mobileTealGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#14b8a6" />
-                        <stop offset="100%" stopColor="#06b6d4" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-xs font-black text-slate-50">{progress.overallProgress}%</span>
+                  {/* Title & info */}
+                  <div>
+                    <h4 className="font-black text-slate-900 text-sm">{career.title}</h4>
+                    <p className="text-[11px] text-slate-400 font-semibold mt-0.5">{career.description}</p>
                   </div>
                 </div>
-                <div className="space-y-0.5">
-                  <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Current Milestone</h4>
-                  <p className="text-xs font-bold text-slate-200 leading-tight">
-                    {progress.stages.find(s => s.status === "in_progress")?.title || "Complete your profile to get started"}
-                  </p>
-                </div>
-              </div>
 
-              {/* Horizontal Scrollable Stages track */}
-              <div className="space-y-1.5">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block px-1">Roadmap Stages</span>
-                <div className="flex gap-3 overflow-x-auto pb-2 pt-1 px-1 -mx-1 scroll-smooth snap-x snap-mandatory custom-scrollbar">
-                  {progress.stages.map((stage) => {
-                    const isActive = stage.status === "in_progress";
-                    const isDone = stage.status === "completed";
-                    return (
+                {/* Footer specs */}
+                <div className="space-y-2 pt-2 border-t border-slate-100">
+                  <div className="flex items-baseline justify-between">
+                    <span className={`text-xs font-black ${
+                      career.accentColor === "teal"
+                        ? "text-teal-650"
+                        : career.accentColor === "indigo"
+                          ? "text-indigo-650"
+                          : "text-orange-650"
+                    }`}>
+                      {career.salary}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
                       <div
-                        key={stage.id}
-                        className={`flex flex-col items-center gap-2.5 flex-shrink-0 w-28 snap-start p-3.5 rounded-2xl border transition-all duration-300 ${
-                          isActive
-                            ? "bg-slate-800/60 border-amber-500/30 shadow-md shadow-amber-500/5 ring-1 ring-amber-500/20"
-                            : isDone
-                              ? "bg-slate-900/40 border-teal-500/20"
-                              : "bg-slate-900/10 border-slate-850"
+                        className={`h-full rounded-full transition-all duration-1000 ${
+                          career.accentColor === "teal"
+                            ? "bg-teal-600"
+                            : career.accentColor === "indigo"
+                              ? "bg-indigo-600"
+                              : "bg-orange-600"
                         }`}
-                      >
-                        <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-black shadow-md transition-all ${
-                          isDone
-                            ? "bg-gradient-to-br from-teal-500 to-cyan-500 text-white"
-                            : isActive
-                              ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white animate-pulse"
-                              : "bg-slate-850 text-slate-500 border border-slate-700/50"
-                        }`}>
-                          {isDone ? "✓" : stage.order}
-                        </div>
-                        <div className="text-center w-full">
-                          <span className={`block text-[9px] font-extrabold truncate uppercase tracking-wider ${
-                            isDone ? "text-teal-400" : isActive ? "text-amber-400" : "text-slate-500"
-                          }`}>
-                            {stage.status.replace("_", " ")}
-                          </span>
-                          <span className="block text-[10px] font-bold text-slate-200 mt-0.5 truncate leading-tight w-full">{stage.title}</span>
-                        </div>
-                      </div>
-                    );
-                  })}
+                        style={{ width: `${career.matchPercentage}%` }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-black text-slate-400 whitespace-nowrap">{career.matchPercentage}% match</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
+        </div>
 
-          {/* Mobile Careers */}
-          {careers.length > 0 && (
-            <div className="rounded-3xl border border-slate-850 bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 p-5 space-y-4 animate-slideInLeft shadow-inner">
-              <div className="flex items-center justify-between">
-                <h3 className="font-extrabold text-slate-100 flex items-center gap-2 text-sm tracking-tight">
-                  <Star className="h-4 w-4 text-teal-400" />
-                  Recommended Paths
-                </h3>
-                <Link href="#" className="text-xs text-teal-400 hover:text-teal-300 font-bold transition-colors">See all</Link>
+        {/* YOUR TOOLS SECTION */}
+        <div className="space-y-4">
+          <h3 className="font-extrabold text-slate-900 text-sm tracking-tight">Your Tools</h3>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {/* Tool 1 */}
+            <Link href="/dashboard/ai-chat" className="flex flex-col p-4 rounded-3xl bg-[#E6F4F1]/60 border border-[#CCECE6]/50 hover:bg-[#E6F4F1] transition-all text-left space-y-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-sm text-teal-650">
+                <MessageSquare className="h-5 w-5 fill-[#E6F4F1] stroke-teal-600" />
               </div>
+              <div>
+                <h4 className="text-xs font-black text-slate-900 leading-tight">AI Discovery</h4>
+                <p className="text-[9px] font-bold text-slate-450 mt-0.5 leading-tight">Chat & explore careers</p>
+              </div>
+            </Link>
 
-              <div className="space-y-2.5">
-                {careers.slice(0, 3).map((career) => (
-                  <div
-                    key={career.id}
-                    className="rounded-2xl border border-slate-800 bg-slate-950/40 p-4 space-y-3 hover:bg-slate-900/30 transition-all duration-300 cursor-pointer"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-slate-50 text-xs truncate">{career.title}</h4>
-                        <p className="text-[10px] text-slate-400 line-clamp-1 mt-0.5 leading-relaxed">{career.description}</p>
-                      </div>
-                      <button className="text-slate-500 hover:text-red-400 transition-colors flex-shrink-0">
-                        ♡
-                      </button>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                        <div
-                          className="bg-gradient-to-r from-teal-500 to-cyan-400 h-full rounded-full"
-                          style={{ width: `${career.matchPercentage}%` }}
-                        />
-                      </div>
-                      <span className="text-[10px] font-extrabold text-teal-400 whitespace-nowrap">{career.matchPercentage}%</span>
-                    </div>
-                  </div>
-                ))}
+            {/* Tool 2 */}
+            <div className="flex flex-col p-4 rounded-3xl bg-[#F0FDF4]/80 border border-[#DCFCE7]/60 hover:bg-[#F0FDF4] transition-all text-left space-y-3 cursor-pointer">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-sm text-emerald-650">
+                <Zap className="h-5 w-5 text-emerald-500 fill-emerald-100" />
+              </div>
+              <div>
+                <h4 className="text-xs font-black text-slate-900 leading-tight">Skill Gap Analysis</h4>
+                <p className="text-[9px] font-bold text-slate-450 mt-0.5 leading-tight">Find & fix your gaps</p>
               </div>
             </div>
-          )}
 
-          {/* Mobile CTA */}
-          <div className="group relative rounded-3xl bg-gradient-to-br from-teal-650 to-cyan-600 p-5 space-y-4 overflow-hidden animate-slideInLeft shadow-lg">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16" />
-            <div className="relative z-10">
-              <h3 className="font-black text-white text-base tracking-tight">Keep going! 🚀</h3>
-              <p className="text-xs text-white/95 mt-1 leading-relaxed">You're {progress?.overallProgress || 0}% closer to your career goals.</p>
+            {/* Tool 3 */}
+            <div className="flex flex-col p-4 rounded-3xl bg-[#FFFBEB] border border-[#FEF3C7] hover:bg-[#FFFBEB] transition-all text-left space-y-3 cursor-pointer">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-sm text-amber-650">
+                <Map className="h-5 w-5 text-amber-500" />
+              </div>
+              <div>
+                <h4 className="text-xs font-black text-slate-900 leading-tight">Career Roadmaps</h4>
+                <p className="text-[9px] font-bold text-slate-450 mt-0.5 leading-tight">Step-by-step guides</p>
+              </div>
             </div>
-            <button className="relative z-10 w-full rounded-xl bg-white text-teal-600 py-3 text-xs font-extrabold hover:bg-slate-50 active:scale-[0.98] transition-all shadow-md">
-              Continue Roadmap
-            </button>
-          </div>
-        </main>
 
-        {/* Mobile Bottom Nav */}
-        <nav className="fixed bottom-0 left-0 right-0 border-t border-slate-800 glass px-4 py-2">
-          <div className="flex justify-between max-w-md mx-auto">
-            <NavItem icon={Home} label="Home" active />
-            <NavItem icon={MessageSquare} label="Chat" />
-            <NavItem icon={Plus} label="Plan" />
-            <NavItem icon={BookOpen} label="Learn" />
-            <NavItem icon={User} label="Profile" />
+            {/* Tool 4 */}
+            <div className="flex flex-col p-4 rounded-3xl bg-[#F5F3FF]/80 border border-[#EDE9FE]/60 hover:bg-[#F5F3FF] transition-all text-left space-y-3 cursor-pointer">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-sm text-indigo-650">
+                <BookOpen className="h-5 w-5 text-indigo-500" />
+              </div>
+              <div>
+                <h4 className="text-xs font-black text-slate-900 leading-tight">Courses & Scholarships</h4>
+                <p className="text-[9px] font-bold text-slate-450 mt-0.5 leading-tight">Find opportunities</p>
+              </div>
+            </div>
           </div>
-        </nav>
-      </div>
+        </div>
+
+        {/* BOTTOM KEEP GOING CTA BANNER */}
+        <div className="group relative rounded-3xl bg-[#054E45] p-5 flex items-center justify-between overflow-hidden shadow-md">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl filter drop-shadow-sm flex-shrink-0 select-none">🏆</span>
+            <div>
+              <h3 className="font-extrabold text-white text-xs leading-tight">Keep going, {user?.name?.split(" ")[0] || "Brian"}! 🎯</h3>
+              <p className="text-[10px] text-white/90 font-medium mt-0.5">You're {progress?.overallProgress || 68}% closer to your career goal.</p>
+            </div>
+          </div>
+          <button className="relative z-10 rounded-full bg-white px-5 py-2.5 text-[10px] font-black text-[#054E45] hover:bg-slate-50 transition-all shadow-md active:scale-95 whitespace-nowrap">
+            Continue Roadmap
+          </button>
+        </div>
+
+      </main>
+
+      {/* STICKY BOTTOM NAV BAR */}
+      <nav className="fixed bottom-0 left-0 right-0 border-t border-slate-100 bg-white/90 backdrop-blur-md px-4 py-2 z-40">
+        <div className="flex justify-between items-center max-w-md mx-auto">
+          <NavItem icon={Home} label="Dashboard" active />
+          <NavItem icon={Compass} label="Explore" />
+          <button className="flex flex-col items-center justify-center -translate-y-4 relative z-50">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-600 text-white shadow-lg border-4 border-[#F8FAFC] active:scale-95 transition-all">
+              <Plus className="h-6 w-6 stroke-[3]" />
+            </div>
+            <span className="text-[9px] font-black text-slate-500 mt-1">Plan</span>
+          </button>
+          <NavItem icon={MessageSquare} label="Chats" href="/dashboard/ai-chat" />
+          <NavItem icon={User} label="Profile" />
+        </div>
+      </nav>
     </div>
   )
 }
 
-function NavItem({ icon: Icon, label, active }: any) {
-  return (
-    <button className={`flex flex-col items-center justify-center py-2.5 px-2 rounded-lg transition-all duration-300 ${active
-      ? "text-teal-400"
-      : "text-slate-400 hover:text-slate-200"
+interface NavItemProps {
+  icon: any;
+  label: string;
+  active?: boolean;
+  href?: string;
+}
+
+function NavItem({ icon: Icon, label, active, href }: NavItemProps) {
+  const content = (
+    <button className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 ${active
+      ? "text-teal-650"
+      : "text-slate-400 hover:text-slate-600"
       }`}>
-      <Icon className="h-5 w-5 mb-1" />
-      <span className="text-xs font-semibold">{label}</span>
+      <Icon className="h-5 w-5 mb-0.5" />
+      <span className="text-[9px] font-black leading-none">{label}</span>
     </button>
-  )
+  );
+
+  if (href) {
+    return <Link href={href}>{content}</Link>;
+  }
+
+  return content;
 }
