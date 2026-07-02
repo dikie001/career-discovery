@@ -444,7 +444,7 @@ export function AiChat({
     try {
       const response = await onSendMessage(selectedOption.label, personality)
 
-      // Parse response for options
+      // Parse response for options and strip any machine-readable JSON blocks
       const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/)
       let assistantMessage: Message = {
         id: `msg_${Date.now() + 1}`,
@@ -456,10 +456,12 @@ export function AiChat({
       if (jsonMatch) {
         try {
           const parsed = JSON.parse(jsonMatch[1])
+
+          // Prefer any human-friendly text that appears before the JSON block
+          const textBeforeJson = response.substring(0, jsonMatch.index || 0).trim()
+
+          // If the JSON contains options, surface them and show only the human text
           if (parsed.options && Array.isArray(parsed.options)) {
-            const textBeforeJson = response
-              .substring(0, jsonMatch.index || 0)
-              .trim()
             assistantMessage = {
               id: `msg_${Date.now() + 1}`,
               role: "assistant",
@@ -471,13 +473,44 @@ export function AiChat({
                 description: opt.description,
               })),
             }
+          } else if (parsed.recommendation) {
+            // If AI emitted a machine-readable recommendation block, build a concise
+            // display string (do NOT display the raw JSON).
+            const r = parsed.recommendation
+            const title = String(r.title || "Recommendation").trim()
+            const short = String(r.summary || r.description || "").trim()
+            const shortSummary = short.split("\n")[0].slice(0, 240)
+            assistantMessage = {
+              id: `msg_${Date.now() + 1}`,
+              role: "assistant",
+              content: textBeforeJson || `${title} — ${shortSummary}` || title,
+              timestamp: new Date(),
+            }
+          } else {
+            // Generic JSON block present but not recognized: show text before block
+            assistantMessage = {
+              id: `msg_${Date.now() + 1}`,
+              role: "assistant",
+              content: textBeforeJson || parsed.message || "",
+              timestamp: new Date(),
+            }
           }
         } catch (e) {
           console.error("Failed to parse JSON:", e)
+          // Fallback: remove any fenced JSON blocks from the displayed content
+          assistantMessage = {
+            id: `msg_${Date.now() + 1}`,
+            role: "assistant",
+            content: response.replace(/```json[\s\S]*?```/g, "").trim(),
+            timestamp: new Date(),
+          }
         }
       }
 
       setMessages((prev) => [...prev, assistantMessage])
+
+      // Persist any structured recommendations that may be present in the raw response
+      saveRecommendations(response)
     } catch (error) {
       console.error("Failed to send option message:", error)
       const errorMessage: Message = {
@@ -671,8 +704,11 @@ export function AiChat({
       setMessages((prev) => [...prev, assistantMessage])
       setSending(false)
 
-      // Silently extract and persist any career recommendations mentioned
-      saveRecommendations(assistantMessage.content)
+      // Silently extract and persist any career recommendations mentioned.
+      // Use the original response (may still contain the machine JSON block)
+      // so `saveRecommendations` can parse the structured data. The UI will
+      // display the cleaned `assistantMessage.content` (without raw JSON).
+      saveRecommendations(response)
 
       if (typeof window !== "undefined") {
         window.dispatchEvent(new Event("pathfinder:progress-updated"))
