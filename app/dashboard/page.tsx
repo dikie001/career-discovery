@@ -74,7 +74,10 @@ export default function DashboardPage() {
     window.addEventListener("pathfinder:progress-updated", handleProgressUpdate)
 
     return () => {
-      window.removeEventListener("pathfinder:progress-updated", handleProgressUpdate)
+      window.removeEventListener(
+        "pathfinder:progress-updated",
+        handleProgressUpdate
+      )
     }
   }, [loadData])
 
@@ -390,12 +393,13 @@ export default function DashboardPage() {
                         className="z-10 flex flex-1 flex-col items-center gap-1.5"
                       >
                         <div
-                          className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-extrabold shadow-md ${isCompleted
+                          className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-extrabold shadow-md ${
+                            isCompleted
                               ? "bg-teal-600 text-white"
                               : isActive
                                 ? "border-2 border-teal-600 bg-white text-teal-600"
                                 : "border border-slate-300 bg-white text-slate-400"
-                            }`}
+                          }`}
                         >
                           {isCompleted ? "✓" : index + 1}
                         </div>
@@ -403,12 +407,13 @@ export default function DashboardPage() {
                           {stage.title}
                         </span>
                         <span
-                          className={`text-[8px] font-bold uppercase ${isCompleted
+                          className={`text-[8px] font-bold uppercase ${
+                            isCompleted
                               ? "text-teal-650"
                               : isActive
                                 ? "text-amber-500"
                                 : "text-slate-400"
-                            }`}
+                          }`}
                         >
                           {statusText}
                         </span>

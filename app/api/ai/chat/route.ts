@@ -40,7 +40,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to fetch chat history",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch chat history",
       } as ApiResponse<null>,
       { status: 500 }
     )
@@ -95,12 +98,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       take: 20,
     })
 
-    const conversationHistory = history
-      .reverse()
-      .map((msg) => ({
-        role: msg.role as "user" | "assistant",
-        content: msg.content,
-      }))
+    const conversationHistory = history.reverse().map((msg) => ({
+      role: msg.role as "user" | "assistant",
+      content: msg.content,
+    }))
 
     // Get AI response with full conversation context and chosen personality
     const aiResponse = await groqService.answerCareerQuestion(
@@ -184,8 +185,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     )
   } catch (error) {
     console.error("Chat error:", error)
-    const errorMsg = error instanceof Error ? error.message : "Chat failed";
-    const isRateLimit = errorMsg.includes("429") || errorMsg.includes("rate_limit");
+    const errorMsg = error instanceof Error ? error.message : "Chat failed"
+    const isRateLimit =
+      errorMsg.includes("429") || errorMsg.includes("rate_limit")
     return NextResponse.json(
       {
         success: false,

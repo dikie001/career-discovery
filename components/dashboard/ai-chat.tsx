@@ -775,7 +775,7 @@ export function AiChat({
                   title={pers.description}
                   className={`relative flex h-20 flex-col justify-between rounded-xl border p-2.5 text-left shadow-sm transition-all ${
                     personality === pers.id
-                      ? `border-${activeTheme.accent}-500  bg-slate-800/80`
+                      ? `border-${activeTheme.accent}-500 bg-slate-800/80`
                       : "border-slate-800 bg-slate-800/20 hover:border-slate-700 hover:bg-slate-800/40"
                   }`}
                 >
