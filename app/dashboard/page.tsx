@@ -529,9 +529,21 @@ export default function DashboardPage() {
                 </div>
               ))
             ) : (
-              <div className="w-full rounded-3xl border border-dashed border-slate-200 bg-white p-5 text-sm text-slate-500 shadow-sm md:col-span-3">
-                Ask Pathfinder AI for a recommendation and it will appear here
-                automatically.
+              <div className="w-full rounded-3xl border border-dashed border-slate-200 bg-white p-6 text-sm text-slate-500 shadow-sm md:col-span-3">
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-slate-900">
+                    No recommendations yet.
+                  </p>
+                  <p>
+                    Start a conversation with Pathfinder AI and your first tailored career suggestions will show up here.
+                  </p>
+                  <Link
+                    href="/dashboard/ai-chat"
+                    className="inline-flex items-center justify-center rounded-2xl bg-teal-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-teal-700"
+                  >
+                    Chat with Pathfinder AI
+                  </Link>
+                </div>
               </div>
             )}
           </div>
