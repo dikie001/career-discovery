@@ -535,7 +535,8 @@ export default function DashboardPage() {
                     No recommendations yet.
                   </p>
                   <p>
-                    Start a conversation with Pathfinder AI and your first tailored career suggestions will show up here.
+                    Start a conversation with Pathfinder AI and your first
+                    tailored career suggestions will show up here.
                   </p>
                   <Link
                     href="/dashboard/ai-chat"
