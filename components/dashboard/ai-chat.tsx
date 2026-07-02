@@ -90,6 +90,20 @@ const PERSONALITIES = [
 
 const THEMES = [
   {
+    id: "pathfinder",
+    name: "Pathfinder",
+    bg: "bg-[#032E28]",
+    sidebar: "bg-[#044039] border-[#0A5C52]",
+    header: "bg-[#044039] border-[#0A5C52]",
+    accent: "teal",
+    accentBg: "bg-[#059669] hover:bg-[#047857]",
+    accentText: "text-teal-300",
+    accentBorder: "border-teal-700",
+    chatUser: "bg-[#059669]",
+    chatAssistant: "bg-[#044039] border-[#0A5C52]",
+    colorPreview: "bg-[#0F766E]",
+  },
+  {
     id: "nordic",
     name: "Nordic Frost",
     bg: "bg-zinc-950",
@@ -209,9 +223,9 @@ export function AiChat({
   // Theme state
   const [themeId, setThemeId] = useState<string>(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("ai_theme") || "nordic";
+      return localStorage.getItem("ai_theme") || "pathfinder";
     }
-    return "nordic";
+    return "pathfinder";
   });
 
   const activeTheme = useMemo(() => {
