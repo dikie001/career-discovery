@@ -143,12 +143,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     )
   } catch (error) {
     console.error("Chat error:", error)
+    const errorMsg = error instanceof Error ? error.message : "Chat failed";
+    const isRateLimit = errorMsg.includes("429") || errorMsg.includes("rate_limit");
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Chat failed",
+        error: errorMsg,
       } as ApiResponse<null>,
-      { status: 500 }
+      { status: isRateLimit ? 429 : 500 }
     )
   }
 }

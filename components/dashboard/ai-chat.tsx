@@ -254,6 +254,9 @@ export function AiChat({
   // Current session selection state
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [loadingHistory, setLoadingHistory] = useState(true);
+  
+  const [rateLimitCountdown, setRateLimitCountdown] = useState<number | null>(null);
+  const [queuedMessage, setQueuedMessage] = useState<{ text: string; override?: string } | null>(null);
 
   // Load chat history from backend on mount
   useEffect(() => {
@@ -332,6 +335,32 @@ export function AiChat({
   const sessions = useMemo((): ChatSession[] => {
     return getSessionsFromMessages(messages);
   }, [messages]);
+
+  // Handle auto-retry rate limit countdown timer
+  useEffect(() => {
+    if (rateLimitCountdown === null) return;
+
+    if (rateLimitCountdown <= 0) {
+      setRateLimitCountdown(null);
+      if (queuedMessage) {
+        const msg = queuedMessage;
+        setQueuedMessage(null);
+        handleSendMessage(null, msg.override || msg.text, true);
+      } else {
+        setSending(false);
+      }
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setRateLimitCountdown((prev) => {
+        if (prev === null) return null;
+        return Math.max(0, prev - 0.1);
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [rateLimitCountdown, queuedMessage]);
 
 
   // Messages to render in the main panel
@@ -499,31 +528,39 @@ export function AiChat({
     await handleSendMessage(null, prompt);
   };
 
-  const handleSendMessage = async (e?: React.FormEvent | null, messageOverride?: string) => {
+  const handleSendMessage = async (
+    e?: React.FormEvent | null,
+    messageOverride?: string,
+    isRetry?: boolean
+  ) => {
     if (e) {
       e.preventDefault();
     }
 
     const messageText = messageOverride || input;
-    if (!messageText.trim() || sending) return;
+    if (!messageText.trim()) return;
+    if (sending && !isRetry) return;
 
-    const userMsgId = `msg_${Date.now()}`;
-    const userMessage: Message = {
-      id: userMsgId,
-      role: "user",
-      content: messageText,
-      timestamp: new Date(),
-      sessionStart: activeSessionId === "new",
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    if (!messageOverride) {
-      setInput("");
-    }
     setSending(true);
 
-    if (activeSessionId === "new") {
-      setActiveSessionId(`session_${userMsgId}`);
+    if (!isRetry) {
+      const userMsgId = `msg_${Date.now()}`;
+      const userMessage: Message = {
+        id: userMsgId,
+        role: "user",
+        content: messageText,
+        timestamp: new Date(),
+        sessionStart: activeSessionId === "new",
+      };
+
+      setMessages((prev) => [...prev, userMessage]);
+      if (!messageOverride) {
+        setInput("");
+      }
+
+      if (activeSessionId === "new") {
+        setActiveSessionId(`session_${userMsgId}`);
+      }
     }
 
     try {
@@ -561,17 +598,30 @@ export function AiChat({
       }
 
       setMessages((prev) => [...prev, assistantMessage]);
+      setSending(false);
     } catch (error) {
       console.error("Failed to send message:", error);
-      const errorMessage: Message = {
-        id: `msg_${Date.now() + 1}`,
-        role: "assistant",
-        content: "Sorry, I encountered an error. Please try again.",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setSending(false);
+      
+      const errorMsg = error instanceof Error ? error.message : "";
+      const isRateLimit = errorMsg.includes("429") || errorMsg.includes("rate_limit");
+      
+      if (isRateLimit) {
+        // Extract wait duration
+        const match = errorMsg.match(/try again in ([0-9.]+)\s*s/i) || errorMsg.match(/try again in ([0-9.]+)\s*seconds/i);
+        const retrySec = match ? parseFloat(match[1]) : 10;
+        
+        setRateLimitCountdown(retrySec);
+        setQueuedMessage({ text: messageText, override: messageOverride });
+      } else {
+        const errorMessage: Message = {
+          id: `msg_${Date.now() + 1}`,
+          role: "assistant",
+          content: "Sorry, I encountered an error. Please try again.",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+        setSending(false);
+      }
     }
   };
 
@@ -813,18 +863,18 @@ export function AiChat({
                   <div className={`flex items-end gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                     {/* Assistant Bot Avatar */}
                     {message.role === "assistant" && (
-                      <div className="flex-shrink-0 flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900 border border-slate-800 shadow-sm">
-                        <div className={`p-1 rounded ${activePersonality.color} text-white scale-75`}>
+                      <div className="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 border border-slate-800/80 shadow-md">
+                        <div className={`p-1.5 rounded-lg ${activePersonality.color} text-white`}>
                           {activePersonality.icon}
                         </div>
                       </div>
                     )}
 
                     <div
-                      className={`max-w-2xl shadow-sm rounded-2xl transition-all duration-300 ${
+                      className={`max-w-xl md:max-w-2xl shadow-sm rounded-2xl transition-all duration-300 w-fit ${
                         message.role === "user"
                           ? `rounded-tr-none ${activeTheme.chatUser} px-4 py-2.5 text-white text-sm font-medium`
-                          : `rounded-tl-none ${activeTheme.chatAssistant} w-full px-5 py-3.5 text-sm text-slate-200 border`
+                          : `rounded-tl-none ${activeTheme.chatAssistant} px-4 py-2.5 text-sm text-slate-200 border`
                       }`}
                     >
                       {message.role === "assistant" ? (
@@ -838,21 +888,21 @@ export function AiChat({
 
                     {/* User Avatar */}
                     {message.role === "user" && (
-                      <div className="flex-shrink-0 flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900 border border-slate-800 shadow-sm text-slate-300 font-extrabold text-sm uppercase">
+                      <div className="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 border border-slate-800/80 shadow-md text-slate-300 font-extrabold text-sm uppercase">
                         {user?.name ? user.name.charAt(0) : "U"}
                       </div>
                     )}
                   </div>
 
                   {/* Message Timestamp */}
-                  <div className={`flex text-xs text-slate-650 font-bold px-10 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div className={`flex text-xs text-slate-600 font-bold px-11 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                     {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </div>
 
                   {/* Option Buttons */}
                   {message.options && message.options.length > 0 && !message.selectedOption && (
-                    <div className="flex justify-start pl-10">
-                      <div className="w-full max-w-2xl">
+                    <div className="flex justify-start pl-11">
+                      <div className="w-full max-w-xl">
                         <ChatOptions
                           options={message.options}
                           onSelect={handleSelectOption}
@@ -866,8 +916,8 @@ export function AiChat({
               );
             })}
 
-            {sending && (
-              <div className="flex justify-start animate-fadeIn pl-10">
+            {sending && rateLimitCountdown === null && (
+              <div className="flex justify-start animate-fadeIn pl-11">
                 <div className="flex gap-1.5 px-3.5 py-2.5 bg-slate-900/60 border border-slate-800/80 rounded-xl">
                   {[0, 1, 2].map((i) => (
                     <div
@@ -876,6 +926,18 @@ export function AiChat({
                       style={{ animationDelay: `${i * 0.15}s` }}
                     />
                   ))}
+                </div>
+              </div>
+            )}
+
+            {rateLimitCountdown !== null && (
+              <div className="flex justify-start animate-fadeIn pl-11">
+                <div className="flex items-center gap-2.5 px-4 py-2.5 bg-amber-950/40 border border-amber-800/60 rounded-xl text-amber-300 text-xs font-bold shadow-md">
+                  <div className="relative w-3.5 h-3.5 flex items-center justify-center">
+                    <div className="absolute inset-0 rounded-full border border-amber-800"></div>
+                    <div className="absolute inset-0 rounded-full border border-transparent border-t-amber-400 border-r-amber-400 animate-spin"></div>
+                  </div>
+                  <span>Rate limit hit. Retrying automatically in {rateLimitCountdown.toFixed(1)}s...</span>
                 </div>
               </div>
             )}
