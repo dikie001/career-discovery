@@ -1,24 +1,76 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import { useDashboard } from "@/contexts/dashboard-context"
 import { useAuth } from "@/contexts/auth-context"
-import { Bell, Send, Home, MessageSquare, Plus, BookOpen, User, Zap, Map, Heart, TrendingUp, Star, ArrowRight, Sparkles, Compass, BarChart2 } from "lucide-react"
+import { Bell, Send, Home, MessageSquare, Plus, BookOpen, User, Zap, Map, Heart, TrendingUp, Star, ArrowRight, Sparkles, Compass, BarChart2, Briefcase } from "lucide-react"
 import Link from "next/link"
 
 export default function DashboardPage() {
-  const { user } = useAuth()
+  const { user, token } = useAuth()
   const { profile, careers, courses, progress, isLoading, loadData, sendChatMessage } = useDashboard()
   const [messages, setMessages] = useState<Array<{ id: string; role: string; content: string }>>([
     { id: "1", role: "assistant", content: "Hey! 👋 What would you like to explore today?" },
   ])
   const [input, setInput] = useState("")
   const [sending, setSending] = useState(false)
+  const [recommendations, setRecommendations] = useState<Array<{
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    matchPercentage: number;
+    salaryRange: string;
+    reason: string;
+    createdAt: string;
+  }>>([])
+  const [recommendationsLoading, setRecommendationsLoading] = useState(false)
 
   useEffect(() => {
     loadData()
   }, [loadData])
+
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      if (!token) return
+
+      setRecommendationsLoading(true)
+      try {
+        const response = await fetch("/api/recommendations", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch recommendations")
+        }
+
+        const data = await response.json()
+        setRecommendations(data.data || [])
+      } catch (error) {
+        console.error("Failed to load recommendations", error)
+      } finally {
+        setRecommendationsLoading(false)
+      }
+    }
+
+    fetchRecommendations()
+
+    const handleRefresh = () => {
+      fetchRecommendations()
+    }
+
+    window.addEventListener("pathfinder:recommendations-updated", handleRefresh)
+    window.addEventListener("storage", (event) => {
+      if (event.key === "pathfinder:recommendations-updated") {
+        handleRefresh()
+      }
+    })
+
+    return () => {
+      window.removeEventListener("pathfinder:recommendations-updated", handleRefresh)
+    }
+  }, [token])
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,6 +110,24 @@ export default function DashboardPage() {
       </div>
     )
   }
+
+  const recommendationCards = useMemo(() => {
+    if (recommendations.length > 0) {
+      return recommendations.map((item, index) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description || "Recommended by Pathfinder AI.",
+        salary: item.salaryRange || "Tailored for your profile",
+        matchPercentage: item.matchPercentage || Math.max(78, 90 - index),
+        badge: index === 0 ? "Top Match" : index === 1 ? "Fresh insight" : "Saved suggestion",
+        badgeColor: index === 0 ? "bg-teal-50 text-teal-700" : index === 1 ? "bg-indigo-50 text-indigo-700" : "bg-amber-50 text-amber-700",
+        accentColor: index === 0 ? "teal" : index === 1 ? "indigo" : "amber",
+        reason: item.reason || item.description,
+      }))
+    }
+
+    return []
+  }, [recommendations])
 
   // Fallback data matching user mockups
   const mockupCareers = [
@@ -131,15 +201,25 @@ export default function DashboardPage() {
     }
   ]
 
-  const activeCareers = careers.length > 0 ? careers.slice(0, 3).map((c, idx) => ({
-    ...c,
-    salary: idx === 0 ? "KSh 120K+ /month" : idx === 1 ? "KSh 150K+ /month" : "KSh 70K+ /month",
-    badge: idx === 0 ? "Top Match" : idx === 1 ? "High Growth" : "Make Impact",
-    badgeColor: idx === 0 ? "bg-teal-50 text-teal-700" : idx === 1 ? "bg-purple-100 text-purple-700" : "bg-orange-100 text-orange-700",
-    accentColor: idx === 0 ? "teal" : idx === 1 ? "purple" : "orange",
-    illustration: mockupCareers[idx % 3].illustration,
-    description: c.description || mockupCareers[idx % 3].description
-  })) : mockupCareers
+  const activeCareers = recommendationCards.length > 0
+    ? recommendationCards.map((career, idx) => ({
+        ...career,
+        illustration: mockupCareers[idx % mockupCareers.length].illustration,
+      }))
+    : careers.length > 0
+      ? careers.slice(0, 3).map((c, idx) => ({
+          id: c.id,
+          title: c.title,
+          description: c.description || mockupCareers[idx % mockupCareers.length].description,
+          salary: idx === 0 ? "KSh 120K+ /month" : idx === 1 ? "KSh 150K+ /month" : "KSh 70K+ /month",
+          matchPercentage: c.matchPercentage,
+          badge: idx === 0 ? "Top Match" : idx === 1 ? "High Growth" : "Make Impact",
+          badgeColor: idx === 0 ? "bg-teal-50 text-teal-700" : idx === 1 ? "bg-purple-100 text-purple-700" : "bg-orange-100 text-orange-700",
+          accentColor: idx === 0 ? "teal" : idx === 1 ? "purple" : "orange",
+          illustration: mockupCareers[idx % mockupCareers.length].illustration,
+          reason: c.description,
+        }))
+      : mockupCareers
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-800 pb-24 font-sans antialiased">
@@ -189,7 +269,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ASK PATHFINDER AI GRADIENT CARD */}
-        <Link href="/dashboard/ai-chat" className="block group relative rounded-3xl bg-gradient-to-r from-[#0F766E] to-[#044E44] px-5 pt-5 pb-4 overflow-hidden hover:shadow-xl transition-all duration-300 shadow-sm min-h-[160px]">
+        <Link href="/dashboard/ai-chat" className="block group relative rounded-3xl bg-linear-to-r from-[#0F766E] to-[#044E44] px-5 pt-5 pb-4 overflow-hidden hover:shadow-xl transition-all duration-300 shadow-sm min-h-40">
           <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16" />
 
           {/* Robot — absolute, bottom-left, behind everything */}
@@ -214,7 +294,7 @@ export default function DashboardPage() {
             {/* Search bar — full width, sits on top of robot lower body */}
             <div className="w-full rounded-full bg-white pl-5 pr-1.5 py-1.5 flex items-center justify-between shadow-md">
               <span className="text-[13px] text-slate-400 font-medium truncate pr-4">What would you like to explore today?</span>
-              <button disabled className="flex-shrink-0 h-9 w-9 rounded-full bg-[#059669] text-white flex items-center justify-center shadow-sm">
+              <button disabled className="shrink-0 h-9 w-9 rounded-full bg-[#059669] text-white flex items-center justify-center shadow-sm">
                 <Send className="h-4 w-4 fill-white -ml-0.5" />
               </button>
             </div>
@@ -248,7 +328,7 @@ export default function DashboardPage() {
           {/* Connected timeline and progress ring layout */}
           <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
             {/* Overall Ring */}
-            <div className="relative h-20 w-20 flex-shrink-0 flex items-center justify-center">
+            <div className="relative h-20 w-20 shrink-0 flex items-center justify-center">
               <svg className="absolute h-full w-full transform -rotate-90" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="40" fill="none" stroke="#E2E8F0" strokeWidth="6" />
                 <circle
@@ -324,25 +404,30 @@ export default function DashboardPage() {
 
           {/* Cards carousel - horizontal scrolling on mobile, grid on desktop */}
           <div className="flex gap-4 overflow-x-auto pb-3 pt-1 px-1 -mx-1 scroll-smooth snap-x snap-mandatory custom-scrollbar md:grid md:grid-cols-3 md:overflow-x-visible md:pb-0 md:mx-0">
-            {activeCareers.map((career) => (
+            {recommendationsLoading && recommendations.length === 0 ? (
+              <div className="w-full rounded-3xl border border-slate-100 bg-white p-5 text-sm text-slate-500 shadow-sm md:col-span-3">
+                Loading your latest recommendations...
+              </div>
+            ) : activeCareers.length > 0 ? (
+              activeCareers.map((career) => (
               <div
                 key={career.id}
-                className="flex-shrink-0 w-72 md:w-auto bg-white rounded-3xl border border-slate-100 p-4 space-y-4 shadow-sm snap-start hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                className="shrink-0 w-72 md:w-auto bg-white rounded-3xl border border-slate-100 p-4 space-y-4 shadow-sm snap-start hover:shadow-md transition-all duration-300 flex flex-col justify-between"
               >
                 {/* Header elements */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${
                       career.badge === "Top Match"
-                        ? "bg-teal-55 text-teal-750"
-                        : career.badge === "High Growth"
-                          ? "bg-indigo-50 text-indigo-650"
-                          : "bg-orange-50 text-orange-650"
+                        ? "bg-teal-50 text-teal-700"
+                        : career.badge === "Fresh insight"
+                          ? "bg-indigo-50 text-indigo-700"
+                          : "bg-amber-50 text-amber-700"
                     }`}>
                       {career.badge}
                     </span>
-                    <button className="text-slate-400 hover:text-red-400 transition-colors">
-                      <Heart className="h-4.5 w-4.5" />
+                    <button className="text-slate-400 hover:text-red-400 transition-colors" aria-label="Save recommendation">
+                      <Heart className="h-4 w-4" />
                     </button>
                   </div>
 
@@ -355,20 +440,27 @@ export default function DashboardPage() {
                   <div>
                     <h4 className="font-black text-slate-900 text-sm">{career.title}</h4>
                     <p className="text-[11px] text-slate-400 font-semibold mt-0.5">{career.description}</p>
+                    {career.reason ? (
+                      <p className="mt-2 text-[11px] leading-5 text-slate-500">{career.reason}</p>
+                    ) : null}
                   </div>
                 </div>
 
                 {/* Footer specs */}
                 <div className="space-y-2 pt-2 border-t border-slate-100">
-                  <div className="flex items-baseline justify-between">
+                  <div className="flex items-baseline justify-between gap-2">
                     <span className={`text-xs font-black ${
                       career.accentColor === "teal"
                         ? "text-teal-650"
                         : career.accentColor === "indigo"
                           ? "text-indigo-650"
-                          : "text-orange-650"
+                          : "text-amber-650"
                     }`}>
                       {career.salary}
+                    </span>
+                    <span className="rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-bold text-slate-500">
+                      <Briefcase className="mr-1 inline h-3 w-3" />
+                      {career.category || "Career"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -379,16 +471,21 @@ export default function DashboardPage() {
                             ? "bg-teal-600"
                             : career.accentColor === "indigo"
                               ? "bg-indigo-600"
-                              : "bg-orange-600"
+                              : "bg-amber-600"
                         }`}
-                        style={{ width: `${career.matchPercentage}%` }}
+                        style={{ width: `${Math.min(100, Math.max(0, career.matchPercentage))}%` }}
                       />
                     </div>
-                    <span className="text-[10px] font-black text-slate-400 whitespace-nowrap">{career.matchPercentage}% match</span>
+                    <span className="text-[10px] font-black text-slate-400 whitespace-nowrap">{Math.min(100, Math.max(0, career.matchPercentage))}% match</span>
                   </div>
                 </div>
               </div>
-            ))}
+            ))
+            ) : (
+              <div className="w-full rounded-3xl border border-dashed border-slate-200 bg-white p-5 text-sm text-slate-500 shadow-sm md:col-span-3">
+                Ask Pathfinder AI for a recommendation and it will appear here automatically.
+              </div>
+            )}
           </div>
         </div>
 

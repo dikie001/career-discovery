@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react"
 import {
   Send,
   Loader,
@@ -14,43 +14,43 @@ import {
   MessageSquare,
   History,
   ArrowLeft,
-} from "lucide-react";
-import { MarkdownRenderer } from "./markdown-renderer";
-import { ChatOptions, ChatOption } from "./chat-options";
-import { ConsentModal } from "./consent-modal";
-import { ChatStarters } from "./chat-starters";
-import { useAuth } from "@/contexts/auth-context";
-import Link from "next/link";
+} from "lucide-react"
+import { MarkdownRenderer } from "./markdown-renderer"
+import { ChatOptions, ChatOption } from "./chat-options"
+import { ConsentModal } from "./consent-modal"
+import { ChatStarters } from "./chat-starters"
+import { useAuth } from "@/contexts/auth-context"
+import Link from "next/link"
 
 interface Message {
-  id: string;
-  role: "user" | "assistant" | "system";
-  content: string;
-  timestamp: Date;
-  options?: ChatOption[];
-  selectedOption?: string;
-  sessionStart?: boolean;
+  id: string
+  role: "user" | "assistant" | "system"
+  content: string
+  timestamp: Date
+  options?: ChatOption[]
+  selectedOption?: string
+  sessionStart?: boolean
 }
 
 interface AiChatProps {
-  onSendMessage: (message: string, personality?: string) => Promise<string>;
-  isLoading?: boolean;
-  userConsent?: boolean | null;
-  onConsentChange?: (consented: boolean) => Promise<void>;
+  onSendMessage: (message: string, personality?: string) => Promise<string>
+  isLoading?: boolean
+  userConsent?: boolean | null
+  onConsentChange?: (consented: boolean) => Promise<void>
 }
 
 interface ChatSession {
-  id: string;
-  title: string;
-  timestamp: Date;
-  messages: Message[];
+  id: string
+  title: string
+  timestamp: Date
+  messages: Message[]
 }
 
 interface GroupedSessions {
-  today: ChatSession[];
-  yesterday: ChatSession[];
-  lastWeek: ChatSession[];
-  older: ChatSession[];
+  today: ChatSession[]
+  yesterday: ChatSession[]
+  lastWeek: ChatSession[]
+  older: ChatSession[]
 }
 
 const PERSONALITIES = [
@@ -86,7 +86,7 @@ const PERSONALITIES = [
     color: "bg-purple-600",
     textBg: "bg-purple-900/40 text-purple-300 border-purple-800/80",
   },
-];
+]
 
 const THEMES = [
   {
@@ -159,51 +159,57 @@ const THEMES = [
     chatAssistant: "bg-slate-900 border-slate-800",
     colorPreview: "bg-emerald-500",
   },
-];
+]
 
 const getSessionsFromMessages = (allMsgs: Message[]): ChatSession[] => {
-  const chatSessions: ChatSession[] = [];
-  let currentSessionMsgs: Message[] = [];
+  const chatSessions: ChatSession[] = []
+  let currentSessionMsgs: Message[] = []
 
   // Filter out system notifications
-  const filteredMsgs = allMsgs.filter((m) => m.role !== "system");
+  const filteredMsgs = allMsgs.filter((m) => m.role !== "system")
 
   filteredMsgs.forEach((msg, idx) => {
     if (idx === 0) {
-      currentSessionMsgs.push(msg);
-      return;
+      currentSessionMsgs.push(msg)
+      return
     }
 
-    const prevMsg = filteredMsgs[idx - 1];
-    const timeDiff = msg.timestamp.getTime() - prevMsg.timestamp.getTime();
+    const prevMsg = filteredMsgs[idx - 1]
+    const timeDiff = msg.timestamp.getTime() - prevMsg.timestamp.getTime()
 
     if (msg.sessionStart || timeDiff > 30 * 60 * 1000) {
       // Start a new session
-      const firstUserMsg = currentSessionMsgs.find((m) => m.role === "user");
+      const firstUserMsg = currentSessionMsgs.find((m) => m.role === "user")
       chatSessions.push({
         id: `session_${currentSessionMsgs[0].id}`,
-        title: firstUserMsg ? firstUserMsg.content.slice(0, 30) + (firstUserMsg.content.length > 30 ? "..." : "") : "Career Discussion",
+        title: firstUserMsg
+          ? firstUserMsg.content.slice(0, 30) +
+            (firstUserMsg.content.length > 30 ? "..." : "")
+          : "Career Discussion",
         timestamp: currentSessionMsgs[0].timestamp,
         messages: currentSessionMsgs,
-      });
-      currentSessionMsgs = [msg];
+      })
+      currentSessionMsgs = [msg]
     } else {
-      currentSessionMsgs.push(msg);
+      currentSessionMsgs.push(msg)
     }
-  });
+  })
 
   if (currentSessionMsgs.length > 0) {
-    const firstUserMsg = currentSessionMsgs.find((m) => m.role === "user");
+    const firstUserMsg = currentSessionMsgs.find((m) => m.role === "user")
     chatSessions.push({
       id: `session_${currentSessionMsgs[0].id}`,
-      title: firstUserMsg ? firstUserMsg.content.slice(0, 30) + (firstUserMsg.content.length > 30 ? "..." : "") : "Career Discussion",
+      title: firstUserMsg
+        ? firstUserMsg.content.slice(0, 30) +
+          (firstUserMsg.content.length > 30 ? "..." : "")
+        : "Career Discussion",
       timestamp: currentSessionMsgs[0].timestamp,
       messages: currentSessionMsgs,
-    });
+    })
   }
 
-  return chatSessions.reverse(); // Newest first
-};
+  return chatSessions.reverse() // Newest first
+}
 
 export function AiChat({
   onSendMessage,
@@ -211,98 +217,114 @@ export function AiChat({
   userConsent = null,
   onConsentChange,
 }: AiChatProps) {
-  const { token, user } = useAuth();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const [sending, setSending] = useState(false);
-  const [showConsentModal, setShowConsentModal] = useState(false);
-  const [consentLoading, setConsentLoading] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { token, user } = useAuth()
+  const [messages, setMessages] = useState<Message[]>([])
+  const [input, setInput] = useState("")
+  const [sending, setSending] = useState(false)
+  const [showConsentModal, setShowConsentModal] = useState(false)
+  const [consentLoading, setConsentLoading] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Theme state
   const [themeId, setThemeId] = useState<string>(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("ai_theme") || "pathfinder";
+      return localStorage.getItem("ai_theme") || "pathfinder"
     }
-    return "pathfinder";
-  });
+    return "pathfinder"
+  })
 
   const activeTheme = useMemo(() => {
-    return THEMES.find((t) => t.id === themeId) || THEMES[0];
-  }, [themeId]);
+    return THEMES.find((t) => t.id === themeId) || THEMES[0]
+  }, [themeId])
 
   const focusStyles = {
     sky: "focus:border-sky-500/80 focus:ring-sky-500/20 group-focus-within:text-sky-400",
     teal: "focus:border-teal-500/80 focus:ring-teal-500/20 group-focus-within:text-teal-400",
-    amber: "focus:border-amber-500/80 focus:ring-amber-500/20 group-focus-within:text-amber-400",
-    emerald: "focus:border-emerald-500/80 focus:ring-emerald-500/20 group-focus-within:text-emerald-400",
-  };
-  const currentFocusStyle = focusStyles[activeTheme.accent as keyof typeof focusStyles] || focusStyles.sky;
+    amber:
+      "focus:border-amber-500/80 focus:ring-amber-500/20 group-focus-within:text-amber-400",
+    emerald:
+      "focus:border-emerald-500/80 focus:ring-emerald-500/20 group-focus-within:text-emerald-400",
+  }
+  const currentFocusStyle =
+    focusStyles[activeTheme.accent as keyof typeof focusStyles] ||
+    focusStyles.sky
 
   const sendShadowStyles = {
     sky: "hover:shadow-sky-500/10",
     teal: "hover:shadow-teal-500/10",
     amber: "hover:shadow-amber-500/10",
     emerald: "hover:shadow-emerald-500/10",
-  };
-  const currentSendShadow = sendShadowStyles[activeTheme.accent as keyof typeof sendShadowStyles] || sendShadowStyles.sky;
+  }
+  const currentSendShadow =
+    sendShadowStyles[activeTheme.accent as keyof typeof sendShadowStyles] ||
+    sendShadowStyles.sky
 
   const handleThemeChange = (id: string) => {
-    setThemeId(id);
-    localStorage.setItem("ai_theme", id);
-  };
+    setThemeId(id)
+    localStorage.setItem("ai_theme", id)
+  }
 
   // AI Personality state
   const [personality, setPersonality] = useState<string>(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("ai_personality") || "mentor";
+      return localStorage.getItem("ai_personality") || "mentor"
     }
-    return "mentor";
-  });
+    return "mentor"
+  })
 
   const activePersonality = useMemo(() => {
-    return PERSONALITIES.find((p) => p.id === personality) || PERSONALITIES[0];
-  }, [personality]);
+    return PERSONALITIES.find((p) => p.id === personality) || PERSONALITIES[0]
+  }, [personality])
 
   // Current session selection state
-  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
-  const [loadingHistory, setLoadingHistory] = useState(true);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
+  const [loadingHistory, setLoadingHistory] = useState(true)
 
-  const [rateLimitCountdown, setRateLimitCountdown] = useState<number | null>(null);
-  const [queuedMessage, setQueuedMessage] = useState<{ text: string; override?: string } | null>(null);
+  const [rateLimitCountdown, setRateLimitCountdown] = useState<number | null>(
+    null
+  )
+  const [queuedMessage, setQueuedMessage] = useState<{
+    text: string
+    override?: string
+  } | null>(null)
 
   // Load chat history from backend on mount
   useEffect(() => {
     const fetchHistory = async () => {
-      if (!token) return;
+      if (!token) return
       try {
         const res = await fetch("/api/ai/chat", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
+        })
         if (res.ok) {
-          const data = await res.json();
+          const data = await res.json()
           if (data.success && Array.isArray(data.data)) {
             const parsedMessages: Message[] = data.data.map((msg: any) => {
-              let options;
-              let content = msg.content;
+              let options
+              let content = msg.content
               if (msg.role === "assistant") {
-                const jsonMatch = msg.content.match(/```json\n([\s\S]*?)\n```/);
+                const jsonMatch = msg.content.match(/```json\n([\s\S]*?)\n```/)
                 if (jsonMatch) {
                   try {
-                    const parsed = JSON.parse(jsonMatch[1]);
+                    const parsed = JSON.parse(jsonMatch[1])
                     if (parsed.options && Array.isArray(parsed.options)) {
-                      content = msg.content.substring(0, jsonMatch.index || 0).trim() || parsed.message || "";
+                      content =
+                        msg.content.substring(0, jsonMatch.index || 0).trim() ||
+                        parsed.message ||
+                        ""
                       options = parsed.options.map((opt: any) => ({
-                        id: opt.id || opt.label.toLowerCase().replace(/\s+/g, "_"),
+                        id:
+                          opt.id ||
+                          opt.label.toLowerCase().replace(/\s+/g, "_"),
                         label: opt.label,
                         description: opt.description,
-                      }));
+                      }))
                     }
                   } catch (e) {
-                    console.error("Failed to parse options in history load:", e);
+                    console.error("Failed to parse options in history load:", e)
                   }
                 }
               }
@@ -312,139 +334,144 @@ export function AiChat({
                 content,
                 timestamp: new Date(msg.timestamp),
                 options,
-              };
-            });
+              }
+            })
 
             // Mark older options as selected to prevent interactive buttons on old segments
             if (parsedMessages.length > 0) {
-              const lastAssistantIdx = parsedMessages.map((m: Message) => m.role).lastIndexOf("assistant");
+              const lastAssistantIdx = parsedMessages
+                .map((m: Message) => m.role)
+                .lastIndexOf("assistant")
               parsedMessages.forEach((m: Message, idx: number) => {
                 if (m.options && idx !== lastAssistantIdx) {
-                  m.selectedOption = "historical";
+                  m.selectedOption = "historical"
                 }
-              });
+              })
             }
 
-            setMessages(parsedMessages);
+            setMessages(parsedMessages)
 
-            const computedSessions = getSessionsFromMessages(parsedMessages);
+            const computedSessions = getSessionsFromMessages(parsedMessages)
             if (computedSessions.length > 0) {
-              setActiveSessionId(computedSessions[0].id);
+              setActiveSessionId(computedSessions[0].id)
             } else {
-              setActiveSessionId("new");
+              setActiveSessionId("new")
             }
           }
         }
       } catch (e) {
-        console.error("Error loading chat history:", e);
-        setActiveSessionId("new");
+        console.error("Error loading chat history:", e)
+        setActiveSessionId("new")
       } finally {
-        setLoadingHistory(false);
+        setLoadingHistory(false)
       }
-    };
-    fetchHistory();
-  }, [token]);
+    }
+    fetchHistory()
+  }, [token])
 
   // Group messages into virtual sessions dynamically based on 30 minutes time gaps
   const sessions = useMemo((): ChatSession[] => {
-    return getSessionsFromMessages(messages);
-  }, [messages]);
+    return getSessionsFromMessages(messages)
+  }, [messages])
 
   // Handle auto-retry rate limit countdown timer
   useEffect(() => {
-    if (rateLimitCountdown === null) return;
+    if (rateLimitCountdown === null) return
 
     if (rateLimitCountdown <= 0) {
-      setRateLimitCountdown(null);
+      setRateLimitCountdown(null)
       if (queuedMessage) {
-        const msg = queuedMessage;
-        setQueuedMessage(null);
-        handleSendMessage(null, msg.override || msg.text, true);
+        const msg = queuedMessage
+        setQueuedMessage(null)
+        handleSendMessage(null, msg.override || msg.text, true)
       } else {
-        setSending(false);
+        setSending(false)
       }
-      return;
+      return
     }
 
     const interval = setInterval(() => {
       setRateLimitCountdown((prev) => {
-        if (prev === null) return null;
-        return Math.max(0, prev - 0.1);
-      });
-    }, 100);
+        if (prev === null) return null
+        return Math.max(0, prev - 0.1)
+      })
+    }, 100)
 
-    return () => clearInterval(interval);
-  }, [rateLimitCountdown, queuedMessage]);
-
+    return () => clearInterval(interval)
+  }, [rateLimitCountdown, queuedMessage])
 
   // Messages to render in the main panel
   const activeMessages = useMemo(() => {
-    if (activeSessionId === "new") return [];
-    const foundSession = sessions.find((s) => s.id === activeSessionId);
-    return foundSession ? foundSession.messages : [];
-  }, [sessions, activeSessionId]);
+    if (activeSessionId === "new") return []
+    const foundSession = sessions.find((s) => s.id === activeSessionId)
+    return foundSession ? foundSession.messages : []
+  }, [sessions, activeSessionId])
 
   // Grouped sessions for history display
   const groupedSessions = useMemo((): GroupedSessions => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const oneWeekAgo = new Date(today);
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+    const oneWeekAgo = new Date(today)
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
 
     const groups: GroupedSessions = {
       today: [],
       yesterday: [],
       lastWeek: [],
       older: [],
-    };
+    }
 
     sessions.forEach((session) => {
-      const sessionDate = new Date(session.timestamp);
-      const sessionDay = new Date(sessionDate.getFullYear(), sessionDate.getMonth(), sessionDate.getDate());
+      const sessionDate = new Date(session.timestamp)
+      const sessionDay = new Date(
+        sessionDate.getFullYear(),
+        sessionDate.getMonth(),
+        sessionDate.getDate()
+      )
 
       if (sessionDay.getTime() === today.getTime()) {
-        groups.today.push(session);
+        groups.today.push(session)
       } else if (sessionDay.getTime() === yesterday.getTime()) {
-        groups.yesterday.push(session);
+        groups.yesterday.push(session)
       } else if (sessionDay.getTime() >= oneWeekAgo.getTime()) {
-        groups.lastWeek.push(session);
+        groups.lastWeek.push(session)
       } else {
-        groups.older.push(session);
+        groups.older.push(session)
       }
-    });
+    })
 
-    return groups;
-  }, [sessions]);
+    return groups
+  }, [sessions])
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
 
   useEffect(() => {
-    scrollToBottom();
-  }, [activeMessages]);
+    scrollToBottom()
+  }, [activeMessages])
 
   const handleConsentResponse = async (agreed: boolean) => {
-    setConsentLoading(true);
+    setConsentLoading(true)
     try {
       if (onConsentChange) {
-        await onConsentChange(agreed);
+        await onConsentChange(agreed)
       }
-      setShowConsentModal(false);
+      setShowConsentModal(false)
     } catch (error) {
-      console.error("Failed to update consent:", error);
+      console.error("Failed to update consent:", error)
     } finally {
-      setConsentLoading(false);
+      setConsentLoading(false)
     }
-  };
+  }
 
   const handlePersonalityChange = (newPersonality: string) => {
-    setPersonality(newPersonality);
-    localStorage.setItem("ai_personality", newPersonality);
+    setPersonality(newPersonality)
+    localStorage.setItem("ai_personality", newPersonality)
 
-    const targetPers = PERSONALITIES.find((p) => p.id === newPersonality);
+    const targetPers = PERSONALITIES.find((p) => p.id === newPersonality)
 
     // Add visual notification message
     const noticeMessage: Message = {
@@ -452,56 +479,60 @@ export function AiChat({
       role: "system",
       content: `Personality changed to ${targetPers?.name}.`,
       timestamp: new Date(),
-    };
-    setMessages((prev) => [...prev, noticeMessage]);
-  };
+    }
+    setMessages((prev) => [...prev, noticeMessage])
+  }
 
   const handleSelectOption = async (optionId: string) => {
-    const lastMessage = activeMessages[activeMessages.length - 1];
-    if (!lastMessage?.options) return;
+    const lastMessage = activeMessages[activeMessages.length - 1]
+    if (!lastMessage?.options) return
 
-    const selectedOption = lastMessage.options.find((opt) => opt.id === optionId);
-    if (!selectedOption) return;
+    const selectedOption = lastMessage.options.find(
+      (opt) => opt.id === optionId
+    )
+    if (!selectedOption) return
 
     // Update the last message to show selected option in local state
     setMessages((prev) => {
       return prev.map((m) => {
         if (m.id === lastMessage.id) {
-          return { ...m, selectedOption: optionId };
+          return { ...m, selectedOption: optionId }
         }
-        return m;
-      });
-    });
+        return m
+      })
+    })
 
     // Send the selected option as a message
-    const userMsgId = `msg_${Date.now()}`;
+    const userMsgId = `msg_${Date.now()}`
     const userMessage: Message = {
       id: userMsgId,
       role: "user",
       content: selectedOption.label,
       timestamp: new Date(),
-    };
+    }
 
-    setMessages((prev) => [...prev, userMessage]);
-    setSending(true);
+    setMessages((prev) => [...prev, userMessage])
+    setSending(true)
 
     try {
-      const response = await onSendMessage(selectedOption.label, personality);
+      const response = await onSendMessage(selectedOption.label, personality)
 
       // Parse response for options
-      const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/);
+      const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/)
       let assistantMessage: Message = {
         id: `msg_${Date.now() + 1}`,
         role: "assistant",
         content: response,
         timestamp: new Date(),
-      };
+      }
 
       if (jsonMatch) {
         try {
-          const parsed = JSON.parse(jsonMatch[1]);
+          const parsed = JSON.parse(jsonMatch[1])
           if (parsed.options && Array.isArray(parsed.options)) {
-            const textBeforeJson = response.substring(0, jsonMatch.index || 0).trim();
+            const textBeforeJson = response
+              .substring(0, jsonMatch.index || 0)
+              .trim()
             assistantMessage = {
               id: `msg_${Date.now() + 1}`,
               role: "assistant",
@@ -512,85 +543,73 @@ export function AiChat({
                 label: opt.label,
                 description: opt.description,
               })),
-            };
+            }
           }
         } catch (e) {
-          console.error("Failed to parse JSON:", e);
+          console.error("Failed to parse JSON:", e)
         }
       }
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, assistantMessage])
     } catch (error) {
-      console.error("Failed to send option message:", error);
+      console.error("Failed to send option message:", error)
       const errorMessage: Message = {
         id: `msg_${Date.now() + 1}`,
         role: "assistant",
         content: "Sorry, I encountered an error. Please try again.",
         timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      }
+      setMessages((prev) => [...prev, errorMessage])
     } finally {
-      setSending(false);
+      setSending(false)
     }
-  };
+  }
 
   // ── Career extraction & persistence ────────────────────────────────────────
   const saveRecommendations = async (text: string) => {
-    if (!token) return;
+    if (!token) return
 
-    // Match **Career Title** patterns (bold markdown) followed by optional context
-    const boldPattern = /\*\*([A-Z][^*\n]{2,40})\*\*/g;
-    const found = new Set<string>();
-    let m;
-    while ((m = boldPattern.exec(text)) !== null) {
-      const t = m[1].trim();
-      // Basic heuristic: skip generic words that aren't career titles
-      if (t.length > 3 && !/^(note|tip|important|warning|example|result|step|here|this|the|and|for|you|your)$/i.test(t)) {
-        found.add(t);
-      }
+    const { titles, salaryRange, matchPercentage, summary } =
+      extractRecommendationMetadata(text)
+    if (titles.length === 0) return
+
+    await Promise.allSettled(
+      titles.map((title) =>
+        fetch("/api/recommendations", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title,
+            description: `Recommended by Pathfinder AI based on your profile and career goals.`,
+            category: "AI Recommendation",
+            matchPercentage,
+            salaryRange,
+            reason: summary,
+          }),
+        })
+      )
+    )
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "pathfinder:recommendations-updated",
+        Date.now().toString()
+      )
+      window.dispatchEvent(new Event("pathfinder:recommendations-updated"))
     }
-
-    // Also match numbered list career titles: "1. Data Analyst"
-    const listPattern = /^\d+\.\s+([A-Z][a-zA-Z\s&/-]{3,40})$/gm;
-    while ((m = listPattern.exec(text)) !== null) {
-      found.add(m[1].trim());
-    }
-
-    if (found.size === 0) return;
-
-    // Extract a salary range if present near the career name
-    const salaryMatch = text.match(/[Kk][Ss][Hh]\s*[\d,]+[Kk]?\s*[-–]?\s*[\d,]*[Kk]?/);
-    const salaryRange = salaryMatch ? salaryMatch[0] : "";
-
-    // Extract a match percentage if present
-    const matchMatch = text.match(/(\d{1,3})%\s*match/i);
-    const matchPct = matchMatch ? parseInt(matchMatch[1]) : 0;
-
-    // Fire-and-forget: save each detected career
-    for (const title of Array.from(found).slice(0, 5)) {
-      fetch("/api/recommendations", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          description: `Recommended by Pathfinder AI based on your profile and career goals.`,
-          category: "AI Recommendation",
-          matchPercentage: matchPct,
-          salaryRange,
-          reason: text.slice(0, 300).replace(/\*\*/g, ""),
-        }),
-      }).catch(() => { /* silent — don't interrupt chat */ });
-    }
-  };
+  }
   // ────────────────────────────────────────────────────────────────────────────
 
   const handleStarterSelect = async (prompt: string) => {
     if (messages.length === 0 && userConsent === false) {
-      setShowConsentModal(true);
-      return;
+      setShowConsentModal(true)
+      return
     }
-    await handleSendMessage(null, prompt);
-  };
+    await handleSendMessage(null, prompt)
+  }
 
   const handleSendMessage = async (
     e?: React.FormEvent | null,
@@ -598,52 +617,54 @@ export function AiChat({
     isRetry?: boolean
   ) => {
     if (e) {
-      e.preventDefault();
+      e.preventDefault()
     }
 
-    const messageText = messageOverride || input;
-    if (!messageText.trim()) return;
-    if (sending && !isRetry) return;
+    const messageText = messageOverride || input
+    if (!messageText.trim()) return
+    if (sending && !isRetry) return
 
-    setSending(true);
+    setSending(true)
 
     if (!isRetry) {
-      const userMsgId = `msg_${Date.now()}`;
+      const userMsgId = `msg_${Date.now()}`
       const userMessage: Message = {
         id: userMsgId,
         role: "user",
         content: messageText,
         timestamp: new Date(),
         sessionStart: activeSessionId === "new",
-      };
+      }
 
-      setMessages((prev) => [...prev, userMessage]);
+      setMessages((prev) => [...prev, userMessage])
       if (!messageOverride) {
-        setInput("");
+        setInput("")
       }
 
       if (activeSessionId === "new") {
-        setActiveSessionId(`session_${userMsgId}`);
+        setActiveSessionId(`session_${userMsgId}`)
       }
     }
 
     try {
-      const response = await onSendMessage(messageText, personality);
+      const response = await onSendMessage(messageText, personality)
 
       // Parse options
-      const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/);
+      const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/)
       let assistantMessage: Message = {
         id: `msg_${Date.now() + 1}`,
         role: "assistant",
         content: response,
         timestamp: new Date(),
-      };
+      }
 
       if (jsonMatch) {
         try {
-          const parsed = JSON.parse(jsonMatch[1]);
+          const parsed = JSON.parse(jsonMatch[1])
           if (parsed.options && Array.isArray(parsed.options)) {
-            const textBeforeJson = response.substring(0, jsonMatch.index || 0).trim();
+            const textBeforeJson = response
+              .substring(0, jsonMatch.index || 0)
+              .trim()
             assistantMessage = {
               id: `msg_${Date.now() + 1}`,
               role: "assistant",
@@ -654,76 +675,86 @@ export function AiChat({
                 label: opt.label,
                 description: opt.description,
               })),
-            };
+            }
           }
         } catch (e) {
-          console.error("Failed to parse JSON:", e);
+          console.error("Failed to parse JSON:", e)
         }
       }
 
-      setMessages((prev) => [...prev, assistantMessage]);
-      setSending(false);
+      setMessages((prev) => [...prev, assistantMessage])
+      setSending(false)
 
       // Silently extract and persist any career recommendations mentioned
-      saveRecommendations(assistantMessage.content);
+      saveRecommendations(assistantMessage.content)
     } catch (error) {
-      console.error("Failed to send message:", error);
+      console.error("Failed to send message:", error)
 
-      const errorMsg = error instanceof Error ? error.message : "";
-      const isRateLimit = errorMsg.includes("429") || errorMsg.includes("rate_limit");
+      const errorMsg = error instanceof Error ? error.message : ""
+      const isRateLimit =
+        errorMsg.includes("429") || errorMsg.includes("rate_limit")
 
       if (isRateLimit) {
         // Extract wait duration
-        const match = errorMsg.match(/try again in ([0-9.]+)\s*s/i) || errorMsg.match(/try again in ([0-9.]+)\s*seconds/i);
-        const retrySec = match ? parseFloat(match[1]) : 10;
+        const match =
+          errorMsg.match(/try again in ([0-9.]+)\s*s/i) ||
+          errorMsg.match(/try again in ([0-9.]+)\s*seconds/i)
+        const retrySec = match ? parseFloat(match[1]) : 10
 
-        setRateLimitCountdown(retrySec);
-        setQueuedMessage({ text: messageText, override: messageOverride });
+        setRateLimitCountdown(retrySec)
+        setQueuedMessage({ text: messageText, override: messageOverride })
       } else {
         const errorMessage: Message = {
           id: `msg_${Date.now() + 1}`,
           role: "assistant",
           content: "Sorry, I encountered an error. Please try again.",
           timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, errorMessage]);
-        setSending(false);
+        }
+        setMessages((prev) => [...prev, errorMessage])
+        setSending(false)
       }
     }
-  };
+  }
 
   const handleNewChat = () => {
-    setActiveSessionId("new");
-    setSidebarOpen(false);
-  };
+    setActiveSessionId("new")
+    setSidebarOpen(false)
+  }
 
   const renderHistoryCategory = (title: string, list: ChatSession[]) => {
-    if (list.length === 0) return null;
+    if (list.length === 0) return null
     return (
-      <div className="space-y-1.5 mt-4">
-        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider px-2.5 mb-1.5">{title}</p>
+      <div className="mt-4 space-y-1.5">
+        <p className="mb-1.5 px-2.5 text-xs font-bold tracking-wider text-slate-500 uppercase">
+          {title}
+        </p>
         {list.map((session) => (
           <button
             key={session.id}
             onClick={() => {
-              setActiveSessionId(session.id);
-              setSidebarOpen(false);
+              setActiveSessionId(session.id)
+              setSidebarOpen(false)
             }}
-            className={`w-full text-left p-2.5 rounded-xl text-xs truncate flex items-center gap-2.5 transition-all ${activeSessionId === session.id
-                ? "bg-slate-800/80 text-white font-semibold shadow-inner border border-slate-700/50"
-                : "text-slate-400 hover:text-slate-100 hover:bg-slate-800/30"
-              }`}
+            className={`flex w-full items-center gap-2.5 truncate rounded-xl p-2.5 text-left text-xs transition-all ${
+              activeSessionId === session.id
+                ? "border border-slate-700/50 bg-slate-800/80 font-semibold text-white shadow-inner"
+                : "text-slate-400 hover:bg-slate-800/30 hover:text-slate-100"
+            }`}
           >
-            <MessageSquare className={`h-3.5 w-3.5 flex-shrink-0 ${activeSessionId === session.id ? activeTheme.accentText : "text-slate-500"}`} />
+            <MessageSquare
+              className={`h-3.5 w-3.5 flex-shrink-0 ${activeSessionId === session.id ? activeTheme.accentText : "text-slate-500"}`}
+            />
             <span className="truncate">{session.title}</span>
           </button>
         ))}
       </div>
-    );
-  };
+    )
+  }
 
   return (
-    <div className={`flex h-screen w-screen overflow-hidden ${activeTheme.bg} text-white font-sans transition-all duration-300`}>
+    <div
+      className={`flex h-screen w-screen overflow-hidden ${activeTheme.bg} font-sans text-white transition-all duration-300`}
+    >
       {/* Consent Modal */}
       <ConsentModal
         isOpen={showConsentModal}
@@ -733,34 +764,41 @@ export function AiChat({
 
       {/* SIDEBAR - Desktop / Mobile Drawer */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col ${activeTheme.sidebar} border-r transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col ${activeTheme.sidebar} border-r transition-transform duration-300 lg:static lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         {/* Sidebar Header */}
-        <div className="p-4 border-b border-slate-800/50 flex items-center justify-between">
+        <div className="flex items-center justify-between border-b border-slate-800/50 p-4">
           <div className="flex items-center gap-2.5">
-            <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${activeTheme.chatUser} shadow-lg shadow-teal-500/10`}>
+            <div
+              className={`flex h-9 w-9 items-center justify-center rounded-xl ${activeTheme.chatUser} shadow-lg shadow-teal-500/10`}
+            >
               <span className="text-base font-black text-white">P</span>
             </div>
             <div>
-              <span className="font-bold text-sm tracking-tight text-slate-100">Pathfinder AI</span>
-              <span className="block text-xs text-slate-400 font-medium">Career advisor</span>
+              <span className="text-sm font-bold tracking-tight text-slate-100">
+                Pathfinder AI
+              </span>
+              <span className="block text-xs font-medium text-slate-400">
+                Career advisor
+              </span>
             </div>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white lg:hidden"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Sidebar Body */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+        <div className="custom-scrollbar flex-1 space-y-6 overflow-y-auto p-4">
           {/* New Chat Button */}
           <button
             onClick={handleNewChat}
-            className={`w-full rounded-xl ${activeTheme.accentBg} text-white py-2.5 px-4 flex items-center justify-center gap-2 font-bold text-xs transition-all shadow-md active:scale-98`}
+            className={`w-full rounded-xl ${activeTheme.accentBg} flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold text-white shadow-md transition-all active:scale-98`}
           >
             <Plus className="h-4 w-4" />
             New Chat
@@ -768,17 +806,24 @@ export function AiChat({
 
           {/* Theme Selector swatch list */}
           <div className="space-y-2 px-1">
-            <span className="text-xs font-bold text-slate-500">Choose Theme</span>
+            <span className="text-xs font-bold text-slate-500">
+              Choose Theme
+            </span>
             <div className="flex items-center gap-2 pt-1">
               {THEMES.map((theme) => (
                 <button
                   key={theme.id}
                   onClick={() => handleThemeChange(theme.id)}
                   title={theme.name}
-                  className={`h-7 w-7 rounded-full border-2 transition-all flex items-center justify-center ${themeId === theme.id ? "border-slate-100 scale-110 shadow-md" : "border-slate-800 hover:border-slate-600"
-                    }`}
+                  className={`flex h-7 w-7 items-center justify-center rounded-full border-2 transition-all ${
+                    themeId === theme.id
+                      ? "scale-110 border-slate-100 shadow-md"
+                      : "border-slate-800 hover:border-slate-600"
+                  }`}
                 >
-                  <span className={`h-5 w-5 rounded-full ${theme.colorPreview}`} />
+                  <span
+                    className={`h-5 w-5 rounded-full ${theme.colorPreview}`}
+                  />
                 </button>
               ))}
             </div>
@@ -787,7 +832,9 @@ export function AiChat({
           {/* AI Personality Selection */}
           <div className="space-y-2.5">
             <div className="px-1">
-              <span className="text-xs font-bold text-slate-500 ">AI Persona Model</span>
+              <span className="text-xs font-bold text-slate-500">
+                AI Persona Model
+              </span>
             </div>
             <div className="grid grid-cols-2 gap-2">
               {PERSONALITIES.map((pers) => (
@@ -795,15 +842,20 @@ export function AiChat({
                   key={pers.id}
                   onClick={() => handlePersonalityChange(pers.id)}
                   title={pers.description}
-                  className={`p-2.5 rounded-xl border text-left transition-all relative flex flex-col justify-between h-20 shadow-sm ${personality === pers.id
+                  className={`relative flex h-20 flex-col justify-between rounded-xl border p-2.5 text-left shadow-sm transition-all ${
+                    personality === pers.id
                       ? `border-${activeTheme.accent}-500 bg-slate-800/80 ring-1 ring-${activeTheme.accent}-500/20`
                       : "border-slate-800 bg-slate-800/20 hover:border-slate-700 hover:bg-slate-800/40"
-                    }`}
+                  }`}
                 >
-                  <div className={`p-1.5 rounded-lg w-fit ${pers.color} text-white shadow-sm`}>
+                  <div
+                    className={`w-fit rounded-lg p-1.5 ${pers.color} text-white shadow-sm`}
+                  >
                     {pers.icon}
                   </div>
-                  <span className="text-xs font-bold text-slate-100 leading-tight mt-1">{pers.name}</span>
+                  <span className="mt-1 text-xs leading-tight font-bold text-slate-100">
+                    {pers.name}
+                  </span>
                 </button>
               ))}
             </div>
@@ -813,18 +865,26 @@ export function AiChat({
           <div className="space-y-1">
             <div className="flex items-center gap-2 px-1 py-1">
               <History className="h-3.5 w-3.5 text-slate-500" />
-              <span className="text-xs font-bold text-slate-500 ">Conversation History</span>
+              <span className="text-xs font-bold text-slate-500">
+                Conversation History
+              </span>
             </div>
             <div className="space-y-3">
               {sessions.length === 0 ? (
-                <div className="p-4 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl mt-2">
+                <div className="mt-2 rounded-xl border border-dashed border-slate-800 p-4 text-center text-xs text-slate-500">
                   No past discussions saved.
                 </div>
               ) : (
                 <>
                   {renderHistoryCategory("Today", groupedSessions.today)}
-                  {renderHistoryCategory("Yesterday", groupedSessions.yesterday)}
-                  {renderHistoryCategory("Previous 7 Days", groupedSessions.lastWeek)}
+                  {renderHistoryCategory(
+                    "Yesterday",
+                    groupedSessions.yesterday
+                  )}
+                  {renderHistoryCategory(
+                    "Previous 7 Days",
+                    groupedSessions.lastWeek
+                  )}
                   {renderHistoryCategory("Older", groupedSessions.older)}
                 </>
               )}
@@ -833,9 +893,9 @@ export function AiChat({
         </div>
 
         {/* Sidebar Footer - Back to Dashboard */}
-        <div className="p-4 border-t border-slate-800/80 bg-slate-900/20">
+        <div className="border-t border-slate-800/80 bg-slate-900/20 p-4">
           <Link href="/dashboard">
-            <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-800 hover:bg-slate-800 hover:border-slate-700 hover:text-white text-xs font-bold text-slate-400 transition-all">
+            <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-800 px-4 py-2.5 text-xs font-bold text-slate-400 transition-all hover:border-slate-700 hover:bg-slate-800 hover:text-white">
               <ArrowLeft className="h-3.5 w-3.5" />
               Return to Hub
             </button>
@@ -854,48 +914,59 @@ export function AiChat({
       {/* MAIN CHAT AREA */}
       <div className="flex flex-1 flex-col overflow-hidden bg-slate-950/20">
         {/* Chat Header */}
-        <header className={`sticky top-0 z-30 flex items-center justify-between border-b ${activeTheme.header} px-4 py-2.5 sm:px-6 backdrop-blur-md`}>
+        <header
+          className={`sticky top-0 z-30 flex items-center justify-between border-b ${activeTheme.header} px-4 py-2.5 backdrop-blur-md sm:px-6`}
+        >
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 transition-colors"
+              className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-800/50 hover:text-slate-100 lg:hidden"
             >
               <Menu className="h-4.5 w-4.5" />
             </button>
             <div className="flex items-center gap-2">
-              <div className={`p-1.5 rounded-lg ${activePersonality.color} text-white shadow-sm`}>
+              <div
+                className={`rounded-lg p-1.5 ${activePersonality.color} text-white shadow-sm`}
+              >
                 {activePersonality.icon}
               </div>
               <div>
-                <h2 className="text-sm font-bold text-slate-100">{activePersonality.name}</h2>
-                <span className="block text-xs text-slate-500 font-medium">{activePersonality.description}</span>
+                <h2 className="text-sm font-bold text-slate-100">
+                  {activePersonality.name}
+                </h2>
+                <span className="block text-xs font-medium text-slate-500">
+                  {activePersonality.description}
+                </span>
               </div>
             </div>
           </div>
         </header>
 
         {/* Message Area */}
-        <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 custom-scrollbar bg-transparent">
-          <div className="max-w-3xl mx-auto space-y-6">
+        <div className="custom-scrollbar flex-1 overflow-y-auto bg-transparent px-4 py-6 sm:px-6">
+          <div className="mx-auto max-w-3xl space-y-6">
             {loadingHistory ? (
-              <div className="flex h-64 flex-col items-center justify-center text-center py-12 px-4 animate-fadeIn">
+              <div className="animate-fadeIn flex h-64 flex-col items-center justify-center px-4 py-12 text-center">
                 <div className="space-y-4">
-                  <div className="relative w-9 h-9 mx-auto">
+                  <div className="relative mx-auto h-9 w-9">
                     <div className="absolute inset-0 rounded-full border border-slate-800"></div>
-                    <div className="absolute inset-0 rounded-full border border-transparent border-t-sky-500 border-r-sky-500 animate-spin"></div>
+                    <div className="absolute inset-0 animate-spin rounded-full border border-transparent border-t-sky-500 border-r-sky-500"></div>
                   </div>
-                  <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Syncing Secure History...</p>
+                  <p className="text-xs font-bold tracking-wider text-slate-500 uppercase">
+                    Syncing Secure History...
+                  </p>
                 </div>
               </div>
             ) : activeMessages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-center py-12 px-4 animate-fadeIn">
-          
-
-          <h1 className="text-center font-bold text-xl">PathFinder Ai</h1>   
+              <div className="animate-fadeIn flex flex-col items-center justify-center px-4 py-12 text-center">
+                <h1 className="text-center text-xl font-bold">PathFinder Ai</h1>
 
                 {/* Chat Starters - Three compact cards */}
                 <div className="w-full pt-6">
-                  <ChatStarters onSelect={handleStarterSelect} isLoading={sending} />
+                  <ChatStarters
+                    onSelect={handleStarterSelect}
+                    isLoading={sending}
+                  />
                 </div>
               </div>
             ) : null}
@@ -903,34 +974,41 @@ export function AiChat({
             {activeMessages.map((message) => {
               if (message.role === "system") {
                 return (
-                  <div key={message.id} className="flex justify-center my-2.5">
-                    <span className="px-3.5 py-1.5 rounded-full bg-slate-900/60 border border-slate-800/80 text-xs text-slate-400 font-bold uppercase tracking-wider">
+                  <div key={message.id} className="my-2.5 flex justify-center">
+                    <span className="rounded-full border border-slate-800/80 bg-slate-900/60 px-3.5 py-1.5 text-xs font-bold tracking-wider text-slate-400 uppercase">
                       {message.content}
                     </span>
                   </div>
-                );
+                )
               }
 
               return (
                 <div key={message.id} className="animate-fadeIn space-y-1">
-                  <div className={`flex items-end gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`flex items-end gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                  >
                     {/* Assistant Bot Avatar */}
                     {message.role === "assistant" && (
-                      <div className={`flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-xl ${activeTheme.chatAssistant} shadow-md border`}>
-                        <div className={`p-1.5 rounded-lg ${activePersonality.color} text-white`}>
+                      <div
+                        className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl ${activeTheme.chatAssistant} border shadow-md`}
+                      >
+                        <div
+                          className={`rounded-lg p-1.5 ${activePersonality.color} text-white`}
+                        >
                           {activePersonality.icon}
                         </div>
                       </div>
                     )}
 
                     <div
-                      className={`max-w-xl md:max-w-2xl shadow-sm rounded-2xl transition-all duration-300 w-fit ${message.role === "user"
-                          ? `rounded-tr-none ${activeTheme.chatUser} px-4 py-2.5 text-white text-sm font-medium`
-                          : `rounded-tl-none ${activeTheme.chatAssistant} px-4 py-2.5 text-sm text-slate-200 border`
-                        }`}
+                      className={`w-fit max-w-xl rounded-2xl shadow-sm transition-all duration-300 md:max-w-2xl ${
+                        message.role === "user"
+                          ? `rounded-tr-none ${activeTheme.chatUser} px-4 py-2.5 text-sm font-medium text-white`
+                          : `rounded-tl-none ${activeTheme.chatAssistant} border px-4 py-2.5 text-sm text-slate-200`
+                      }`}
                     >
                       {message.role === "assistant" ? (
-                        <div className="prose prose-invert prose-sm max-w-none text-slate-200 leading-relaxed">
+                        <div className="prose prose-invert prose-sm max-w-none leading-relaxed text-slate-200">
                           <MarkdownRenderer content={message.content} />
                         </div>
                       ) : (
@@ -940,37 +1018,48 @@ export function AiChat({
 
                     {/* User Avatar */}
                     {message.role === "user" && (
-                      <div className={`flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-full ${activeTheme.chatUser} shadow-md text-white font-extrabold text-sm uppercase`}>
+                      <div
+                        className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${activeTheme.chatUser} text-sm font-extrabold text-white uppercase shadow-md`}
+                      >
                         {user?.name ? user.name.charAt(0) : "U"}
                       </div>
                     )}
                   </div>
 
                   {/* Message Timestamp */}
-                  <div className={`flex text-xs text-slate-600 font-bold px-11 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
-                    {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  <div
+                    className={`flex px-11 text-xs font-bold text-slate-600 ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                  >
+                    {message.timestamp.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </div>
 
                   {/* Option Buttons */}
-                  {message.options && message.options.length > 0 && !message.selectedOption && (
-                    <div className="flex justify-start pl-11">
-                      <div className="w-full max-w-xl">
-                        <ChatOptions
-                          options={message.options}
-                          onSelect={handleSelectOption}
-                          isLoading={sending}
-                          themeAccent={activeTheme.accent as any}
-                        />
+                  {message.options &&
+                    message.options.length > 0 &&
+                    !message.selectedOption && (
+                      <div className="flex justify-start pl-11">
+                        <div className="w-full max-w-xl">
+                          <ChatOptions
+                            options={message.options}
+                            onSelect={handleSelectOption}
+                            isLoading={sending}
+                            themeAccent={activeTheme.accent as any}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
-              );
+              )
             })}
 
             {sending && rateLimitCountdown === null && (
-              <div className="flex justify-start animate-fadeIn pl-11">
-                <div className={`flex gap-1.5 px-3.5 py-2.5 ${activeTheme.chatAssistant} border rounded-xl`}>
+              <div className="animate-fadeIn flex justify-start pl-11">
+                <div
+                  className={`flex gap-1.5 px-3.5 py-2.5 ${activeTheme.chatAssistant} rounded-xl border`}
+                >
                   {[0, 1, 2].map((i) => (
                     <div
                       key={i}
@@ -983,13 +1072,16 @@ export function AiChat({
             )}
 
             {rateLimitCountdown !== null && (
-              <div className="flex justify-start animate-fadeIn pl-11">
-                <div className="flex items-center gap-2.5 px-4 py-2.5 bg-amber-950/40 border border-amber-800/60 rounded-xl text-amber-300 text-xs font-bold shadow-md">
-                  <div className="relative w-3.5 h-3.5 flex items-center justify-center">
+              <div className="animate-fadeIn flex justify-start pl-11">
+                <div className="flex items-center gap-2.5 rounded-xl border border-amber-800/60 bg-amber-950/40 px-4 py-2.5 text-xs font-bold text-amber-300 shadow-md">
+                  <div className="relative flex h-3.5 w-3.5 items-center justify-center">
                     <div className="absolute inset-0 rounded-full border border-amber-800"></div>
-                    <div className="absolute inset-0 rounded-full border border-transparent border-t-amber-400 border-r-amber-400 animate-spin"></div>
+                    <div className="absolute inset-0 animate-spin rounded-full border border-transparent border-t-amber-400 border-r-amber-400"></div>
                   </div>
-                  <span>Rate limit hit. Retrying automatically in {rateLimitCountdown.toFixed(1)}s...</span>
+                  <span>
+                    Rate limit hit. Retrying automatically in{" "}
+                    {rateLimitCountdown.toFixed(1)}s...
+                  </span>
                 </div>
               </div>
             )}
@@ -999,10 +1091,17 @@ export function AiChat({
         </div>
 
         {/* Input Area */}
-        <div className={`border-t ${activeTheme.accentBorder} ${activeTheme.header} px-4 py-4 sm:px-6`}>
-          <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto flex gap-3">
-            <div className="relative flex-1 flex items-center group">
-              <div className={`absolute left-4 ${activeTheme.accentText} transition-colors pointer-events-none`}>
+        <div
+          className={`border-t ${activeTheme.accentBorder} ${activeTheme.header} px-4 py-4 sm:px-6`}
+        >
+          <form
+            onSubmit={handleSendMessage}
+            className="mx-auto flex max-w-3xl gap-3"
+          >
+            <div className="group relative flex flex-1 items-center">
+              <div
+                className={`absolute left-4 ${activeTheme.accentText} pointer-events-none transition-colors`}
+              >
                 <Sparkles className="h-4 w-4 animate-pulse" />
               </div>
               <input
@@ -1011,29 +1110,32 @@ export function AiChat({
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={`Query Pathfinder as a ${activePersonality.name}...`}
                 disabled={sending || externalLoading}
-                className={`w-full rounded-xl ${activeTheme.chatAssistant} border pl-11 pr-4 py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-2 ${currentFocusStyle} transition-all duration-300 disabled:opacity-50 shadow-inner`}
+                className={`w-full rounded-xl ${activeTheme.chatAssistant} border py-3 pr-4 pl-11 text-sm text-white placeholder-white/30 focus:ring-2 focus:outline-none ${currentFocusStyle} shadow-inner transition-all duration-300 disabled:opacity-50`}
               />
             </div>
             <button
               type="submit"
               disabled={sending || externalLoading || !input.trim()}
-              className={`group rounded-xl ${activeTheme.accentBg} px-5 py-3 text-white font-bold text-sm shadow-md active:scale-95 transition-all duration-300 ${currentSendShadow} disabled:opacity-50 flex items-center gap-2`}
+              className={`group rounded-xl ${activeTheme.accentBg} px-5 py-3 text-sm font-bold text-white shadow-md transition-all duration-300 active:scale-95 ${currentSendShadow} flex items-center gap-2 disabled:opacity-50`}
             >
               {sending || externalLoading ? (
                 <Loader className="h-4 w-4 animate-spin" />
               ) : (
                 <>
                   <span className="hidden sm:inline">Ask AI</span>
-                  <Send className="h-4 w-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+                  <Send className="h-4 w-4 transform transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </>
               )}
             </button>
           </form>
-          <div className={`max-w-3xl mx-auto mt-2 text-center text-xs ${activeTheme.accentText} opacity-60 font-medium`}>
-            Pathfinder AI can make mistakes. Verify important career and learning decisions.
+          <div
+            className={`mx-auto mt-2 max-w-3xl text-center text-xs ${activeTheme.accentText} font-medium opacity-60`}
+          >
+            Pathfinder AI can make mistakes. Verify important career and
+            learning decisions.
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
