@@ -22,12 +22,26 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       )
     }
 
-    const careers = await prisma.career.findMany({
-      take: 10,
-    })
+    const careers = await prisma.career.findMany({ take: 10 })
+
+    const mappedCareers: Career[] = careers.map((c) => ({
+      id: c.id,
+      title: c.title,
+      description: c.description,
+      matchPercentage: c.matchPercentage,
+      category: c.category,
+      salary: {
+        min: c.salaryMin,
+        max: c.salaryMax,
+        currency: c.salaryCurrency,
+      },
+      icon: c.icon ?? undefined,
+      color: c.color ?? undefined,
+      createdAt: c.createdAt,
+    }))
 
     return NextResponse.json(
-      { success: true, data: careers } as ApiResponse<Career[]>,
+      { success: true, data: mappedCareers } as ApiResponse<Career[]>,
       { status: 200 }
     )
   } catch (error) {

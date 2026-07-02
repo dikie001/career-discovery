@@ -70,6 +70,8 @@ export async function signupPrisma(request: SignupRequest): Promise<AuthResponse
       user: {
         ...user,
         password: "",
+        location: user.location ?? undefined,
+        avatar: user.avatar ?? undefined,
       },
       token,
     }
@@ -109,6 +111,8 @@ export async function loginPrisma(request: LoginRequest): Promise<AuthResponse> 
       user: {
         ...user,
         password: "",
+        location: user.location ?? undefined,
+        avatar: user.avatar ?? undefined,
       },
       token,
     }

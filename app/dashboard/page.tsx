@@ -196,7 +196,7 @@ export default function DashboardPage() {
             {/* Header Area with Robot and Text */}
             <div className="flex items-end px-1">
               {/* Robot Image extending behind the search bar */}
-              <div className="relative w-20 h-20 -mb-2 flex-shrink-0 z-0 drop-shadow-lg">
+              <div className="relative w-80 h-120  -mb-2 flex-shrink-0 z-0 drop-shadow-lg">
                 <Image
                   src="/bot.png"
                   alt="Pathfinder AI"
