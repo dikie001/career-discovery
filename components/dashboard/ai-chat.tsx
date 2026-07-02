@@ -568,7 +568,7 @@ export function AiChat({
     if (list.length === 0) return null;
     return (
       <div className="space-y-1.5 mt-4">
-        <p className="text-sm font-bold text-slate-500 uppercase tracking-wider px-2.5 mb-1.5">{title}</p>
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider px-2.5 mb-1.5">{title}</p>
         {list.map((session) => (
           <button
             key={session.id}
@@ -576,7 +576,7 @@ export function AiChat({
               setActiveSessionId(session.id);
               setSidebarOpen(false);
             }}
-            className={`w-full text-left p-2.5 rounded-xl text-sm truncate flex items-center gap-2.5 transition-all ${
+            className={`w-full text-left p-2.5 rounded-xl text-xs truncate flex items-center gap-2.5 transition-all ${
               activeSessionId === session.id
                 ? "bg-slate-800/80 text-white font-semibold shadow-inner border border-slate-700/50"
                 : "text-slate-400 hover:text-slate-100 hover:bg-slate-800/30"

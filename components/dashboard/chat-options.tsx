@@ -66,7 +66,7 @@ export function ChatOptions({
   const hasNextButton = options.some((opt) => opt.label.toLowerCase().includes("next"));
 
   return (
-    <div className={`mt-3 w-full ${hasNextButton ? "flex flex-wrap gap-2.5" : "space-y-2"}`}>
+    <div className={`mt-3 w-full ${hasNextButton ? "flex justify-end gap-2.5" : "space-y-2"}`}>
       {options.map((option) => {
         const isNextButton = option.label.toLowerCase().includes("next");
 
@@ -76,14 +76,14 @@ export function ChatOptions({
               key={option.id}
               onClick={() => onSelect(option.id)}
               disabled={isLoading}
-              className={`px-5 py-2.5 rounded-xl border transition-all flex items-center justify-center gap-2 font-semibold text-sm shadow-md ${
+              className={`group px-6 py-2.5 rounded-xl border transition-all duration-300 flex items-center justify-center gap-2 font-bold text-sm shadow-lg active:scale-95 ${
                 isSelected(option.id)
                   ? currentAccent.selected
-                  : `${currentAccent.button} text-white active:scale-95`
+                  : `${currentAccent.button} text-white animate-pulse hover:animate-none hover:ring-2 hover:ring-offset-2 hover:ring-offset-slate-950`
               } disabled:opacity-50`}
             >
               <span>{option.label}</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1.5 transition-transform duration-300" />
             </button>
           );
         }

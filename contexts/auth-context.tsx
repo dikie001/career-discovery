@@ -19,7 +19,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Load from localStorage on mount
@@ -30,6 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setToken(stored);
       setUser(JSON.parse(storedUser));
     }
+    setIsLoading(false);
   }, []);
 
   const login = useCallback(async (credentials: LoginRequest) => {
