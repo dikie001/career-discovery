@@ -79,7 +79,11 @@ function isLikelyCareerTitle(title: string): boolean {
   )
   if (hasCareerKeyword) return true
 
-  if (/^(salary|growth|timeline|summary|why it matches|why it fits|key skills|gap analysis|course|learning|roadmap|insight|recommendation)s?$/i.test(normalized)) {
+  if (
+    /^(salary|growth|timeline|summary|why it matches|why it fits|key skills|gap analysis|course|learning|roadmap|insight|recommendation)s?$/i.test(
+      normalized
+    )
+  ) {
     return false
   }
 
