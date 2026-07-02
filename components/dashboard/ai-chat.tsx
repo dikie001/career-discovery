@@ -20,6 +20,7 @@ import { ChatOptions, ChatOption } from "./chat-options"
 import { ConsentModal } from "./consent-modal"
 import { ChatStarters } from "./chat-starters"
 import { useAuth } from "@/contexts/auth-context"
+import { extractRecommendationMetadata } from "@/lib/recommendations"
 import Link from "next/link"
 
 interface Message {
