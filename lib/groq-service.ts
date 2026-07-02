@@ -111,7 +111,24 @@ INSTRUCTIONS ON PRESENTING SUGGESTIONS (CRITICAL):
      }
      \`\`\`
    - When the user asks for the next suggestion (e.g., sends "Next Course" or "Next"), check the conversation history to see which courses you already suggested, and suggest the NEXT matching course.
-   - Recommend a maximum of 4 courses. On the 4th (final) course suggestion, do not include the "Next Course" button or ask the user to click it. Instead, conclude the roadmap.`;
+   - Recommend a maximum of 4 courses. On the 4th (final) course suggestion, do not include the "Next Course" button or ask the user to click it. Instead, conclude the roadmap.
+
+  - CRITICAL FOR STORAGE: In addition to the options block, append a separate JSON block (also fenced with \`\`\`json) named `recommendation` that contains a single object with the following fields so the client can unambiguously persist the suggestion. This JSON block MUST appear after any human-readable text and before or after the options block, and must be valid JSON. Example format (whitespace allowed):
+    \`\`\`json
+    {
+      "recommendation": {
+        "title": "Digital Marketing Coordinator",
+        "summary": "Short 1-2 line summary suitable for display",
+        "matchPercentage": 89,
+        "salaryRange": "KSh 120K+ /month",
+        "category": "Career",
+        "order": 1
+      }
+    }
+    \`\`\`
+    - The `summary` field should be concise (1-2 lines). The `order` is the suggestion index (1 for first recommendation, 2 for second, etc.).
+    - THIS JSON BLOCK IS FOR MACHINE CONSUMPTION ONLY. The assistant should still render the human-friendly markdown above it — do NOT display raw JSON in the visible UI. The client will parse this block and use the fields to save to the database in the correct order.
+`;
 
   constructor() {
     this.apiKey = process.env.GROQ_API_KEY || "";
@@ -158,26 +175,8 @@ INSTRUCTIONS ON PRESENTING SUGGESTIONS (CRITICAL):
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
-      });
+        });
 
-        - CRITICAL FOR STORAGE: In addition to the options block, append a separate JSON block (also fenced with \`\`\`json) named \`recommendation\` that contains a single object with the following fields so the client can unambiguously persist the suggestion. This JSON block MUST appear after any human-readable text and before or after the options block, and must be valid JSON. Example format (whitespace allowed):
-          \`\`\`json
-          {
-            "recommendation": {
-              "title": "Digital Marketing Coordinator",
-              "summary": "Short 1-2 line summary suitable for display",
-              "matchPercentage": 89,
-              "salaryRange": "KSh 120K+ /month",
-              "category": "Career",
-              "order": 1
-            }
-          }
-          \`\`\`
-          - The \`summary\` field should be concise (1-2 lines). The \`order\` is the suggestion index (1 for first recommendation, 2 for second, etc.).
-          - THIS JSON BLOCK IS FOR MACHINE CONSUMPTION ONLY. The assistant should still render the human-friendly markdown above it — do NOT display raw JSON in the visible UI. The client will parse this block and use the fields to save to the database in the correct order.
-        throw new Error(
-          `Groq API error: ${response.status} - ${responseText || response.statusText}`
-        );
       }
 
       const data: GroqResponse = JSON.parse(responseText);
