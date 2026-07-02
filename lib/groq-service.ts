@@ -60,7 +60,57 @@ When users ask about specific career paths, provide:
 4. Industry salary ranges (if in Kenya, use KES; otherwise USD)
 5. Companies/industries hiring for this role
 
-IMPORTANT: You have access to the user's profile data (interests, skills, experience level, target role). USE THIS DATA instead of asking redundant questions. Only ask for additional clarification if needed for specificity.`;
+IMPORTANT: You have access to the user's profile data (interests, skills, experience level, target role). USE THIS DATA instead of asking redundant questions. Only ask for additional clarification if needed for specificity.
+
+INSTRUCTIONS ON PRESENTING SUGGESTIONS (CRITICAL):
+1. WHEN SUGGESTING CAREERS (including in the initial greeting, or in response to a request for matches or careers):
+   - You MUST NOT list or suggest multiple careers at once.
+   - Present exactly ONE career suggestion at a time.
+   - For each suggestion, provide:
+     - The career title (e.g., "Software Engineer")
+     - Why it matches the user's profile
+     - Key skills needed and gap analysis
+     - Salary range (KES if Kenya, USD otherwise) and timeline
+     - The first action-oriented step
+   - Ask the user to click the "Next Career" button to see the next suggestion.
+   - Append a JSON options block at the very end of your response to render the "Next" button:
+     \`\`\`json
+     {
+       "options": [
+         {
+           "id": "next_career",
+           "label": "Next Career",
+           "description": "View the next career recommendation"
+         }
+       ]
+     }
+     \`\`\`
+   - When the user asks for the next suggestion (e.g., sends "Next Career" or "Next"), check the conversation history to see which careers you already suggested, and suggest the NEXT matching career path.
+   - Recommend a maximum of 3 careers. On the 3rd (final) career suggestion, do not include the "Next Career" button or ask the user to click it. Instead, conclude the list and ask if they would like to see course/learning path recommendations for any of these.
+
+2. WHEN SUGGESTING COURSES OR LEARNING ROADS (including in response to "Create a personalized learning roadmap" or similar):
+   - You MUST NOT list or suggest multiple courses/milestones at once.
+   - Present exactly ONE course suggestion at a time.
+   - For each course, provide:
+     - Course name and provider/difficulty
+     - How it fills a gap or advances their goal
+     - Duration and estimated timeframe
+     - Key outcomes (what they will build or do)
+   - Ask the user to click the "Next Course" button to see the next suggestion.
+   - Append a JSON options block at the very end of your response to render the "Next" button:
+     \`\`\`json
+     {
+       "options": [
+         {
+           "id": "next_course",
+           "label": "Next Course",
+           "description": "View the next course recommendation"
+         }
+       ]
+     }
+     \`\`\`
+   - When the user asks for the next suggestion (e.g., sends "Next Course" or "Next"), check the conversation history to see which courses you already suggested, and suggest the NEXT matching course.
+   - Recommend a maximum of 4 courses. On the 4th (final) course suggestion, do not include the "Next Course" button or ask the user to click it. Instead, conclude the roadmap.`;
 
   constructor() {
     this.apiKey = process.env.GROQ_API_KEY || "";
@@ -206,8 +256,10 @@ IMPORTANT: Do NOT ask the user questions about their interests, skills, or exper
 
 Greet the user warmly and immediately provide value based on their profile. Do NOT ask for information you already have. Instead:
 1. Acknowledge their interests and skills
-2. Suggest relevant career paths right away
-3. Offer to help with specific next steps
+2. Suggest the FIRST relevant career path matching their profile. Do not list other careers yet.
+3. For this career path, give detail on why it fits, required skills, timeline, salary/growth, and the first step.
+4. Ask the user to click the "Next Career" button to see the next suggestion.
+5. Provide a JSON block at the end with a single option for "Next Career".
 
 Keep it conversational, brief, and action-oriented.`;
 
@@ -219,12 +271,33 @@ Keep it conversational, brief, and action-oriented.`;
       ]);
     }
 
-    // For subsequent messages, use their profile to contextualize responses
+    // Guide the AI model if user clicked "Next Career" or "Next Course" or used specific phrases
+    let userMessageContent = `${userContext}\n\nUser's question: ${question}`;
+
+    const lowerQuestion = question.toLowerCase();
+    if (lowerQuestion === "next career") {
+      userMessageContent += `\n\n(System: The user has clicked "Next Career". Please identify the careers suggested so far from the chat history. Provide the next (second or third) career recommendation from their matches in the exact same format, ask the user to click "Next Career", and include the "Next Career" JSON block. If this is the 3rd career path, it will be the last one, so do not include a "Next Career" option or ask the user to click Next. Instead, conclude and offer to help them with courses/roadmaps.)`;
+    } else if (lowerQuestion === "next course") {
+      userMessageContent += `\n\n(System: The user has clicked "Next Course". Please identify the courses suggested so far from the chat history. Provide the next recommended course in their learning roadmap in the exact same format, ask the user to click "Next Course", and include the "Next Course" JSON block. If this is the 4th course, it is the last one, so do not include a "Next Course" option or ask the user to click Next. Instead, conclude.)`;
+    } else if (
+      lowerQuestion.includes("career match") ||
+      lowerQuestion.includes("top career paths") ||
+      (lowerQuestion.includes("career") && lowerQuestion.includes("recommend"))
+    ) {
+      userMessageContent += `\n\n(System: The user is requesting career suggestions. Suggest ONLY the FIRST career recommendation right now. Do not list multiple careers. Provide details, ask them to click "Next Career" to see more, and append the "Next Career" JSON options block.)`;
+    } else if (
+      lowerQuestion.includes("learning roadmap") ||
+      lowerQuestion.includes("courses to study") ||
+      (lowerQuestion.includes("course") && lowerQuestion.includes("recommend"))
+    ) {
+      userMessageContent += `\n\n(System: The user is requesting course recommendations or a learning roadmap. Suggest ONLY the FIRST course suggestion right now. Do not list multiple courses. Provide details, ask them to click "Next Course" to see the next, and append the "Next Course" JSON options block.)`;
+    }
+
     const messages: GroqMessage[] = [
       ...conversationHistory,
       {
         role: "user",
-        content: `${userContext}\n\nUser's question: ${question}`,
+        content: userMessageContent,
       },
     ];
 
