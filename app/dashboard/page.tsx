@@ -109,6 +109,35 @@ export default function DashboardPage() {
     }
   }, [token])
 
+  const recommendationCards = useMemo(() => {
+    if (recommendations.length > 0) {
+      return recommendations.map((item, index) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description || "Recommended by Pathfinder AI.",
+        salary: item.salaryRange || "Tailored for your profile",
+        matchPercentage: item.matchPercentage || Math.max(78, 90 - index),
+        badge:
+          index === 0
+            ? "Top Match"
+            : index === 1
+              ? "Fresh insight"
+              : "Saved suggestion",
+        badgeColor:
+          index === 0
+            ? "bg-teal-50 text-teal-700"
+            : index === 1
+              ? "bg-indigo-50 text-indigo-700"
+              : "bg-amber-50 text-amber-700",
+        accentColor: index === 0 ? "teal" : index === 1 ? "indigo" : "amber",
+        reason: item.reason || item.description,
+        category: item.category || "Career",
+      }))
+    }
+
+    return []
+  }, [recommendations])
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || sending) return
@@ -162,34 +191,6 @@ export default function DashboardPage() {
     )
   }
 
-  const recommendationCards = useMemo(() => {
-    if (recommendations.length > 0) {
-      return recommendations.map((item, index) => ({
-        id: item.id,
-        title: item.title,
-        description: item.description || "Recommended by Pathfinder AI.",
-        salary: item.salaryRange || "Tailored for your profile",
-        matchPercentage: item.matchPercentage || Math.max(78, 90 - index),
-        badge:
-          index === 0
-            ? "Top Match"
-            : index === 1
-              ? "Fresh insight"
-              : "Saved suggestion",
-        badgeColor:
-          index === 0
-            ? "bg-teal-50 text-teal-700"
-            : index === 1
-              ? "bg-indigo-50 text-indigo-700"
-              : "bg-amber-50 text-amber-700",
-        accentColor: index === 0 ? "teal" : index === 1 ? "indigo" : "amber",
-        reason: item.reason || item.description,
-      }))
-    }
-
-    return []
-  }, [recommendations])
-
   // Fallback data matching user mockups
   const mockupCareers = [
     {
@@ -201,6 +202,8 @@ export default function DashboardPage() {
       badge: "Top Match",
       badgeColor: "bg-teal-150 text-teal-700",
       accentColor: "teal",
+      category: "Career",
+      reason: "A strong match based on your skills and regional demand.",
       illustration: (
         <svg viewBox="0 0 120 90" className="h-24 w-full object-contain">
           <rect
@@ -252,6 +255,8 @@ export default function DashboardPage() {
       badge: "High Growth",
       badgeColor: "bg-indigo-100 text-indigo-700",
       accentColor: "indigo",
+      category: "Career",
+      reason: "Strong demand and transferable skills make this a solid option.",
       illustration: (
         <svg viewBox="0 0 120 90" className="h-24 w-full object-contain">
           <rect
@@ -301,6 +306,8 @@ export default function DashboardPage() {
       badge: "Make Impact",
       badgeColor: "bg-orange-100 text-orange-700",
       accentColor: "orange",
+      category: "Career",
+      reason: "A socially impactful role with approachable training pathways.",
       illustration: (
         <svg viewBox="0 0 120 90" className="h-24 w-full object-contain">
           <rect
@@ -396,6 +403,7 @@ export default function DashboardPage() {
             illustration:
               mockupCareers[idx % mockupCareers.length].illustration,
             reason: c.description,
+            category: c.category || "Career",
           }))
         : mockupCareers
 
