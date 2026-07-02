@@ -76,7 +76,7 @@ export function ChatOptions({
               key={option.id}
               onClick={() => onSelect(option.id)}
               disabled={isLoading}
-              className={`px-5 py-2.5 rounded-xl border transition-all flex items-center justify-center gap-2 font-semibold text-xs shadow-md ${
+              className={`px-5 py-2.5 rounded-xl border transition-all flex items-center justify-center gap-2 font-semibold text-sm shadow-md ${
                 isSelected(option.id)
                   ? currentAccent.selected
                   : `${currentAccent.button} text-white active:scale-95`
@@ -101,9 +101,9 @@ export function ChatOptions({
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1">
-                <p className="font-semibold text-slate-100 text-xs">{option.label}</p>
+                <p className="font-semibold text-slate-100 text-sm">{option.label}</p>
                 {option.description && (
-                  <p className="text-[10px] text-slate-400 mt-1">{option.description}</p>
+                  <p className="text-sm text-slate-400 mt-1">{option.description}</p>
                 )}
               </div>
               {isSelected(option.id) && (

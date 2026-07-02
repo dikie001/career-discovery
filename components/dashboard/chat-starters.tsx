@@ -59,10 +59,10 @@ export function ChatStarters({ onSelect, isLoading = false }: ChatStartersProps)
               {starter.icon}
             </div>
             <div className="space-y-0.5 min-w-0">
-              <span className="block text-xs font-bold text-slate-200 group-hover:text-white transition-colors truncate">
+              <span className="block text-sm font-bold text-slate-200 group-hover:text-white transition-colors truncate">
                 {starter.label}
               </span>
-              <p className="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors line-clamp-1 leading-normal">
+              <p className="text-sm text-slate-500 group-hover:text-slate-400 transition-colors line-clamp-1 leading-normal">
                 {starter.description}
               </p>
             </div>
