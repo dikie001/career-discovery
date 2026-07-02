@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react"
 import Image from "next/image"
 import { useDashboard } from "@/contexts/dashboard-context"
 import { useAuth } from "@/contexts/auth-context"
-import { Bell, Send, Home, MessageSquare, Plus, BookOpen, User, Zap, Map, Heart, TrendingUp, Star, ArrowRight } from "lucide-react"
+import { Bell, Send, Home, MessageSquare, Plus, BookOpen, User, Zap, Map, Heart, TrendingUp, Star, ArrowRight, Sparkles } from "lucide-react"
 import Link from "next/link"
 
 export default function DashboardPage() {
@@ -317,87 +317,89 @@ export default function DashboardPage() {
 
         <main className="px-4 py-4 space-y-4 animate-fadeInUp">
           {/* Welcome Section */}
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-white">Hey, {user?.name?.split(" ")[0] || "User"}! 👋</h2>
-            <p className="text-sm text-slate-400">Build a career that fits you</p>
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h2 className="text-2xl font-black text-white tracking-tight">Hey, {user?.name?.split(" ")[0] || "User"}! 👋</h2>
+              <p className="text-xs text-slate-400 font-semibold tracking-wide uppercase">Build a career that fits you</p>
+            </div>
+            <div className="h-10 w-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-sm font-extrabold text-teal-400 shadow-md">
+              {user?.name ? user.name.charAt(0) : "U"}
+            </div>
           </div>
 
-          {/* Mobile AI Chat */}
-          <Link href="/dashboard/ai-chat" className="group relative rounded-3xl bg-gradient-to-r from-teal-700 to-teal-600 p-5 overflow-hidden hover:shadow-lg transition-all">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-2xl -mr-24 -mt-24" />
+          {/* Mobile AI Chat Card */}
+          <Link href="/dashboard/ai-chat" className="block group relative rounded-3xl bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 border border-slate-800/80 p-5 overflow-hidden hover:shadow-lg transition-all shadow-inner">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-teal-500/20 transition-all" />
 
             {/* Header with Bot Image */}
-            <div className="relative z-10 flex items-start gap-3 mb-4">
-              {/* Bot Image */}
-              <div className="relative flex-shrink-0">
-                <div className="h-16 w-16">
-                  <Image
-                    src="/bot.png"
-                    alt="Pathfinder AI"
-                    fill
-                    className="object-contain drop-shadow-lg"
-                    priority
-                  />
-                </div>
+            <div className="relative z-10 flex items-center gap-4 mb-4">
+              {/* Bot Image Container */}
+              <div className="relative flex-shrink-0 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500/20 to-cyan-500/10 border border-teal-500/30 p-2 shadow-inner">
+                <Image
+                  src="/bot.png"
+                  alt="Pathfinder AI"
+                  width={36}
+                  height={36}
+                  className="object-contain drop-shadow-md"
+                  priority
+                />
               </div>
 
               {/* Title */}
               <div>
-                <h3 className="font-bold text-white text-lg">Ask Pathfinder AI</h3>
-                <p className="text-xs text-teal-50">Your career guide</p>
+                <h3 className="font-extrabold text-white text-base tracking-tight">Ask Pathfinder AI</h3>
+                <p className="text-xs text-slate-400 font-medium">Your interactive career mentor</p>
               </div>
             </div>
 
-            {/* Input Area */}
-            <div className="relative z-10 flex gap-2 mb-3">
-              <input
-                type="text"
-                placeholder="What would you like to explore?"
-                disabled
-                className="flex-1 rounded-full bg-white px-4 py-2.5 text-sm text-gray-600 placeholder-gray-400 cursor-pointer hover:bg-gray-50 transition-all font-medium"
-              />
+            {/* Simulated Input Area */}
+            <div className="relative z-10 flex gap-2.5 mb-4">
+              <div className="flex-1 rounded-xl bg-slate-950/60 border border-slate-800/80 px-4 py-3 text-xs text-slate-400 font-medium flex items-center gap-2">
+                <Sparkles className="h-3.5 w-3.5 text-teal-400 animate-pulse" />
+                <span>What would you like to explore?</span>
+              </div>
               <button
                 disabled
-                className="flex-shrink-0 rounded-full bg-teal-500 p-2.5 text-white transition-all"
+                className="flex-shrink-0 rounded-xl bg-teal-650 p-3 text-white transition-all shadow-md flex items-center justify-center"
               >
-                <Send className="h-4 w-4" />
+                <Send className="h-3.5 w-3.5" />
               </button>
             </div>
 
-            {/* Quick Action Buttons */}
+            {/* Quick Action Pills */}
             <div className="relative z-10 flex gap-2 flex-wrap">
-              <button className="rounded-full border-2 border-teal-200 bg-transparent hover:bg-teal-500/10 px-3 py-1.5 text-xs font-semibold text-white transition-all">
+              <span className="rounded-full bg-slate-950 border border-slate-800/60 px-3.5 py-1.5 text-[10px] font-bold text-slate-300 transition-all flex items-center gap-1">
                 ⚡ Best careers
-              </button>
-              <button className="rounded-full border-2 border-teal-200 bg-transparent hover:bg-teal-500/10 px-3 py-1.5 text-xs font-semibold text-white transition-all">
+              </span>
+              <span className="rounded-full bg-slate-950 border border-slate-800/60 px-3.5 py-1.5 text-[10px] font-bold text-slate-300 transition-all flex items-center gap-1">
                 📊 Skills
-              </button>
-              <button className="rounded-full border-2 border-teal-200 bg-transparent hover:bg-teal-500/10 px-3 py-1.5 text-xs font-semibold text-white transition-all">
+              </span>
+              <span className="rounded-full bg-slate-950 border border-slate-800/60 px-3.5 py-1.5 text-[10px] font-bold text-slate-300 transition-all flex items-center gap-1">
                 📚 Courses
-              </button>
+              </span>
             </div>
           </Link>
 
-          {/* Mobile Progress */}
+          {/* Mobile Progress Tracker */}
           {progress && (
-            <div className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-800/50 to-slate-900/50 p-4 space-y-4 animate-slideInLeft">
-              <h3 className="font-bold text-slate-50 flex items-center gap-2">
+            <div className="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 p-5 space-y-4 animate-slideInLeft shadow-inner">
+              <h3 className="font-extrabold text-slate-100 flex items-center gap-2 text-sm tracking-tight">
                 <TrendingUp className="h-4 w-4 text-teal-400" />
-                Your Progress
+                Your Progress Tracker
               </h3>
 
-              {/* Compact Progress Ring */}
-              <div className="flex justify-center">
-                <div className="relative h-24 w-24">
+              {/* Progress Summary Card */}
+              <div className="flex items-center gap-5 bg-slate-950/40 p-4 rounded-2xl border border-slate-850/60">
+                <div className="relative h-14 w-14 flex-shrink-0">
                   <svg className="h-full w-full transform -rotate-90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(30, 41, 59, 0.6)" strokeWidth="2" />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(30, 41, 59, 0.6)" strokeWidth="4" />
                     <circle
                       cx="50"
                       cy="50"
                       r="40"
                       fill="none"
                       stroke="url(#mobileTealGradient)"
-                      strokeWidth="2"
+                      strokeWidth="4"
                       strokeDasharray={`${(progress.overallProgress / 100) * 251.2} 251.2`}
                       strokeLinecap="round"
                     />
@@ -409,65 +411,94 @@ export default function DashboardPage() {
                     </defs>
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-2xl font-bold text-teal-400">{progress.overallProgress}%</span>
-                    <span className="text-xs text-slate-400">Progress</span>
+                    <span className="text-xs font-black text-slate-50">{progress.overallProgress}%</span>
                   </div>
+                </div>
+                <div className="space-y-0.5">
+                  <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Current Milestone</h4>
+                  <p className="text-xs font-bold text-slate-200 leading-tight">
+                    {progress.stages.find(s => s.status === "in_progress")?.title || "Complete your profile to get started"}
+                  </p>
                 </div>
               </div>
 
-              {/* Stage Pills */}
-              <div className="flex justify-between gap-1">
-                {progress.stages.map((stage) => (
-                  <div key={stage.id} className="flex flex-col items-center gap-1 flex-1">
-                    <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${stage.status === "completed"
-                      ? "bg-gradient-to-r from-teal-600 to-teal-500 text-white"
-                      : stage.status === "in_progress"
-                        ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-white"
-                        : "bg-slate-700 text-slate-400"
-                      }`}>
-                      {stage.status === "completed" ? "✓" : stage.order}
-                    </div>
-                    <span className="text-xs text-slate-400 text-center line-clamp-2">{stage.title}</span>
-                  </div>
-                ))}
+              {/* Horizontal Scrollable Stages track */}
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block px-1">Roadmap Stages</span>
+                <div className="flex gap-3 overflow-x-auto pb-2 pt-1 px-1 -mx-1 scroll-smooth snap-x snap-mandatory custom-scrollbar">
+                  {progress.stages.map((stage) => {
+                    const isActive = stage.status === "in_progress";
+                    const isDone = stage.status === "completed";
+                    return (
+                      <div
+                        key={stage.id}
+                        className={`flex flex-col items-center gap-2.5 flex-shrink-0 w-28 snap-start p-3.5 rounded-2xl border transition-all duration-300 ${
+                          isActive
+                            ? "bg-slate-800/60 border-amber-500/30 shadow-md shadow-amber-500/5 ring-1 ring-amber-500/20"
+                            : isDone
+                              ? "bg-slate-900/40 border-teal-500/20"
+                              : "bg-slate-900/10 border-slate-850"
+                        }`}
+                      >
+                        <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-black shadow-md transition-all ${
+                          isDone
+                            ? "bg-gradient-to-br from-teal-500 to-cyan-500 text-white"
+                            : isActive
+                              ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white animate-pulse"
+                              : "bg-slate-850 text-slate-500 border border-slate-700/50"
+                        }`}>
+                          {isDone ? "✓" : stage.order}
+                        </div>
+                        <div className="text-center w-full">
+                          <span className={`block text-[9px] font-extrabold truncate uppercase tracking-wider ${
+                            isDone ? "text-teal-400" : isActive ? "text-amber-400" : "text-slate-500"
+                          }`}>
+                            {stage.status.replace("_", " ")}
+                          </span>
+                          <span className="block text-[10px] font-bold text-slate-200 mt-0.5 truncate leading-tight w-full">{stage.title}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           )}
 
           {/* Mobile Careers */}
           {careers.length > 0 && (
-            <div className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-800/50 to-slate-900/50 p-4 space-y-3 animate-slideInLeft">
+            <div className="rounded-3xl border border-slate-850 bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 p-5 space-y-4 animate-slideInLeft shadow-inner">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-slate-50 flex items-center gap-2">
+                <h3 className="font-extrabold text-slate-100 flex items-center gap-2 text-sm tracking-tight">
                   <Star className="h-4 w-4 text-teal-400" />
-                  Recommended
+                  Recommended Paths
                 </h3>
-                <Link href="#" className="text-xs text-teal-400">See all</Link>
+                <Link href="#" className="text-xs text-teal-400 hover:text-teal-300 font-bold transition-colors">See all</Link>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {careers.slice(0, 3).map((career) => (
                   <div
                     key={career.id}
-                    className="rounded-xl border border-slate-700 bg-slate-700/20 p-3 space-y-2 hover:bg-slate-700/40 transition-colors"
+                    className="rounded-2xl border border-slate-800 bg-slate-950/40 p-4 space-y-3 hover:bg-slate-900/30 transition-all duration-300 cursor-pointer"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-slate-50 text-sm">{career.title}</h4>
-                        <p className="text-xs text-slate-400 line-clamp-1 mt-1">{career.description}</p>
+                        <h4 className="font-bold text-slate-50 text-xs truncate">{career.title}</h4>
+                        <p className="text-[10px] text-slate-400 line-clamp-1 mt-0.5 leading-relaxed">{career.description}</p>
                       </div>
-                      <button className="text-slate-400 hover:text-red-400 flex-shrink-0">
+                      <button className="text-slate-500 hover:text-red-400 transition-colors flex-shrink-0">
                         ♡
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-slate-700 rounded-full h-1.5 overflow-hidden">
+                      <div className="flex-1 bg-slate-800 rounded-full h-1.5 overflow-hidden">
                         <div
                           className="bg-gradient-to-r from-teal-500 to-cyan-400 h-full rounded-full"
                           style={{ width: `${career.matchPercentage}%` }}
                         />
                       </div>
-                      <span className="text-xs font-bold text-teal-400 whitespace-nowrap">{career.matchPercentage}%</span>
+                      <span className="text-[10px] font-extrabold text-teal-400 whitespace-nowrap">{career.matchPercentage}%</span>
                     </div>
                   </div>
                 ))}
@@ -476,13 +507,13 @@ export default function DashboardPage() {
           )}
 
           {/* Mobile CTA */}
-          <div className="group relative rounded-2xl bg-gradient-to-br from-teal-600 to-cyan-600 p-4 space-y-3 overflow-hidden animate-slideInLeft">
+          <div className="group relative rounded-3xl bg-gradient-to-br from-teal-650 to-cyan-600 p-5 space-y-4 overflow-hidden animate-slideInLeft shadow-lg">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16" />
             <div className="relative z-10">
-              <h3 className="font-bold text-white">Keep going! 🚀</h3>
-              <p className="text-sm text-white/90 mt-1">You're {progress?.overallProgress || 0}% closer to your goal.</p>
+              <h3 className="font-black text-white text-base tracking-tight">Keep going! 🚀</h3>
+              <p className="text-xs text-white/95 mt-1 leading-relaxed">You're {progress?.overallProgress || 0}% closer to your career goals.</p>
             </div>
-            <button className="relative z-10 w-full rounded-lg bg-white text-teal-600 py-2.5 text-sm font-bold hover:bg-slate-100 transition-all">
+            <button className="relative z-10 w-full rounded-xl bg-white text-teal-600 py-3 text-xs font-extrabold hover:bg-slate-50 active:scale-[0.98] transition-all shadow-md">
               Continue Roadmap
             </button>
           </div>
