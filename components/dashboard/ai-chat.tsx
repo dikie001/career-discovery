@@ -534,6 +534,56 @@ export function AiChat({
     }
   };
 
+  // ── Career extraction & persistence ────────────────────────────────────────
+  const saveRecommendations = async (text: string) => {
+    if (!token) return;
+
+    // Match **Career Title** patterns (bold markdown) followed by optional context
+    const boldPattern = /\*\*([A-Z][^*\n]{2,40})\*\*/g;
+    const found = new Set<string>();
+    let m;
+    while ((m = boldPattern.exec(text)) !== null) {
+      const t = m[1].trim();
+      // Basic heuristic: skip generic words that aren't career titles
+      if (t.length > 3 && !/^(note|tip|important|warning|example|result|step|here|this|the|and|for|you|your)$/i.test(t)) {
+        found.add(t);
+      }
+    }
+
+    // Also match numbered list career titles: "1. Data Analyst"
+    const listPattern = /^\d+\.\s+([A-Z][a-zA-Z\s&/-]{3,40})$/gm;
+    while ((m = listPattern.exec(text)) !== null) {
+      found.add(m[1].trim());
+    }
+
+    if (found.size === 0) return;
+
+    // Extract a salary range if present near the career name
+    const salaryMatch = text.match(/[Kk][Ss][Hh]\s*[\d,]+[Kk]?\s*[-–]?\s*[\d,]*[Kk]?/);
+    const salaryRange = salaryMatch ? salaryMatch[0] : "";
+
+    // Extract a match percentage if present
+    const matchMatch = text.match(/(\d{1,3})%\s*match/i);
+    const matchPct = matchMatch ? parseInt(matchMatch[1]) : 0;
+
+    // Fire-and-forget: save each detected career
+    for (const title of Array.from(found).slice(0, 5)) {
+      fetch("/api/recommendations", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          description: `Recommended by Pathfinder AI based on your profile and career goals.`,
+          category: "AI Recommendation",
+          matchPercentage: matchPct,
+          salaryRange,
+          reason: text.slice(0, 300).replace(/\*\*/g, ""),
+        }),
+      }).catch(() => { /* silent — don't interrupt chat */ });
+    }
+  };
+  // ────────────────────────────────────────────────────────────────────────────
+
   const handleStarterSelect = async (prompt: string) => {
     if (messages.length === 0 && userConsent === false) {
       setShowConsentModal(true);
@@ -613,6 +663,9 @@ export function AiChat({
 
       setMessages((prev) => [...prev, assistantMessage]);
       setSending(false);
+
+      // Silently extract and persist any career recommendations mentioned
+      saveRecommendations(assistantMessage.content);
     } catch (error) {
       console.error("Failed to send message:", error);
 

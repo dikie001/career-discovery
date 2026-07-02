@@ -25,6 +25,7 @@ model User {
   favorites         Favorite[]
   progress          CareerProgress?
   consent           UserConsent?
+  recommendations   AIRecommendation[]
 }
 
 model UserProfile {
@@ -120,4 +121,17 @@ model UserConsent {
   useProfileDataForAI Boolean @default(false)
   consentedAt       DateTime?
   updatedAt         DateTime @updatedAt
+}
+
+model AIRecommendation {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title           String
+  description     String   @db.Text
+  category        String   @default("General")
+  matchPercentage Int      @default(0)
+  salaryRange     String   @default("")
+  reason          String   @db.Text @default("")
+  createdAt       DateTime @default(now())
 }

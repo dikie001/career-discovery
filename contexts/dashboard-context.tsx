@@ -50,7 +50,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 
       const [profileRes, careersRes, coursesRes, progressRes, consentRes] = await Promise.all([
         fetch("/api/user/profile", { headers }),
-        fetch("/api/careers", { headers }),
+        fetch("/api/recommendations", { headers }),
         fetch("/api/courses", { headers }),
         fetch("/api/user/progress", { headers }),
         fetch("/api/user/consent", { headers }),
