@@ -4,6 +4,49 @@ import { groqService } from "@/lib/groq-service"
 import { ApiResponse } from "@/lib/types"
 import { NextRequest, NextResponse } from "next/server"
 
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  try {
+    const authHeader = request.headers.get("authorization")
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" } as ApiResponse<null>,
+        { status: 401 }
+      )
+    }
+
+    const token = authHeader.substring(7)
+    const userId = verifyToken(token)
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "Invalid token" } as ApiResponse<null>,
+        { status: 401 }
+      )
+    }
+
+    const messages = await prisma.chatMessage.findMany({
+      where: { userId },
+      orderBy: { timestamp: "asc" },
+    })
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: messages,
+      } as ApiResponse<typeof messages>,
+      { status: 200 }
+    )
+  } catch (error) {
+    console.error("Fetch chat history error:", error)
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to fetch chat history",
+      } as ApiResponse<null>,
+      { status: 500 }
+    )
+  }
+}
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const authHeader = request.headers.get("authorization")
@@ -24,7 +67,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const body = await request.json()
-    const { message } = body
+    const { message, personality } = body
 
     if (!message || typeof message !== "string") {
       return NextResponse.json(
@@ -59,16 +102,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         content: msg.content,
       }))
 
-    // Get AI response with full conversation context
+    // Get AI response with full conversation context and chosen personality
     const aiResponse = await groqService.answerCareerQuestion(
       {
         interests: profile.interests,
         skills: profile.skills,
         experienceLevel: profile.experienceLevel,
-        targetRole: profile.targetRole,
+        targetRole: profile.targetRole || undefined,
       },
       message,
-      conversationHistory
+      conversationHistory,
+      personality || "mentor"
     )
 
     // Save messages

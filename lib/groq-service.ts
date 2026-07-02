@@ -119,18 +119,28 @@ INSTRUCTIONS ON PRESENTING SUGGESTIONS (CRITICAL):
     }
   }
 
-  async chat(messages: GroqMessage[]): Promise<string> {
+  async chat(messages: GroqMessage[], personality: string = "mentor"): Promise<string> {
     try {
       if (!this.apiKey) {
         throw new Error("GROQ_API_KEY is not configured");
       }
+
+      const personalityPrompts: Record<string, string> = {
+        mentor: `YOUR PERSONALITY: Expert Mentor (Default). You are professional, structured, data-driven, balanced, and encouraging. Focus on providing detailed, well-founded career advice, structured roadmaps, and career growth trajectories.`,
+        coach: `YOUR PERSONALITY: Warm Career Coach. You are highly empathetic, conversational, warm, and friendly. Focus on user motivation, soft skills, confidence building, and work-life balance. Use a warmer tone, encouraging words, and helpful emojis.`,
+        analyst: `YOUR PERSONALITY: Direct Analyst. You are straight-to-the-point, highly analytical, objective, and data-focused. Skip long introductions and pleasantries. Focus heavily on market demand statistics, salary numbers, concrete skill gaps, and ROI of career moves.`,
+        pivot: `YOUR PERSONALITY: Creative Career Pivoter. You are creative, out-of-the-box, and focused on transition. Specialize in identifying transferable skills, alternative/non-linear paths, and creative routes to break into new industries. Encouraging and strategic about pivoting.`
+      };
+
+      const selectedPersonalityPrompt = personalityPrompts[personality.toLowerCase()] || personalityPrompts.mentor;
+      const fullSystemPrompt = `${this.systemPrompt}\n\n${selectedPersonalityPrompt}`;
 
       const payload = {
         model: this.model,
         messages: [
           {
             role: "system" as const,
-            content: this.systemPrompt,
+            content: fullSystemPrompt,
           },
           ...messages,
         ],
@@ -239,7 +249,8 @@ Arrange in learning order - easy fundamentals first, then progressively more adv
       targetRole?: string;
     },
     question: string,
-    conversationHistory: GroqMessage[] = []
+    conversationHistory: GroqMessage[] = [],
+    personality: string = "mentor"
   ): Promise<string> {
     // Build user context from their profile
     const userContext = `User Profile (from signup):
@@ -268,7 +279,7 @@ Keep it conversational, brief, and action-oriented.`;
           role: "user",
           content: initialMessage,
         },
-      ]);
+      ], personality);
     }
 
     // Guide the AI model if user clicked "Next Career" or "Next Course" or used specific phrases
@@ -301,7 +312,7 @@ Keep it conversational, brief, and action-oriented.`;
       },
     ];
 
-    return this.chat(messages);
+    return this.chat(messages, personality);
   }
 
   async generateSkillGaps(

@@ -23,7 +23,7 @@ interface DashboardContextType {
   error: string | null;
   loadData: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
-  sendChatMessage: (message: string) => Promise<string>;
+  sendChatMessage: (message: string, personality?: string) => Promise<string>;
   updateConsent: (useProfileDataForAI: boolean) => Promise<void>;
 }
 
@@ -139,7 +139,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   );
 
   const sendChatMessage = useCallback(
-    async (message: string): Promise<string> => {
+    async (message: string, personality?: string): Promise<string> => {
       if (!token) throw new Error("Not authenticated");
 
       const response = await fetch("/api/ai/chat", {
@@ -148,7 +148,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, personality }),
       });
 
       if (!response.ok) {
