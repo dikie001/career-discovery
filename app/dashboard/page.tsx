@@ -189,55 +189,52 @@ export default function DashboardPage() {
         </div>
 
         {/* ASK PATHFINDER AI GRADIENT CARD */}
-        <Link href="/dashboard/ai-chat" className="block group relative rounded-3xl bg-gradient-to-r from-[#0F766E] to-[#044E44] p-5 overflow-hidden hover:shadow-xl transition-all duration-300 shadow-sm">
+        <Link href="/dashboard/ai-chat" className="block group relative rounded-3xl bg-gradient-to-r from-[#0F766E] to-[#044E44] px-5 pt-5 pb-4 overflow-hidden hover:shadow-xl transition-all duration-300 shadow-sm min-h-[160px]">
           <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16" />
-          
-          <div className="relative z-10 flex flex-col pt-1">
-            {/* Header Area with Robot and Text */}
-            <div className="flex items-end px-1">
-              {/* Robot Image extending behind the search bar */}
-              <div className="relative w-80 h-120  -mb-2 flex-shrink-0 z-0 drop-shadow-lg">
-                <Image
-                  src="/bot.png"
-                  alt="Pathfinder AI"
-                  fill
-                  className="object-contain"
-                  priority
-                />
-              </div>
 
-              {/* Text Content */}
-              <div className="pb-4 ml-2 z-10">
-                <h3 className="font-bold text-white text-[15px] tracking-tight leading-tight">Ask Pathfinder AI</h3>
-                <p className="text-[11px] text-teal-100 font-medium mt-0.5">Your personal career guide</p>
-              </div>
+          {/* Robot — absolute, bottom-left, behind everything */}
+          <div className="absolute top-2 left-[-26] w-40 h-32 z-0 drop-shadow-xl">
+            <Image
+              src="/bot.png"
+              alt="Pathfinder AI"
+              fill
+              className="object-contain object-bottom"
+              priority
+            />
+          </div>
+
+          {/* Content — z-10 so it floats on top of robot */}
+          <div className="relative z-10 flex flex-col gap-3">
+            {/* Title — left padding clears the robot width */}
+            <div className="pl-24">
+              <h3 className="font-bold text-white text-[15px] tracking-tight leading-tight">Ask Pathfinder AI</h3>
+              <p className="text-[11px] text-teal-100 font-medium mt-0.5">Your personal career guide</p>
             </div>
 
-            {/* Search bar overlay */}
-            <div className="relative z-20 w-full rounded-full bg-white pl-5 pr-1.5 py-1.5 flex items-center justify-between shadow-md">
+            {/* Search bar — full width, sits on top of robot lower body */}
+            <div className="w-full rounded-full bg-white pl-5 pr-1.5 py-1.5 flex items-center justify-between shadow-md">
               <span className="text-[13px] text-slate-400 font-medium truncate pr-4">What would you like to explore today?</span>
-              <button
-                disabled
-                className="flex-shrink-0 h-9 w-9 rounded-full bg-[#059669] text-white flex items-center justify-center shadow-sm"
-              >
+              <button disabled className="flex-shrink-0 h-9 w-9 rounded-full bg-[#059669] text-white flex items-center justify-center shadow-sm">
                 <Send className="h-4 w-4 fill-white -ml-0.5" />
               </button>
             </div>
 
-            {/* Quick pill options */}
-            <div className="relative z-20 flex gap-2 flex-wrap mt-4 px-1">
-              <span className="rounded-full bg-white/5 border border-white/20 px-3 py-1.5 text-[9px] sm:text-[10px] font-medium text-white transition-all flex items-center gap-1.5">
-                <Sparkles className="h-3 w-3 text-white" /> Best careers for me
+            {/* Pills — full width, also on top of robot */}
+            <div className="flex gap-2 flex-wrap">
+              <span className="rounded-full bg-white/10 border border-white/20 px-3 py-1.5 text-[10px] font-medium text-white flex items-center gap-1.5">
+                <Sparkles className="h-3 w-3" /> Best careers for me
               </span>
-              <span className="rounded-full bg-white/5 border border-white/20 px-3 py-1.5 text-[9px] sm:text-[10px] font-medium text-white transition-all flex items-center gap-1.5">
-                <BarChart2 className="h-3 w-3 text-white" /> Skills I need
+              <span className="rounded-full bg-white/10 border border-white/20 px-3 py-1.5 text-[10px] font-medium text-white flex items-center gap-1.5">
+                <BarChart2 className="h-3 w-3" /> Skills I need
               </span>
-              <span className="rounded-full bg-white/5 border border-white/20 px-3 py-1.5 text-[9px] sm:text-[10px] font-medium text-white transition-all flex items-center gap-1.5">
-                <BookOpen className="h-3 w-3 text-white" /> Courses to study
+              <span className="rounded-full bg-white/10 border border-white/20 px-3 py-1.5 text-[10px] font-medium text-white flex items-center gap-1.5">
+                <BookOpen className="h-3 w-3" /> Courses to study
               </span>
             </div>
           </div>
         </Link>
+
+
 
         {/* YOUR CAREER PROGRESS CARD */}
         <div className="rounded-3xl border border-slate-100 bg-white p-5 space-y-5 shadow-sm">
