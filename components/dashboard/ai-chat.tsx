@@ -268,7 +268,7 @@ export function AiChat({
   // Current session selection state
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [loadingHistory, setLoadingHistory] = useState(true);
-  
+
   const [rateLimitCountdown, setRateLimitCountdown] = useState<number | null>(null);
   const [queuedMessage, setQueuedMessage] = useState<{ text: string; override?: string } | null>(null);
 
@@ -615,15 +615,15 @@ export function AiChat({
       setSending(false);
     } catch (error) {
       console.error("Failed to send message:", error);
-      
+
       const errorMsg = error instanceof Error ? error.message : "";
       const isRateLimit = errorMsg.includes("429") || errorMsg.includes("rate_limit");
-      
+
       if (isRateLimit) {
         // Extract wait duration
         const match = errorMsg.match(/try again in ([0-9.]+)\s*s/i) || errorMsg.match(/try again in ([0-9.]+)\s*seconds/i);
         const retrySec = match ? parseFloat(match[1]) : 10;
-        
+
         setRateLimitCountdown(retrySec);
         setQueuedMessage({ text: messageText, override: messageOverride });
       } else {
@@ -656,11 +656,10 @@ export function AiChat({
               setActiveSessionId(session.id);
               setSidebarOpen(false);
             }}
-            className={`w-full text-left p-2.5 rounded-xl text-xs truncate flex items-center gap-2.5 transition-all ${
-              activeSessionId === session.id
+            className={`w-full text-left p-2.5 rounded-xl text-xs truncate flex items-center gap-2.5 transition-all ${activeSessionId === session.id
                 ? "bg-slate-800/80 text-white font-semibold shadow-inner border border-slate-700/50"
                 : "text-slate-400 hover:text-slate-100 hover:bg-slate-800/30"
-            }`}
+              }`}
           >
             <MessageSquare className={`h-3.5 w-3.5 flex-shrink-0 ${activeSessionId === session.id ? activeTheme.accentText : "text-slate-500"}`} />
             <span className="truncate">{session.title}</span>
@@ -681,9 +680,8 @@ export function AiChat({
 
       {/* SIDEBAR - Desktop / Mobile Drawer */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col ${activeTheme.sidebar} border-r transition-transform duration-300 lg:static lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col ${activeTheme.sidebar} border-r transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         {/* Sidebar Header */}
         <div className="p-4 border-b border-slate-800/50 flex items-center justify-between">
@@ -693,7 +691,7 @@ export function AiChat({
             </div>
             <div>
               <span className="font-bold text-sm tracking-tight text-slate-100">Pathfinder AI</span>
-              <span className="block text-xs text-slate-400 font-medium">Enterprise Assistant</span>
+              <span className="block text-xs text-slate-400 font-medium">Career advisor</span>
             </div>
           </div>
           <button
@@ -724,9 +722,8 @@ export function AiChat({
                   key={theme.id}
                   onClick={() => handleThemeChange(theme.id)}
                   title={theme.name}
-                  className={`h-7 w-7 rounded-full border-2 transition-all flex items-center justify-center ${
-                    themeId === theme.id ? "border-slate-100 scale-110 shadow-md" : "border-slate-800 hover:border-slate-600"
-                  }`}
+                  className={`h-7 w-7 rounded-full border-2 transition-all flex items-center justify-center ${themeId === theme.id ? "border-slate-100 scale-110 shadow-md" : "border-slate-800 hover:border-slate-600"
+                    }`}
                 >
                   <span className={`h-5 w-5 rounded-full ${theme.colorPreview}`} />
                 </button>
@@ -745,11 +742,10 @@ export function AiChat({
                   key={pers.id}
                   onClick={() => handlePersonalityChange(pers.id)}
                   title={pers.description}
-                  className={`p-2.5 rounded-xl border text-left transition-all relative flex flex-col justify-between h-20 shadow-sm ${
-                    personality === pers.id
+                  className={`p-2.5 rounded-xl border text-left transition-all relative flex flex-col justify-between h-20 shadow-sm ${personality === pers.id
                       ? `border-${activeTheme.accent}-500 bg-slate-800/80 ring-1 ring-${activeTheme.accent}-500/20`
                       : "border-slate-800 bg-slate-800/20 hover:border-slate-700 hover:bg-slate-800/40"
-                  }`}
+                    }`}
                 >
                   <div className={`p-1.5 rounded-lg w-fit ${pers.color} text-white shadow-sm`}>
                     {pers.icon}
@@ -840,19 +836,9 @@ export function AiChat({
               </div>
             ) : activeMessages.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-12 px-4 animate-fadeIn">
-                <div className="mb-6 relative">
-                  <div className={`absolute inset-0 rounded-full ${activeTheme.chatUser} opacity-10 blur-xl scale-125`} />
-                  <div className={`relative flex h-14 w-14 items-center justify-center rounded-2xl ${activeTheme.chatUser} shadow-md text-white`}>
-                    <Sparkles className="h-7 w-7" />
-                  </div>
-                </div>
+          
 
-                <h2 className="text-lg font-bold text-slate-100 tracking-tight">
-                  Pathfinder Suggestion Console
-                </h2>
-                <p className="text-slate-400 text-sm max-w-sm mx-auto mt-2 leading-relaxed font-medium">
-                  Welcome to your personalized career matching interface. Choose a topic below or type your inquiry to get started.
-                </p>
+          <h1 className="text-center font-bold text-xl">PathFinder Ai</h1>   
 
                 {/* Chat Starters - Three compact cards */}
                 <div className="w-full pt-6">
@@ -877,7 +863,7 @@ export function AiChat({
                   <div className={`flex items-end gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                     {/* Assistant Bot Avatar */}
                     {message.role === "assistant" && (
-                      <div className="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 border border-slate-800/80 shadow-md">
+                      <div className={`flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-xl ${activeTheme.chatAssistant} shadow-md border`}>
                         <div className={`p-1.5 rounded-lg ${activePersonality.color} text-white`}>
                           {activePersonality.icon}
                         </div>
@@ -885,11 +871,10 @@ export function AiChat({
                     )}
 
                     <div
-                      className={`max-w-xl md:max-w-2xl shadow-sm rounded-2xl transition-all duration-300 w-fit ${
-                        message.role === "user"
+                      className={`max-w-xl md:max-w-2xl shadow-sm rounded-2xl transition-all duration-300 w-fit ${message.role === "user"
                           ? `rounded-tr-none ${activeTheme.chatUser} px-4 py-2.5 text-white text-sm font-medium`
                           : `rounded-tl-none ${activeTheme.chatAssistant} px-4 py-2.5 text-sm text-slate-200 border`
-                      }`}
+                        }`}
                     >
                       {message.role === "assistant" ? (
                         <div className="prose prose-invert prose-sm max-w-none text-slate-200 leading-relaxed">
@@ -902,7 +887,7 @@ export function AiChat({
 
                     {/* User Avatar */}
                     {message.role === "user" && (
-                      <div className="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 border border-slate-800/80 shadow-md text-slate-300 font-extrabold text-sm uppercase">
+                      <div className={`flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-full ${activeTheme.chatUser} shadow-md text-white font-extrabold text-sm uppercase`}>
                         {user?.name ? user.name.charAt(0) : "U"}
                       </div>
                     )}
@@ -932,7 +917,7 @@ export function AiChat({
 
             {sending && rateLimitCountdown === null && (
               <div className="flex justify-start animate-fadeIn pl-11">
-                <div className="flex gap-1.5 px-3.5 py-2.5 bg-slate-900/60 border border-slate-800/80 rounded-xl">
+                <div className={`flex gap-1.5 px-3.5 py-2.5 ${activeTheme.chatAssistant} border rounded-xl`}>
                   {[0, 1, 2].map((i) => (
                     <div
                       key={i}
@@ -961,10 +946,10 @@ export function AiChat({
         </div>
 
         {/* Input Area */}
-        <div className="border-t border-slate-800/80 bg-slate-950 px-4 py-4 sm:px-6">
+        <div className={`border-t ${activeTheme.accentBorder} ${activeTheme.header} px-4 py-4 sm:px-6`}>
           <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto flex gap-3">
             <div className="relative flex-1 flex items-center group">
-              <div className={`absolute left-4 text-slate-400 group-focus-within:text-${activeTheme.accent}-400 transition-colors pointer-events-none`}>
+              <div className={`absolute left-4 ${activeTheme.accentText} transition-colors pointer-events-none`}>
                 <Sparkles className="h-4 w-4 animate-pulse" />
               </div>
               <input
@@ -973,7 +958,7 @@ export function AiChat({
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={`Query Pathfinder as a ${activePersonality.name}...`}
                 disabled={sending || externalLoading}
-                className={`w-full rounded-xl bg-slate-900/40 border border-slate-800/80 pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:bg-slate-900/60 focus:outline-none focus:ring-2 ${currentFocusStyle} transition-all duration-300 disabled:opacity-50 shadow-inner`}
+                className={`w-full rounded-xl ${activeTheme.chatAssistant} border pl-11 pr-4 py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-2 ${currentFocusStyle} transition-all duration-300 disabled:opacity-50 shadow-inner`}
               />
             </div>
             <button
@@ -991,7 +976,7 @@ export function AiChat({
               )}
             </button>
           </form>
-          <div className="max-w-3xl mx-auto mt-2 text-center text-xs text-slate-500 font-medium">
+          <div className={`max-w-3xl mx-auto mt-2 text-center text-xs ${activeTheme.accentText} opacity-60 font-medium`}>
             Pathfinder AI can make mistakes. Verify important career and learning decisions.
           </div>
         </div>
