@@ -1,24 +1,24 @@
-import { Career, Course } from "./types";
+import { Career, Course } from "./types"
 
 interface GroqMessage {
-  role: "user" | "assistant";
-  content: string;
+  role: "user" | "assistant"
+  content: string
 }
 
 interface GroqResponseChoice {
   message: {
-    content: string;
-  };
+    content: string
+  }
 }
 
 interface GroqResponse {
-  choices: GroqResponseChoice[];
+  choices: GroqResponseChoice[]
 }
 
 class GroqService {
-  private apiKey: string;
-  private baseURL: string = "https://api.groq.com/openai/v1";
-  private model: string = "openai/gpt-oss-20b";
+  private apiKey: string
+  private baseURL: string = "https://api.groq.com/openai/v1"
+  private model: string = "openai/gpt-oss-20b"
 
   private systemPrompt = `You are Pathfinder AI, an expert career guidance and mentoring assistant. Your role is to help users discover suitable careers, develop skills, and create actionable learning paths.
 
@@ -113,7 +113,7 @@ INSTRUCTIONS ON PRESENTING SUGGESTIONS (CRITICAL):
    - When the user asks for the next suggestion (e.g., sends "Next Course" or "Next"), check the conversation history to see which courses you already suggested, and suggest the NEXT matching course.
    - Recommend a maximum of 4 courses. On the 4th (final) course suggestion, do not include the "Next Course" button or ask the user to click it. Instead, conclude the roadmap.
 
-  - CRITICAL FOR STORAGE: In addition to the options block, append a separate JSON block (also fenced with \`\`\`json) named `recommendation` that contains a single object with the following fields so the client can unambiguously persist the suggestion. This JSON block MUST appear after any human-readable text and before or after the options block, and must be valid JSON. Example format (whitespace allowed):
+  - CRITICAL FOR STORAGE: In addition to the options block, include a separate JSON block (fenced as triple backticks with the language 'json') labelled 'recommendation' containing a single object with these fields so the client can unambiguously persist the suggestion. This JSON block MUST appear after the human-readable text (it may appear before or after the options block) and must be valid JSON. Example format (whitespace allowed):
     \`\`\`json
     {
       "recommendation": {
@@ -126,32 +126,37 @@ INSTRUCTIONS ON PRESENTING SUGGESTIONS (CRITICAL):
       }
     }
     \`\`\`
-    - The `summary` field should be concise (1-2 lines). The `order` is the suggestion index (1 for first recommendation, 2 for second, etc.).
+    - The summary field should be concise (1-2 lines). The order is the suggestion index (1 for first recommendation, 2 for second, etc.).
     - THIS JSON BLOCK IS FOR MACHINE CONSUMPTION ONLY. The assistant should still render the human-friendly markdown above it — do NOT display raw JSON in the visible UI. The client will parse this block and use the fields to save to the database in the correct order.
-`;
+`
 
   constructor() {
-    this.apiKey = process.env.GROQ_API_KEY || "";
+    this.apiKey = process.env.GROQ_API_KEY || ""
     if (!this.apiKey) {
-      console.warn("GROQ_API_KEY not set in environment variables");
+      console.warn("GROQ_API_KEY not set in environment variables")
     }
   }
 
-  async chat(messages: GroqMessage[], personality: string = "mentor"): Promise<string> {
+  async chat(
+    messages: GroqMessage[],
+    personality: string = "mentor"
+  ): Promise<string> {
     try {
       if (!this.apiKey) {
-        throw new Error("GROQ_API_KEY is not configured");
+        throw new Error("GROQ_API_KEY is not configured")
       }
 
       const personalityPrompts: Record<string, string> = {
         mentor: `YOUR PERSONALITY: Expert Mentor (Default). You are professional, structured, data-driven, balanced, and encouraging. Focus on providing detailed, well-founded career advice, structured roadmaps, and career growth trajectories.`,
         coach: `YOUR PERSONALITY: Warm Career Coach. You are highly empathetic, conversational, warm, and friendly. Focus on user motivation, soft skills, confidence building, and work-life balance. Use a warmer tone, encouraging words, and helpful emojis.`,
         analyst: `YOUR PERSONALITY: Direct Analyst. You are straight-to-the-point, highly analytical, objective, and data-focused. Skip long introductions and pleasantries. Focus heavily on market demand statistics, salary numbers, concrete skill gaps, and ROI of career moves.`,
-        pivot: `YOUR PERSONALITY: Creative Career Pivoter. You are creative, out-of-the-box, and focused on transition. Specialize in identifying transferable skills, alternative/non-linear paths, and creative routes to break into new industries. Encouraging and strategic about pivoting.`
-      };
+        pivot: `YOUR PERSONALITY: Creative Career Pivoter. You are creative, out-of-the-box, and focused on transition. Specialize in identifying transferable skills, alternative/non-linear paths, and creative routes to break into new industries. Encouraging and strategic about pivoting.`,
+      }
 
-      const selectedPersonalityPrompt = personalityPrompts[personality.toLowerCase()] || personalityPrompts.mentor;
-      const fullSystemPrompt = `${this.systemPrompt}\n\n${selectedPersonalityPrompt}`;
+      const selectedPersonalityPrompt =
+        personalityPrompts[personality.toLowerCase()] ||
+        personalityPrompts.mentor
+      const fullSystemPrompt = `${this.systemPrompt}\n\n${selectedPersonalityPrompt}`
 
       const payload = {
         model: this.model,
@@ -164,9 +169,9 @@ INSTRUCTIONS ON PRESENTING SUGGESTIONS (CRITICAL):
         ],
         temperature: 0.7,
         max_tokens: 1024,
-      };
+      }
 
-      console.log("Sending request to Groq API with model:", this.model);
+      console.log("Sending request to Groq API with model:", this.model)
 
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: "POST",
@@ -175,24 +180,32 @@ INSTRUCTIONS ON PRESENTING SUGGESTIONS (CRITICAL):
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
-        });
+      })
 
+      const responseText = await response.text()
+
+      if (!response.ok) {
+        console.error("Groq API error response:", responseText)
+        console.error("Response status:", response.status)
+        throw new Error(
+          `Groq API error: ${response.status} - ${responseText || response.statusText}`
+        )
       }
 
-      const data: GroqResponse = JSON.parse(responseText);
-      return data.choices[0]?.message.content || "Unable to generate response";
+      const data: GroqResponse = JSON.parse(responseText)
+      return data.choices[0]?.message.content || "Unable to generate response"
     } catch (error) {
-      console.error("Error calling Groq API:", error);
-      throw error;
+      console.error("Error calling Groq API:", error)
+      throw error
     }
   }
 
   async generateCareerRecommendations(
     userProfile: {
-      interests: string[];
-      skills: string[];
-      experienceLevel: string;
-      targetRole?: string;
+      interests: string[]
+      skills: string[]
+      experienceLevel: string
+      targetRole?: string
     },
     availableCareers: Career[]
   ): Promise<string> {
@@ -205,7 +218,10 @@ USER PROFILE:
 - Target Role Interest: ${userProfile.targetRole || "Open to suggestions"}
 
 AVAILABLE CAREERS:
-${availableCareers.slice(0, 10).map((c) => `- ${c.title}: ${c.description}`).join("\n")}
+${availableCareers
+  .slice(0, 10)
+  .map((c) => `- ${c.title}: ${c.description}`)
+  .join("\n")}
 
 For each recommendation provide:
 1. Career name and why it matches their profile
@@ -214,17 +230,17 @@ For each recommendation provide:
 4. Realistic timeline to transition into this role
 5. First concrete step they should take
 
-Be specific and encouraging. Consider their experience level when recommending.`;
+Be specific and encouraging. Consider their experience level when recommending.`
 
-    return this.chat([{ role: "user", content: prompt }]);
+    return this.chat([{ role: "user", content: prompt }])
   }
 
   async generateCourseRecommendations(
     userProfile: {
-      interests: string[];
-      skills: string[];
-      experienceLevel: string;
-      targetRole?: string;
+      interests: string[]
+      skills: string[]
+      experienceLevel: string
+      targetRole?: string
     },
     availableCourses: Course[]
   ): Promise<string> {
@@ -237,7 +253,10 @@ USER PROFILE:
 - Goal: ${userProfile.targetRole || "General career development"}
 
 AVAILABLE COURSES:
-${availableCourses.slice(0, 15).map((c) => `- ${c.title} (${c.level}, ${c.duration}h): ${c.description}`).join("\n")}
+${availableCourses
+  .slice(0, 15)
+  .map((c) => `- ${c.title} (${c.level}, ${c.duration}h): ${c.description}`)
+  .join("\n")}
 
 For each course provide:
 1. Course name and why it's recommended
@@ -246,17 +265,17 @@ For each course provide:
 4. What they'll be able to do after completing it
 5. Prerequisite knowledge (if any)
 
-Arrange in learning order - easy fundamentals first, then progressively more advanced skills.`;
+Arrange in learning order - easy fundamentals first, then progressively more advanced skills.`
 
-    return this.chat([{ role: "user", content: prompt }]);
+    return this.chat([{ role: "user", content: prompt }])
   }
 
   async answerCareerQuestion(
     userProfile: {
-      interests: string[];
-      skills: string[];
-      experienceLevel: string;
-      targetRole?: string;
+      interests: string[]
+      skills: string[]
+      experienceLevel: string
+      targetRole?: string
     },
     question: string,
     conversationHistory: GroqMessage[] = [],
@@ -269,7 +288,7 @@ Arrange in learning order - easy fundamentals first, then progressively more adv
 - Experience Level: ${userProfile.experienceLevel || "Not specified"}
 - Target Role: ${userProfile.targetRole || "Open to suggestions"}
 
-IMPORTANT: Do NOT ask the user questions about their interests, skills, or experience level - you already have this information from their signup. Use this data to provide personalized recommendations directly.`;
+IMPORTANT: Do NOT ask the user questions about their interests, skills, or experience level - you already have this information from their signup. Use this data to provide personalized recommendations directly.`
 
     // For very first message, provide a warm greeting and ask if they want career guidance
     if (conversationHistory.length === 0) {
@@ -296,24 +315,27 @@ Greet the user warmly and introduce yourself as Pathfinder AI.
    }
    \`\`\`
 
-Keep it conversational, warm, brief, and action-oriented.`;
+Keep it conversational, warm, brief, and action-oriented.`
 
-      return this.chat([
-        {
-          role: "user",
-          content: initialMessage,
-        },
-      ], personality);
+      return this.chat(
+        [
+          {
+            role: "user",
+            content: initialMessage,
+          },
+        ],
+        personality
+      )
     }
 
     // Guide the AI model if user clicked "Next Career" or "Next Course" or used specific phrases
-    let userMessageContent = `${userContext}\n\nUser's question: ${question}`;
+    let userMessageContent = `${userContext}\n\nUser's question: ${question}`
 
-    const lowerQuestion = question.toLowerCase();
+    const lowerQuestion = question.toLowerCase()
     if (lowerQuestion === "next career") {
-      userMessageContent += `\n\n(System: The user has clicked "Next Career". Please identify the careers suggested so far from the chat history. Provide the next (second or third) career recommendation from their matches in the exact same format, ask the user to click "Next Career", and include the "Next Career" JSON block. If this is the 3rd career path, it will be the last one, so do not include a "Next Career" option or ask the user to click Next. Instead, conclude and offer to help them with courses/roadmaps.)`;
+      userMessageContent += `\n\n(System: The user has clicked "Next Career". Please identify the careers suggested so far from the chat history. Provide the next (second or third) career recommendation from their matches in the exact same format, ask the user to click "Next Career", and include the "Next Career" JSON block. If this is the 3rd career path, it will be the last one, so do not include a "Next Career" option or ask the user to click Next. Instead, conclude and offer to help them with courses/roadmaps.)`
     } else if (lowerQuestion === "next course") {
-      userMessageContent += `\n\n(System: The user has clicked "Next Course". Please identify the courses suggested so far from the chat history. Provide the next recommended course in their learning roadmap in the exact same format, ask the user to click "Next Course", and include the "Next Course" JSON block. If this is the 4th course, it is the last one, so do not include a "Next Course" option or ask the user to click Next. Instead, conclude.)`;
+      userMessageContent += `\n\n(System: The user has clicked "Next Course". Please identify the courses suggested so far from the chat history. Provide the next recommended course in their learning roadmap in the exact same format, ask the user to click "Next Course", and include the "Next Course" JSON block. If this is the 4th course, it is the last one, so do not include a "Next Course" option or ask the user to click Next. Instead, conclude.)`
     } else if (
       lowerQuestion.includes("explore career") ||
       lowerQuestion.includes("explore_careers") ||
@@ -321,13 +343,13 @@ Keep it conversational, warm, brief, and action-oriented.`;
       lowerQuestion.includes("top career paths") ||
       (lowerQuestion.includes("career") && lowerQuestion.includes("recommend"))
     ) {
-      userMessageContent += `\n\n(System: The user is requesting career matches/suggestions. Suggest ONLY the FIRST career recommendation right now. Do not list multiple careers. Provide details, ask them to click "Next Career" to see more, and append the "Next Career" JSON options block.)`;
+      userMessageContent += `\n\n(System: The user is requesting career matches/suggestions. Suggest ONLY the FIRST career recommendation right now. Do not list multiple careers. Provide details, ask them to click "Next Career" to see more, and append the "Next Career" JSON options block.)`
     } else if (
       lowerQuestion.includes("learning roadmap") ||
       lowerQuestion.includes("courses to study") ||
       (lowerQuestion.includes("course") && lowerQuestion.includes("recommend"))
     ) {
-      userMessageContent += `\n\n(System: The user is requesting course recommendations or a learning roadmap. Suggest ONLY the FIRST course suggestion right now. Do not list multiple courses. Provide details, ask them to click "Next Course" to see the next, and append the "Next Course" JSON options block.)`;
+      userMessageContent += `\n\n(System: The user is requesting course recommendations or a learning roadmap. Suggest ONLY the FIRST course suggestion right now. Do not list multiple courses. Provide details, ask them to click "Next Course" to see the next, and append the "Next Course" JSON options block.)`
     }
 
     const messages: GroqMessage[] = [
@@ -336,9 +358,9 @@ Keep it conversational, warm, brief, and action-oriented.`;
         role: "user",
         content: userMessageContent,
       },
-    ];
+    ]
 
-    return this.chat(messages, personality);
+    return this.chat(messages, personality)
   }
 
   async generateSkillGaps(
@@ -358,9 +380,9 @@ Provide a detailed analysis with:
 6. Estimated timeline to competency
 7. Learning resources or career paths to acquire these skills
 
-Be realistic about effort and timeline. For beginners, suggest a 3-6 month intensive plan. For experienced professionals, suggest specialization areas.`;
+Be realistic about effort and timeline. For beginners, suggest a 3-6 month intensive plan. For experienced professionals, suggest specialization areas.`
 
-    return this.chat([{ role: "user", content: prompt }]);
+    return this.chat([{ role: "user", content: prompt }])
   }
 
   async generateRoadmap(
@@ -402,16 +424,16 @@ Include:
 - Time commitment per week
 - Specific resources (courses, platforms, books)
 - Measurable outcomes for each phase
-- Realistic salary expectations after completing roadmap`;
+- Realistic salary expectations after completing roadmap`
 
-    return this.chat([{ role: "user", content: prompt }]);
+    return this.chat([{ role: "user", content: prompt }])
   }
 
   async startCareerDiscovery(userName: string): Promise<string> {
-    const prompt = `The user "${userName}" is starting their career discovery journey. You have access to their profile data. Greet them warmly and invite them to ask questions or explore career opportunities. Keep it conversational and minimal.`;
+    const prompt = `The user "${userName}" is starting their career discovery journey. You have access to their profile data. Greet them warmly and invite them to ask questions or explore career opportunities. Keep it conversational and minimal.`
 
-    return this.chat([{ role: "user", content: prompt }]);
+    return this.chat([{ role: "user", content: prompt }])
   }
 }
 
-export const groqService = new GroqService();
+export const groqService = new GroqService()
