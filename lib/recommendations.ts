@@ -130,11 +130,18 @@ function cleanSummary(raw: string): string {
       (line) =>
         line &&
         !/^\d+\./.test(line) &&
-        !/^(why it matches|why it fits|salary|match|recommended because)/i.test(line)
+        !/^(why it matches|why it fits|salary|match|recommended because)/i.test(
+          line
+        )
     )
 
-  const summaryText = lines.slice(0, 2).join(" ")
-    .replace(/(Why it matches|Why it fits|Match.*|Salary.*|Recommended because).*/i, "")
+  const summaryText = lines
+    .slice(0, 2)
+    .join(" ")
+    .replace(
+      /(Why it matches|Why it fits|Match.*|Salary.*|Recommended because).*/i,
+      ""
+    )
     .replace(/\s+/g, " ")
     .trim()
 

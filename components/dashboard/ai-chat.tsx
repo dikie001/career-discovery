@@ -501,7 +501,10 @@ export function AiChat({
     if (titles.length === 0) return
 
     const cleanSummary = summary
-      .replace(/^(.*?)\s*(Why it matches|Why it fits|Match percentage|Suggested because).*/i, "$1")
+      .replace(
+        /^(.*?)\s*(Why it matches|Why it fits|Match percentage|Suggested because).*/i,
+        "$1"
+      )
       .replace(/^\s*\*?\*?\s*/g, "")
       .trim()
       .slice(0, 120)

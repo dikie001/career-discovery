@@ -488,7 +488,7 @@ export default function DashboardPage() {
                       <h4 className="text-sm font-black text-slate-900">
                         {career.title}
                       </h4>
-                      <p className="mt-1 text-[11px] leading-5 text-slate-500 line-clamp-3">
+                      <p className="mt-1 line-clamp-3 text-[11px] leading-5 text-slate-500">
                         {career.description}
                       </p>
                     </div>
