@@ -633,7 +633,7 @@ export function AiChat({
 
           {/* Theme Selector swatch list */}
           <div className="space-y-2 px-1">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Enterprise Colorways</span>
+            <span className="text-sm font-bold text-slate-500">Choose Theme</span>
             <div className="flex items-center gap-2 pt-1">
               {THEMES.map((theme) => (
                 <button
@@ -653,7 +653,7 @@ export function AiChat({
           {/* AI Personality Selection */}
           <div className="space-y-2.5">
             <div className="px-1">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">AI Persona Model</span>
+              <span className="text-sm font-bold text-slate-500 ">AI Persona Model</span>
             </div>
             <div className="grid grid-cols-2 gap-2">
               {PERSONALITIES.map((pers) => (
@@ -680,7 +680,7 @@ export function AiChat({
           <div className="space-y-1">
             <div className="flex items-center gap-2 px-1 py-1">
               <History className="h-3.5 w-3.5 text-slate-500" />
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Conversation Log</span>
+              <span className="text-sm font-bold text-slate-500 ">Conversation History</span>
             </div>
             <div className="space-y-3">
               {sessions.length === 0 ? (

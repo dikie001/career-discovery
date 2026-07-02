@@ -261,18 +261,32 @@ Arrange in learning order - easy fundamentals first, then progressively more adv
 
 IMPORTANT: Do NOT ask the user questions about their interests, skills, or experience level - you already have this information from their signup. Use this data to provide personalized recommendations directly.`;
 
-    // For very first message, provide a warm greeting with immediate value
+    // For very first message, provide a warm greeting and ask if they want career guidance
     if (conversationHistory.length === 0) {
       const initialMessage = `${userContext}
 
-Greet the user warmly and immediately provide value based on their profile. Do NOT ask for information you already have. Instead:
-1. Acknowledge their interests and skills
-2. Suggest the FIRST relevant career path matching their profile. Do not list other careers yet.
-3. For this career path, give detail on why it fits, required skills, timeline, salary/growth, and the first step.
-4. Ask the user to click the "Next Career" button to see the next suggestion.
-5. Provide a JSON block at the end with a single option for "Next Career".
+Greet the user warmly and introduce yourself as Pathfinder AI.
+1. Acknowledge their profile (interests and skills from signup) in a very friendly, polite, conversational way (e.g. "I see you are interested in Javascript and have skills in App Development...").
+2. Ask them if they would like to explore some personalized career recommendations based on their profile, or if they have a specific question.
+3. Provide a JSON options block at the end with two options: "Explore Careers" and "Ask a Question". Do not suggest any specific career path yet. Format:
+   \`\`\`json
+   {
+     "options": [
+       {
+         "id": "explore_careers",
+         "label": "Explore Careers",
+         "description": "Show career matches for my profile"
+       },
+       {
+         "id": "ask_question",
+         "label": "Ask a Question",
+         "description": "I have a specific question to ask"
+       }
+     ]
+   }
+   \`\`\`
 
-Keep it conversational, brief, and action-oriented.`;
+Keep it conversational, warm, brief, and action-oriented.`;
 
       return this.chat([
         {
@@ -291,11 +305,13 @@ Keep it conversational, brief, and action-oriented.`;
     } else if (lowerQuestion === "next course") {
       userMessageContent += `\n\n(System: The user has clicked "Next Course". Please identify the courses suggested so far from the chat history. Provide the next recommended course in their learning roadmap in the exact same format, ask the user to click "Next Course", and include the "Next Course" JSON block. If this is the 4th course, it is the last one, so do not include a "Next Course" option or ask the user to click Next. Instead, conclude.)`;
     } else if (
+      lowerQuestion.includes("explore career") ||
+      lowerQuestion.includes("explore_careers") ||
       lowerQuestion.includes("career match") ||
       lowerQuestion.includes("top career paths") ||
       (lowerQuestion.includes("career") && lowerQuestion.includes("recommend"))
     ) {
-      userMessageContent += `\n\n(System: The user is requesting career suggestions. Suggest ONLY the FIRST career recommendation right now. Do not list multiple careers. Provide details, ask them to click "Next Career" to see more, and append the "Next Career" JSON options block.)`;
+      userMessageContent += `\n\n(System: The user is requesting career matches/suggestions. Suggest ONLY the FIRST career recommendation right now. Do not list multiple careers. Provide details, ask them to click "Next Career" to see more, and append the "Next Career" JSON options block.)`;
     } else if (
       lowerQuestion.includes("learning roadmap") ||
       lowerQuestion.includes("courses to study") ||
