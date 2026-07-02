@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react"
 import Image from "next/image"
 import { useDashboard } from "@/contexts/dashboard-context"
 import { useAuth } from "@/contexts/auth-context"
-import { Bell, Send, Home, MessageSquare, Plus, BookOpen, User, Zap, Map, Heart, TrendingUp, Star, ArrowRight, Sparkles, Compass } from "lucide-react"
+import { Bell, Send, Home, MessageSquare, Plus, BookOpen, User, Zap, Map, Heart, TrendingUp, Star, ArrowRight, Sparkles, Compass, BarChart2 } from "lucide-react"
 import Link from "next/link"
 
 export default function DashboardPage() {
@@ -189,55 +189,53 @@ export default function DashboardPage() {
         </div>
 
         {/* ASK PATHFINDER AI GRADIENT CARD */}
-        <Link href="/dashboard/ai-chat" className="block group relative rounded-3xl bg-gradient-to-br from-teal-850 via-[#07594F] to-[#044039] p-5 overflow-hidden hover:shadow-xl transition-all duration-300 border border-teal-900/10 shadow-inner">
+        <Link href="/dashboard/ai-chat" className="block group relative rounded-3xl bg-gradient-to-r from-[#0F766E] to-[#044E44] p-5 overflow-hidden hover:shadow-xl transition-all duration-300 shadow-sm">
           <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16" />
           
-          <div className="relative z-10 flex items-center gap-4 mb-4.5">
-            {/* Robot head */}
-            <div className="flex-shrink-0 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 border border-white/20 p-1.5 shadow-inner">
-              <svg viewBox="0 0 100 100" className="w-11 h-11 object-contain drop-shadow-md">
-                <rect x="25" y="30" width="50" height="40" rx="15" fill="#FFFFFF" />
-                <rect x="30" y="35" width="40" height="30" rx="10" fill="#0D1117" />
-                <circle cx="42" cy="50" r="4.5" fill="#14B8A6" />
-                <circle cx="58" cy="50" r="4.5" fill="#14B8A6" />
-                <rect x="45" y="70" width="10" height="8" rx="2" fill="#E2E8F0" />
-                <circle cx="50" cy="18" r="4" fill="#14B8A6" />
-                <line x1="50" y1="22" x2="50" y2="30" stroke="#E2E8F0" strokeWidth="3" />
-                <path d="M 35 48 Q 28 48 28 58" fill="none" stroke="#E2E8F0" strokeWidth="3" />
-                <path d="M 65 48 Q 72 48 72 58" fill="none" stroke="#E2E8F0" strokeWidth="3" />
-              </svg>
+          <div className="relative z-10 flex flex-col pt-1">
+            {/* Header Area with Robot and Text */}
+            <div className="flex items-end px-1">
+              {/* Robot Image extending behind the search bar */}
+              <div className="relative w-20 h-20 -mb-2 flex-shrink-0 z-0 drop-shadow-lg">
+                <Image
+                  src="/bot.png"
+                  alt="Pathfinder AI"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+
+              {/* Text Content */}
+              <div className="pb-4 ml-2 z-10">
+                <h3 className="font-bold text-white text-[15px] tracking-tight leading-tight">Ask Pathfinder AI</h3>
+                <p className="text-[11px] text-teal-100 font-medium mt-0.5">Your personal career guide</p>
+              </div>
             </div>
 
-            <div>
-              <h3 className="font-extrabold text-white text-base tracking-tight leading-tight">Ask Pathfinder AI</h3>
-              <p className="text-xs text-teal-200/90 font-medium mt-0.5">Your personal career guide</p>
+            {/* Search bar overlay */}
+            <div className="relative z-20 w-full rounded-full bg-white pl-5 pr-1.5 py-1.5 flex items-center justify-between shadow-md">
+              <span className="text-[13px] text-slate-400 font-medium truncate pr-4">What would you like to explore today?</span>
+              <button
+                disabled
+                className="flex-shrink-0 h-9 w-9 rounded-full bg-[#059669] text-white flex items-center justify-center shadow-sm"
+              >
+                <Send className="h-4 w-4 fill-white -ml-0.5" />
+              </button>
             </div>
-          </div>
 
-          {/* Search bar overlay */}
-          <div className="relative z-10 flex gap-2.5 mb-4">
-            <div className="flex-1 rounded-xl bg-white px-4 py-3 text-xs text-slate-400 font-semibold flex items-center gap-2 shadow-inner">
-              <span>What would you like to explore today?</span>
+            {/* Quick pill options */}
+            <div className="relative z-20 flex gap-2 flex-wrap mt-4 px-1">
+              <span className="rounded-full bg-white/5 border border-white/20 px-3 py-1.5 text-[9px] sm:text-[10px] font-medium text-white transition-all flex items-center gap-1.5">
+                <Sparkles className="h-3 w-3 text-white" /> Best careers for me
+              </span>
+              <span className="rounded-full bg-white/5 border border-white/20 px-3 py-1.5 text-[9px] sm:text-[10px] font-medium text-white transition-all flex items-center gap-1.5">
+                <BarChart2 className="h-3 w-3 text-white" /> Skills I need
+              </span>
+              <span className="rounded-full bg-white/5 border border-white/20 px-3 py-1.5 text-[9px] sm:text-[10px] font-medium text-white transition-all flex items-center gap-1.5">
+                <BookOpen className="h-3 w-3 text-white" /> Courses to study
+              </span>
             </div>
-            <button
-              disabled
-              className="flex-shrink-0 rounded-xl bg-[#0EA5E9] p-3 text-white transition-all shadow-md flex items-center justify-center"
-            >
-              <Send className="h-3.5 w-3.5 fill-white" />
-            </button>
-          </div>
-
-          {/* Quick pill options */}
-          <div className="relative z-10 flex gap-2 flex-wrap">
-            <span className="rounded-full bg-white/10 border border-white/15 px-4 py-2 text-[10px] font-bold text-white transition-all flex items-center gap-1.5">
-              <span>⚡</span> Best careers for me
-            </span>
-            <span className="rounded-full bg-white/10 border border-white/15 px-4 py-2 text-[10px] font-bold text-white transition-all flex items-center gap-1.5">
-              <span>📊</span> Skills I need
-            </span>
-            <span className="rounded-full bg-white/10 border border-white/15 px-4 py-2 text-[10px] font-bold text-white transition-all flex items-center gap-1.5">
-              <span>📚</span> Courses to study
-            </span>
           </div>
         </Link>
 
