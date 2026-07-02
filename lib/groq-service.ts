@@ -160,11 +160,21 @@ INSTRUCTIONS ON PRESENTING SUGGESTIONS (CRITICAL):
         body: JSON.stringify(payload),
       });
 
-      const responseText = await response.text();
-
-      if (!response.ok) {
-        console.error("Groq API error response:", responseText);
-        console.error("Response status:", response.status);
+        - CRITICAL FOR STORAGE: In addition to the options block, append a separate JSON block (also fenced with \`\`\`json) named \`recommendation\` that contains a single object with the following fields so the client can unambiguously persist the suggestion. This JSON block MUST appear after any human-readable text and before or after the options block, and must be valid JSON. Example format (whitespace allowed):
+          \`\`\`json
+          {
+            "recommendation": {
+              "title": "Digital Marketing Coordinator",
+              "summary": "Short 1-2 line summary suitable for display",
+              "matchPercentage": 89,
+              "salaryRange": "KSh 120K+ /month",
+              "category": "Career",
+              "order": 1
+            }
+          }
+          \`\`\`
+          - The \`summary\` field should be concise (1-2 lines). The \`order\` is the suggestion index (1 for first recommendation, 2 for second, etc.).
+          - THIS JSON BLOCK IS FOR MACHINE CONSUMPTION ONLY. The assistant should still render the human-friendly markdown above it — do NOT display raw JSON in the visible UI. The client will parse this block and use the fields to save to the database in the correct order.
         throw new Error(
           `Groq API error: ${response.status} - ${responseText || response.statusText}`
         );

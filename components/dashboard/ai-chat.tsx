@@ -496,21 +496,71 @@ export function AiChat({
   const saveRecommendations = async (text: string) => {
     if (!token) return
 
-    const { titles, salaryRange, matchPercentage, summary } =
-      extractRecommendationMetadata(text)
-    if (titles.length === 0) return
+    // Look for a structured recommendation JSON block first
+    const jsonBlockMatch = text.match(/```json\n([\s\S]*?)\n```/)
+    let payloads: Array<{
+      title: string
+      description?: string
+      category?: string
+      matchPercentage?: number
+      salaryRange?: string
+    }> = []
 
-    const cleanSummary = summary
-      .replace(
-        /^(.*?)\s*(Why it matches|Why it fits|Match percentage|Suggested because).*/i,
-        "$1"
-      )
-      .replace(/^\s*\*?\*?\s*/g, "")
-      .trim()
-      .slice(0, 120)
+    if (jsonBlockMatch) {
+      try {
+        const parsed = JSON.parse(jsonBlockMatch[1])
+        if (parsed && parsed.recommendation) {
+          const r = parsed.recommendation
+          if (r.title) {
+            payloads.push({
+              title: String(r.title).trim(),
+              description: (
+                r.summary ||
+                r.description ||
+                "Recommended by Pathfinder AI."
+              )
+                .trim()
+                .slice(0, 140),
+              category: r.category || "AI Recommendation",
+              matchPercentage:
+                typeof r.matchPercentage === "number"
+                  ? r.matchPercentage
+                  : undefined,
+              salaryRange: r.salaryRange || "",
+            })
+          }
+        }
+      } catch (e) {
+        console.error("Failed to parse recommendation JSON block:", e)
+      }
+    }
+
+    // Fallback to heuristic extraction
+    if (payloads.length === 0) {
+      const { titles, salaryRange, matchPercentage, summary } =
+        extractRecommendationMetadata(text)
+      if (titles.length === 0) return
+
+      const cleanSummary = summary
+        .replace(
+          /^(.*?)\s*(Why it matches|Why it fits|Match percentage|Suggested because).*/i,
+          "$1"
+        )
+        .replace(/^\s*\*?\*?\s*/g, "")
+        .trim()
+        .slice(0, 120)
+
+      payloads = titles.map((t) => ({
+        title: t.trim(),
+        description: cleanSummary || "Recommended by Pathfinder AI.",
+        category: "AI Recommendation",
+        matchPercentage,
+        salaryRange,
+      }))
+    }
 
     await Promise.allSettled(
-      titles.map((title) =>
+      payloads.map((p) =>
         fetch("/api/recommendations", {
           method: "POST",
           headers: {
@@ -518,11 +568,11 @@ export function AiChat({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            title: title.trim(),
-            description: cleanSummary || "Recommended by Pathfinder AI.",
-            category: "AI Recommendation",
-            matchPercentage,
-            salaryRange,
+            title: p.title,
+            description: p.description,
+            category: p.category,
+            matchPercentage: p.matchPercentage,
+            salaryRange: p.salaryRange,
             reason: "",
           }),
         })
