@@ -458,7 +458,9 @@ export function AiChat({
           const parsed = JSON.parse(jsonMatch[1])
 
           // Prefer any human-friendly text that appears before the JSON block
-          const textBeforeJson = response.substring(0, jsonMatch.index || 0).trim()
+          const textBeforeJson = response
+            .substring(0, jsonMatch.index || 0)
+            .trim()
 
           // If the JSON contains options, surface them and show only the human text
           if (parsed.options && Array.isArray(parsed.options)) {
