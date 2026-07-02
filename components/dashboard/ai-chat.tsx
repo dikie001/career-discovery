@@ -500,6 +500,12 @@ export function AiChat({
       extractRecommendationMetadata(text)
     if (titles.length === 0) return
 
+    const cleanSummary = summary
+      .replace(/^(.*?)\s*(Why it matches|Why it fits|Match percentage|Suggested because).*/i, "$1")
+      .replace(/^\s*\*?\*?\s*/g, "")
+      .trim()
+      .slice(0, 120)
+
     await Promise.allSettled(
       titles.map((title) =>
         fetch("/api/recommendations", {
@@ -509,12 +515,12 @@ export function AiChat({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            title,
-            description: `Recommended by Pathfinder AI based on your profile and career goals.`,
+            title: title.trim(),
+            description: cleanSummary || "Recommended by Pathfinder AI.",
             category: "AI Recommendation",
             matchPercentage,
             salaryRange,
-            reason: summary,
+            reason: "",
           }),
         })
       )

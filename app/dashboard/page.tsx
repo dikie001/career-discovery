@@ -488,31 +488,28 @@ export default function DashboardPage() {
                       <h4 className="text-sm font-black text-slate-900">
                         {career.title}
                       </h4>
-                      <p className="mt-0.5 text-[11px] font-semibold text-slate-400">
+                      <p className="mt-1 text-[11px] leading-5 text-slate-500 line-clamp-3">
                         {career.description}
                       </p>
-                      {career.reason ? (
-                        <p className="mt-2 text-[11px] leading-5 text-slate-500">
-                          {career.reason}
-                        </p>
-                      ) : null}
                     </div>
                   </div>
 
                   {/* Footer specs */}
                   <div className="space-y-2 border-t border-slate-100 pt-2">
                     <div className="flex items-baseline justify-between gap-2">
-                      <span
-                        className={`text-xs font-black ${
-                          career.accentColor === "teal"
-                            ? "text-teal-650"
-                            : career.accentColor === "indigo"
-                              ? "text-indigo-650"
-                              : "text-amber-650"
-                        }`}
-                      >
-                        {career.salary}
-                      </span>
+                      {career.salary ? (
+                        <span
+                          className={`text-xs font-black ${
+                            career.accentColor === "teal"
+                              ? "text-teal-650"
+                              : career.accentColor === "indigo"
+                                ? "text-indigo-650"
+                                : "text-amber-650"
+                          }`}
+                        >
+                          {career.salary}
+                        </span>
+                      ) : null}
                       <span className="rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-bold text-slate-500">
                         <Briefcase className="mr-1 inline h-3 w-3" />
                         {career.category || "Career"}

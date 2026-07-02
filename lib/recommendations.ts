@@ -74,11 +74,6 @@ function isLikelyCareerTitle(title: string): boolean {
   const normalized = title.replace(/\s+/g, " ").trim()
   if (normalized.length < 5) return false
 
-  const hasCareerKeyword = CAREER_KEYWORDS.some((keyword) =>
-    new RegExp(`\\b${keyword}\\b`, "i").test(normalized)
-  )
-  if (hasCareerKeyword) return true
-
   if (
     /^(salary|growth|timeline|summary|why it matches|why it fits|key skills|gap analysis|course|learning|roadmap|insight|recommendation)s?$/i.test(
       normalized
@@ -87,7 +82,63 @@ function isLikelyCareerTitle(title: string): boolean {
     return false
   }
 
+  const hasCareerKeyword = CAREER_KEYWORDS.some((keyword) =>
+    new RegExp(`\\b${keyword}\\b`, "i").test(normalized)
+  )
+  if (hasCareerKeyword) return true
+
   return /^[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,4}$/.test(normalized)
+}
+
+function cleanTitle(raw: string): string {
+  const title = raw.replace(/\*\*/g, "").trim()
+  const separators = [
+    /\s+Why it matches.*/i,
+    /\s+Why it fits.*/i,
+    /\s+Recommended because.*/i,
+    /\s+–\s+.*/,
+    /\s+-\s+.*/,
+    /\s*:\s*.*/,
+  ]
+
+  for (const pattern of separators) {
+    const match = title.match(pattern)
+    if (match) {
+      return title.slice(0, match.index).trim()
+    }
+  }
+
+  return title
+}
+
+function cleanSummary(raw: string): string {
+  const cleaned = raw
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/#{1,6}\s*/g, "")
+    .replace(/\*\*/g, "")
+    .replace(/(^|\n)\s*[-*+]\s+/g, "$1")
+    .replace(/\n{2,}/g, "\n")
+    .replace(/\s+/g, " ")
+    .trim()
+
+  const lines = cleaned
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(
+      (line) =>
+        line &&
+        !/^\d+\./.test(line) &&
+        !/^(why it matches|why it fits|salary|match|recommended because)/i.test(line)
+    )
+
+  const summaryText = lines.slice(0, 2).join(" ")
+    .replace(/(Why it matches|Why it fits|Match.*|Salary.*|Recommended because).*/i, "")
+    .replace(/\s+/g, " ")
+    .trim()
+
+  return summaryText.slice(0, 100).trim()
 }
 
 export function extractRecommendationTitles(text: string): string[] {
@@ -111,10 +162,10 @@ export function extractRecommendationTitles(text: string): string[] {
   }
 
   for (const title of candidateTitles) {
-    const normalized = title.replace(/\*\*/g, "").trim()
-    if (!normalized || GENERIC_WORDS.has(normalized.toLowerCase())) continue
-    if (isLikelyCareerTitle(normalized)) {
-      found.add(normalized)
+    const cleaned = cleanTitle(title)
+    if (!cleaned || GENERIC_WORDS.has(cleaned.toLowerCase())) continue
+    if (isLikelyCareerTitle(cleaned)) {
+      found.add(cleaned)
     }
   }
 
@@ -130,16 +181,7 @@ export function extractRecommendationMetadata(
   const salaryRange = salaryMatch ? salaryMatch[0] : ""
   const matchMatch = text.match(/(\d{1,3})%\s*match/i)
   const matchPercentage = matchMatch ? parseInt(matchMatch[1], 10) : 0
-  const summary = text
-    .replace(/```[\s\S]*?```/g, "")
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
-    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-    .replace(/#{1,6}\s*/g, "")
-    .replace(/\*\*/g, "")
-    .replace(/\n{2,}/g, "\n")
-    .replace(/(^|\n)\s*[-*+]\s+/g, "$1")
-    .trim()
-    .slice(0, 320)
+  const summary = cleanSummary(text)
 
   return {
     titles: extractRecommendationTitles(text),
