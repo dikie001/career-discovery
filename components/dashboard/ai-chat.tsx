@@ -218,6 +218,22 @@ export function AiChat({
     return THEMES.find((t) => t.id === themeId) || THEMES[0];
   }, [themeId]);
 
+  const focusStyles = {
+    sky: "focus:border-sky-500/80 focus:ring-sky-500/20 group-focus-within:text-sky-400",
+    teal: "focus:border-teal-500/80 focus:ring-teal-500/20 group-focus-within:text-teal-400",
+    amber: "focus:border-amber-500/80 focus:ring-amber-500/20 group-focus-within:text-amber-400",
+    emerald: "focus:border-emerald-500/80 focus:ring-emerald-500/20 group-focus-within:text-emerald-400",
+  };
+  const currentFocusStyle = focusStyles[activeTheme.accent as keyof typeof focusStyles] || focusStyles.sky;
+
+  const sendShadowStyles = {
+    sky: "hover:shadow-sky-500/10",
+    teal: "hover:shadow-teal-500/10",
+    amber: "hover:shadow-amber-500/10",
+    emerald: "hover:shadow-emerald-500/10",
+  };
+  const currentSendShadow = sendShadowStyles[activeTheme.accent as keyof typeof sendShadowStyles] || sendShadowStyles.sky;
+
   const handleThemeChange = (id: string) => {
     setThemeId(id);
     localStorage.setItem("ai_theme", id);
@@ -871,30 +887,36 @@ export function AiChat({
         {/* Input Area */}
         <div className="border-t border-slate-800/80 bg-slate-950 px-4 py-4 sm:px-6">
           <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto flex gap-3">
-            <div className="relative flex-1 flex items-center">
+            <div className="relative flex-1 flex items-center group">
+              <div className={`absolute left-4 text-slate-400 group-focus-within:text-${activeTheme.accent}-400 transition-colors pointer-events-none`}>
+                <Sparkles className="h-4 w-4 animate-pulse" />
+              </div>
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={`Query Pathfinder as a ${activePersonality.name}...`}
                 disabled={sending || externalLoading}
-                className="w-full rounded-xl bg-slate-900/50 border border-slate-850 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-700/50 transition-all disabled:opacity-50"
+                className={`w-full rounded-xl bg-slate-900/40 border border-slate-800/80 pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:bg-slate-900/60 focus:outline-none focus:ring-2 ${currentFocusStyle} transition-all duration-300 disabled:opacity-50 shadow-inner`}
               />
             </div>
             <button
               type="submit"
               disabled={sending || externalLoading || !input.trim()}
-              className={`rounded-xl ${activeTheme.accentBg} p-3 text-white shadow-md active:scale-95 transition-all disabled:opacity-50`}
+              className={`group rounded-xl ${activeTheme.accentBg} px-5 py-3 text-white font-bold text-sm shadow-md active:scale-95 transition-all duration-300 ${currentSendShadow} disabled:opacity-50 flex items-center gap-2`}
             >
               {sending || externalLoading ? (
-                <Loader className="h-4.5 w-4.5 animate-spin" />
+                <Loader className="h-4 w-4 animate-spin" />
               ) : (
-                <Send className="h-4.5 w-4.5" />
+                <>
+                  <span className="hidden sm:inline">Ask AI</span>
+                  <Send className="h-4 w-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+                </>
               )}
             </button>
           </form>
           <div className="max-w-3xl mx-auto mt-2 text-center text-xs text-slate-500 font-medium">
-            Pathfinder Console • Enterprise Mode • Styled as <span className="font-semibold text-slate-400">{activePersonality.name}</span>
+            Pathfinder AI can make mistakes. Verify important career and learning decisions.
           </div>
         </div>
       </div>
