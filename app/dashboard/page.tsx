@@ -24,6 +24,7 @@ import {
   Briefcase,
 } from "lucide-react"
 import Link from "next/link"
+import { CareerProgressComponent } from "@/components/dashboard/career-progress"
 
 export default function DashboardPage() {
   const { user, token } = useAuth()
@@ -63,6 +64,18 @@ export default function DashboardPage() {
 
   useEffect(() => {
     loadData()
+  }, [loadData])
+
+  useEffect(() => {
+    const handleProgressUpdate = () => {
+      loadData()
+    }
+
+    window.addEventListener("pathfinder:progress-updated", handleProgressUpdate)
+
+    return () => {
+      window.removeEventListener("pathfinder:progress-updated", handleProgressUpdate)
+    }
   }, [loadData])
 
   useEffect(() => {
@@ -319,102 +332,97 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          {/* Connected timeline and progress ring layout */}
-          <div className="flex flex-col items-center gap-6 rounded-2xl border border-slate-100 bg-slate-50/50 p-4 md:flex-row md:gap-8">
-            {/* Overall Ring */}
-            <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
-              <svg
-                className="absolute h-full w-full -rotate-90 transform"
-                viewBox="0 0 100 100"
-              >
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="40"
-                  fill="none"
-                  stroke="#E2E8F0"
-                  strokeWidth="6"
-                />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="40"
-                  fill="none"
-                  stroke="#14B8A6"
-                  strokeWidth="6"
-                  strokeDasharray="170 251.2"
-                  strokeLinecap="round"
-                  className="transition-all duration-1000"
-                />
-              </svg>
-              <div className="flex flex-col items-center justify-center">
-                <span className="text-base leading-none font-black text-slate-900">
-                  68%
-                </span>
-                <span className="mt-1 text-[8px] leading-none font-bold text-slate-400 uppercase">
-                  Progress
-                </span>
+          {progress ? (
+            <div className="flex flex-col items-center gap-6 rounded-2xl border border-slate-100 bg-slate-50/50 p-4 md:flex-row md:gap-8">
+              {/* Overall Ring */}
+              <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
+                <svg
+                  className="absolute h-full w-full -rotate-90 transform"
+                  viewBox="0 0 100 100"
+                >
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="40"
+                    fill="none"
+                    stroke="#E2E8F0"
+                    strokeWidth="6"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="40"
+                    fill="none"
+                    stroke="#14B8A6"
+                    strokeWidth="6"
+                    strokeDasharray={`${(progress.overallProgress / 100) * 251.2} 251.2`}
+                    strokeLinecap="round"
+                    className="transition-all duration-1000"
+                  />
+                </svg>
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-base leading-none font-black text-slate-900">
+                    {progress.overallProgress}%
+                  </span>
+                  <span className="mt-1 text-[8px] leading-none font-bold text-slate-400 uppercase">
+                    Progress
+                  </span>
+                </div>
+              </div>
+
+              {/* Stages Track */}
+              <div className="relative flex w-full flex-1 items-start justify-between gap-2">
+                <div className="absolute top-4 right-8 left-8 -z-10 border-t-2 border-dashed border-slate-200/80" />
+                {progress.stages
+                  .slice()
+                  .sort((a, b) => a.order - b.order)
+                  .map((stage, index) => {
+                    const isCompleted = stage.status === "completed"
+                    const isActive = stage.status === "in_progress"
+                    const statusText = isCompleted
+                      ? "Completed"
+                      : isActive
+                        ? "In Progress"
+                        : "Pending"
+                    return (
+                      <div
+                        key={stage.id}
+                        className="z-10 flex flex-1 flex-col items-center gap-1.5"
+                      >
+                        <div
+                          className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-extrabold shadow-md ${isCompleted
+                              ? "bg-teal-600 text-white"
+                              : isActive
+                                ? "border-2 border-teal-600 bg-white text-teal-600"
+                                : "border border-slate-300 bg-white text-slate-400"
+                            }`}
+                        >
+                          {isCompleted ? "✓" : index + 1}
+                        </div>
+                        <span className="text-center text-[10px] leading-tight font-black text-slate-900">
+                          {stage.title}
+                        </span>
+                        <span
+                          className={`text-[8px] font-bold uppercase ${isCompleted
+                              ? "text-teal-650"
+                              : isActive
+                                ? "text-amber-500"
+                                : "text-slate-400"
+                            }`}
+                        >
+                          {statusText}
+                        </span>
+                      </div>
+                    )
+                  })}
               </div>
             </div>
-
-            {/* Stages Track */}
-            <div className="relative flex w-full flex-1 items-start justify-between gap-2">
-              {/* Timeline Connector Line */}
-              <div className="absolute top-4 right-8 left-8 -z-10 border-t-2 border-dashed border-slate-200/80" />
-
-              {/* Node 1: Completed */}
-              <div className="z-10 flex flex-1 flex-col items-center gap-1.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 text-xs font-bold text-white shadow-md">
-                  ✓
-                </div>
-                <span className="text-center text-[10px] leading-tight font-black text-slate-900">
-                  Self Discovery
-                </span>
-                <span className="text-teal-650 text-[8px] font-bold uppercase">
-                  Completed
-                </span>
-              </div>
-
-              {/* Node 2: Completed */}
-              <div className="z-10 flex flex-1 flex-col items-center gap-1.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 text-xs font-bold text-white shadow-md">
-                  ✓
-                </div>
-                <span className="text-center text-[10px] leading-tight font-black text-slate-900">
-                  Interests & Strengths
-                </span>
-                <span className="text-teal-650 text-[8px] font-bold uppercase">
-                  Completed
-                </span>
-              </div>
-
-              {/* Node 3: Active */}
-              <div className="z-10 flex flex-1 flex-col items-center gap-1.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-teal-600 bg-white text-xs font-extrabold text-teal-600 shadow-md">
-                  3
-                </div>
-                <span className="text-center text-[10px] leading-tight font-black text-slate-900">
-                  Skill Gap Analysis
-                </span>
-                <span className="text-[8px] font-bold text-amber-500 uppercase">
-                  In Progress
-                </span>
-              </div>
-
-              {/* Node 4: Unstarted */}
-              <div className="z-10 flex flex-1 flex-col items-center gap-1.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 bg-white text-xs font-bold text-slate-400">
-                  4
-                </div>
-                <span className="text-center text-[10px] leading-tight font-black text-slate-900">
-                  Career Roadmap
-                </span>
-                <span className="text-slate-455 text-[8px] font-bold uppercase">
-                  Pending
-                </span>
-              </div>
+          ) : (
+            <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-500">
+              Start chatting with Pathfinder AI and your career progress will
+              update automatically here.
             </div>
-          </div>
+          )}
         </div>
 
         {/* RECOMMENDED FOR YOU SECTION */}

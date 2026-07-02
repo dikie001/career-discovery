@@ -290,84 +290,10 @@ export function AiChat({
     override?: string
   } | null>(null)
 
-  // Load chat history from backend on mount
+  // Initialize chat with a fresh session and do not pre-load old conversations
   useEffect(() => {
-    const fetchHistory = async () => {
-      if (!token) return
-      try {
-        const res = await fetch("/api/ai/chat", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        if (res.ok) {
-          const data = await res.json()
-          if (data.success && Array.isArray(data.data)) {
-            const parsedMessages: Message[] = data.data.map((msg: any) => {
-              let options
-              let content = msg.content
-              if (msg.role === "assistant") {
-                const jsonMatch = msg.content.match(/```json\n([\s\S]*?)\n```/)
-                if (jsonMatch) {
-                  try {
-                    const parsed = JSON.parse(jsonMatch[1])
-                    if (parsed.options && Array.isArray(parsed.options)) {
-                      content =
-                        msg.content.substring(0, jsonMatch.index || 0).trim() ||
-                        parsed.message ||
-                        ""
-                      options = parsed.options.map((opt: any) => ({
-                        id:
-                          opt.id ||
-                          opt.label.toLowerCase().replace(/\s+/g, "_"),
-                        label: opt.label,
-                        description: opt.description,
-                      }))
-                    }
-                  } catch (e) {
-                    console.error("Failed to parse options in history load:", e)
-                  }
-                }
-              }
-              return {
-                id: msg.id,
-                role: msg.role as any,
-                content,
-                timestamp: new Date(msg.timestamp),
-                options,
-              }
-            })
-
-            // Mark older options as selected to prevent interactive buttons on old segments
-            if (parsedMessages.length > 0) {
-              const lastAssistantIdx = parsedMessages
-                .map((m: Message) => m.role)
-                .lastIndexOf("assistant")
-              parsedMessages.forEach((m: Message, idx: number) => {
-                if (m.options && idx !== lastAssistantIdx) {
-                  m.selectedOption = "historical"
-                }
-              })
-            }
-
-            setMessages(parsedMessages)
-
-            const computedSessions = getSessionsFromMessages(parsedMessages)
-            if (computedSessions.length > 0) {
-              setActiveSessionId(computedSessions[0].id)
-            } else {
-              setActiveSessionId("new")
-            }
-          }
-        }
-      } catch (e) {
-        console.error("Error loading chat history:", e)
-        setActiveSessionId("new")
-      } finally {
-        setLoadingHistory(false)
-      }
-    }
-    fetchHistory()
+    setActiveSessionId("new")
+    setLoadingHistory(false)
   }, [token])
 
   // Group messages into virtual sessions dynamically based on 30 minutes time gaps
@@ -688,6 +614,10 @@ export function AiChat({
 
       // Silently extract and persist any career recommendations mentioned
       saveRecommendations(assistantMessage.content)
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("pathfinder:progress-updated"))
+      }
     } catch (error) {
       console.error("Failed to send message:", error)
 

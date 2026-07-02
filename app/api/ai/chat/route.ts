@@ -132,6 +132,47 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       },
     })
 
+    const progress = await prisma.careerProgress.findUnique({
+      where: { userId },
+      include: { stages: true },
+    })
+
+    if (progress) {
+      const updatedStages = progress.stages.map((stage) => {
+        if (stage.order === 1 || stage.order === 2 || stage.order === 3) {
+          return { ...stage, status: "completed" }
+        }
+        if (stage.order === 4) {
+          return { ...stage, status: "in_progress" }
+        }
+        return stage
+      })
+
+      await Promise.all(
+        updatedStages.map((stage) =>
+          prisma.progressStage.update({
+            where: { id: stage.id },
+            data: { status: stage.status },
+          })
+        )
+      )
+
+      const completedCount = updatedStages.filter(
+        (stage) => stage.status === "completed"
+      ).length
+      const inProgressCount = updatedStages.filter(
+        (stage) => stage.status === "in_progress"
+      ).length
+      const overallProgress = Math.round(
+        ((completedCount + inProgressCount * 0.4) / updatedStages.length) * 100
+      )
+
+      await prisma.careerProgress.update({
+        where: { id: progress.id },
+        data: { overallProgress },
+      })
+    }
+
     return NextResponse.json(
       {
         success: true,
