@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { useDashboard } from "@/contexts/dashboard-context"
 import { useAuth } from "@/contexts/auth-context"
@@ -27,7 +28,8 @@ import Link from "next/link"
 import { CareerProgressComponent } from "@/components/dashboard/career-progress"
 
 export default function DashboardPage() {
-  const { user, token } = useAuth()
+  const router = useRouter()
+  const { user, token, logout } = useAuth()
   const {
     profile,
     careers,
@@ -62,6 +64,7 @@ export default function DashboardPage() {
   >([])
   const [recommendationsLoading, setRecommendationsLoading] = useState(false)
   const [savedRecs, setSavedRecs] = useState<string[]>([])
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -235,6 +238,16 @@ export default function DashboardPage() {
     )
   }
 
+  // Helper to get initials from name
+  const getUserInitials = () => {
+    if (!user?.name) return "U"
+    const parts = user.name.trim().split(/\s+/)
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+    }
+    return user.name.substring(0, 2).toUpperCase()
+  }
+
   const activeCareers = recommendationCards
 
   return (
@@ -260,13 +273,79 @@ export default function DashboardPage() {
               <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-red-500 ring-2 ring-slate-950 shadow-lg shadow-red-500/50"></span>
             </button>
-            <div className="bg-slate-800 relative h-8 sm:h-9 w-8 sm:w-9 overflow-hidden rounded-full border border-slate-700/50 shadow-md flex-shrink-0">
-              <Image
-                src="/bot.png"
-                alt="Profile"
-                fill
-                className="object-cover"
-              />
+
+            {/* Account Button with Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+                className="relative h-8 sm:h-9 w-8 sm:w-9 flex items-center justify-center rounded-full border-2 border-teal-500/40 bg-gradient-to-br from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:border-teal-500/60 transition-all font-bold text-xs sm:text-sm flex-shrink-0"
+              >
+                {getUserInitials()}
+              </button>
+
+              {/* Account Modal Dropdown */}
+              {accountMenuOpen && (
+                <>
+                  {/* Backdrop */}
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setAccountMenuOpen(false)}
+                  />
+                  {/* Modal */}
+                  <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-slate-700/50 bg-slate-900/95 backdrop-blur-xl shadow-2xl shadow-slate-950/50 z-50 animate-fadeInDown overflow-hidden">
+                    {/* Header */}
+                    <div className="border-b border-slate-700/30 px-4 py-4 bg-gradient-to-r from-teal-600/10 to-cyan-600/10">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-cyan-500 text-white font-bold text-sm shadow-lg shadow-teal-500/30">
+                          {getUserInitials()}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-white truncate">
+                            {user?.name || "User"}
+                          </p>
+                          <p className="text-xs text-slate-400 truncate">
+                            {user?.email || ""}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Menu Items */}
+                    <div className="px-2 py-3 space-y-1">
+                      <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:bg-slate-800/60 hover:text-white transition-all">
+                        <User className="h-4 w-4" />
+                        <span>My Profile</span>
+                      </button>
+                      <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:bg-slate-800/60 hover:text-white transition-all">
+                        <Sparkles className="h-4 w-4" />
+                        <span>Preferences</span>
+                      </button>
+                      <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:bg-slate-800/60 hover:text-white transition-all">
+                        <Heart className="h-4 w-4" />
+                        <span>Saved Recommendations</span>
+                      </button>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="border-t border-slate-700/30" />
+
+                    {/* Logout */}
+                    <div className="px-2 py-3">
+                      <button
+                        onClick={() => {
+                          logout()
+                          setAccountMenuOpen(false)
+                          router.push("/auth/login")
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all font-medium"
+                      >
+                        <ArrowRight className="h-4 w-4" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -656,49 +735,51 @@ export default function DashboardPage() {
         </div>
 
         {/* BOTTOM KEEP GOING CTA BANNER */}
-        <div className="group relative flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 overflow-hidden rounded-2xl sm:rounded-3xl bg-[#054E45] p-3 sm:p-5 shadow-md hover:shadow-lg transition-all">
+        <div className="group relative flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-teal-600/20 to-cyan-600/15 p-3 sm:p-5 shadow-lg shadow-teal-600/10 border border-teal-500/20 hover:border-teal-500/40 hover:shadow-lg hover:shadow-teal-600/20 transition-all">
           <div className="flex items-center gap-2 sm:gap-3">
             <span className="flex-shrink-0 text-2xl sm:text-3xl drop-shadow-sm filter select-none">
               🏆
             </span>
             <div>
-              <h3 className="text-[10px] sm:text-xs leading-tight font-extrabold text-white">
+              <h3 className="text-[10px] sm:text-xs leading-tight font-extrabold text-slate-100">
                 Keep going, {user?.name?.split(" ")[0] || "Brian"}! 🎯
               </h3>
-              <p className="mt-0.5 text-[8px] sm:text-[9px] font-medium text-white/90">
-                You're {progress?.overallProgress || 68}% closer to your career
-                goal.
+              <p className="mt-0.5 text-[8px] sm:text-[9px] font-medium text-slate-300">
+                You're {progress?.overallProgress || 68}% closer to your career goal.
               </p>
             </div>
           </div>
-          <button className="relative z-10 rounded-full bg-white px-4 sm:px-5 py-2 sm:py-2.5 text-[8px] sm:text-[9px] font-black whitespace-nowrap text-[#054E45] shadow-md transition-all hover:bg-slate-50 active:scale-95">
-            Continue Roadmap
+          <button className="relative z-10 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 px-4 sm:px-5 py-2 sm:py-2.5 text-[8px] sm:text-[9px] font-black whitespace-nowrap text-white shadow-lg shadow-teal-500/30 transition-all active:scale-95">
+            Continue Learning →
           </button>
-        </div>
-      </main>
-
-      {/* STICKY BOTTOM NAV BAR */}
-      <nav className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-100 bg-white/90 px-2 sm:px-4 py-2 sm:py-3 backdrop-blur-md">
-        <div className="mx-auto flex max-w-md items-center justify-between md:max-w-6xl">
-          <NavItem icon={Home} label="Dashboard" active />
-          <NavItem icon={Compass} label="Explore" />
-          <button className="relative z-50 flex -translate-y-4 flex-col items-center justify-center min-h-11 min-w-11">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#F8FAFC] bg-teal-600 text-white shadow-lg transition-all active:scale-95 hover:shadow-xl">
-              <Plus className="h-5 w-5 sm:h-6 sm:w-6 stroke-[3]" />
-            </div>
-            <span className="mt-1 text-[8px] sm:text-[9px] font-black text-slate-500">
-              Plan
-            </span>
-          </button>
-          <NavItem
-            icon={MessageSquare}
-            label="Chats"
-            href="/dashboard/ai-chat"
-          />
-          <NavItem icon={User} label="Profile" />
-        </div>
-      </nav>
+        </div>45] shadow-md transition-all hover:bg-slate-50 active:scale-95">
+        Continue Roadmap
+      </button>
     </div>
+      </main >
+
+    {/* STICKY BOTTOM NAV BAR */ }
+    < nav className = "fixed right-0 bottom-0 left-0 z-40 border-t border-slate-100 bg-white/90 px-2 sm:px-4 py-2 sm:py-3 backdrop-blur-md" >
+      <div className="mx-auto flex max-w-md items-center justify-between md:max-w-6xl">
+        <NavItem icon={Home} label="Dashboard" active />
+        <NavItem icon={Compass} label="Explore" />
+        <button className="relative z-50 flex -translate-y-4 flex-col items-center justify-center min-h-11 min-w-11">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#F8FAFC] bg-teal-600 text-white shadow-lg transition-all active:scale-95 hover:shadow-xl">
+            <Plus className="h-5 w-5 sm:h-6 sm:w-6 stroke-[3]" />
+          </div>
+          <span className="mt-1 text-[8px] sm:text-[9px] font-black text-slate-500">
+            Plan
+          </span>
+        </button>
+        <NavItem
+          icon={MessageSquare}
+          label="Chats"
+          href="/dashboard/ai-chat"
+        />
+        <NavItem icon={User} label="Profile" />
+      </div>
+      </nav >
+    </div >
   )
 }
 
