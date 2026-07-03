@@ -482,10 +482,10 @@ export default function DashboardPage() {
                   className="flex w-72 sm:w-80 shrink-0 snap-start flex-col justify-between space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-3 sm:p-4 shadow-sm transition-all duration-300 hover:shadow-md hover:bg-slate-50 md:w-auto"
                 >
                   {/* Header elements */}
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     <div className="flex items-center justify-between">
                       <span
-                        className={`rounded-full px-3 py-1 text-[9px] font-black tracking-wider uppercase ${career.badge === "Top Match"
+                        className={`rounded-full px-2.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-[9px] font-black tracking-wider uppercase ${career.badge === "Top Match"
                           ? "bg-teal-50 text-teal-700"
                           : career.badge === "Fresh insight"
                             ? "bg-indigo-50 text-indigo-700"
@@ -495,24 +495,25 @@ export default function DashboardPage() {
                         {career.badge}
                       </span>
                       <button
-                        className="text-slate-400 transition-colors hover:text-red-400"
+                        className="text-slate-300 transition-colors hover:text-red-400"
                         aria-label="Save recommendation"
+                        onClick={() => toggleSaveRecommendation(career.id)}
                       >
-                        <Heart className="h-4 w-4" />
+                        <Heart className={`h-4 w-4 ${career.isSaved ? 'fill-red-400 text-red-400' : ''}`} />
                       </button>
                     </div>
 
                     {/* Recommendation preview */}
-                    <div className="flex justify-center rounded-2xl border border-slate-100/50 bg-slate-50/50 py-6">
-                      <Briefcase className="h-6 w-6 text-slate-400" />
+                    <div className="flex justify-center rounded-2xl border border-slate-100/50 bg-slate-50/50 py-4 sm:py-6">
+                      <Briefcase className="h-5 sm:h-6 w-5 sm:w-6 text-slate-400" />
                     </div>
 
                     {/* Title & info */}
                     <div>
-                      <h4 className="text-sm font-black text-slate-900">
+                      <h4 className="text-xs sm:text-sm font-black text-slate-900">
                         {career.title}
                       </h4>
-                      <p className="mt-1 line-clamp-3 text-[11px] leading-5 text-slate-500">
+                      <p className="mt-1 line-clamp-3 text-[10px] sm:text-[11px] leading-4 sm:leading-5 text-slate-500">
                         {career.description}
                       </p>
                     </div>
@@ -523,7 +524,7 @@ export default function DashboardPage() {
                     <div className="flex items-baseline justify-between gap-2">
                       {career.salary ? (
                         <span
-                          className={`text-xs font-black ${career.accentColor === "teal"
+                          className={`text-[9px] sm:text-xs font-black ${career.accentColor === "teal"
                             ? "text-teal-650"
                             : career.accentColor === "indigo"
                               ? "text-indigo-650"
@@ -533,8 +534,8 @@ export default function DashboardPage() {
                           {career.salary}
                         </span>
                       ) : null}
-                      <span className="rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-bold text-slate-500">
-                        <Briefcase className="mr-1 inline h-3 w-3" />
+                      <span className="rounded-full bg-slate-50 px-2 py-0.5 text-[8px] sm:text-[9px] font-bold text-slate-500">
+                        <Briefcase className="mr-1 inline h-2.5 sm:h-3 w-2.5 sm:w-3" />
                         {career.category || "Career"}
                       </span>
                     </div>
@@ -552,7 +553,7 @@ export default function DashboardPage() {
                           }}
                         />
                       </div>
-                      <span className="text-[10px] font-black whitespace-nowrap text-slate-400">
+                      <span className="text-[8px] sm:text-[9px] font-black whitespace-nowrap text-slate-400">
                         {Math.min(100, Math.max(0, career.matchPercentage))}%
                         match
                       </span>
@@ -561,9 +562,9 @@ export default function DashboardPage() {
                 </div>
               ))
             ) : (
-              <div className="w-full rounded-3xl border border-dashed border-slate-200 bg-white p-6 text-sm text-slate-500 shadow-sm md:col-span-3">
-                <div className="space-y-3">
-                  <p className="text-sm font-semibold text-slate-900">
+              <div className="w-full rounded-2xl sm:rounded-3xl border border-dashed border-slate-200 bg-white p-4 sm:p-6 text-xs sm:text-sm text-slate-500 shadow-sm md:col-span-2">
+                <div className="space-y-2 sm:space-y-3">
+                  <p className="text-xs sm:text-sm font-semibold text-slate-900">
                     No recommendations yet.
                   </p>
                   <p>
@@ -572,7 +573,7 @@ export default function DashboardPage() {
                   </p>
                   <Link
                     href="/dashboard/ai-chat"
-                    className="inline-flex items-center justify-center rounded-2xl bg-teal-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-teal-700"
+                    className="inline-flex items-center justify-center rounded-2xl bg-teal-600 px-3 sm:px-4 py-2 text-[9px] sm:text-xs font-bold text-white transition hover:bg-teal-700"
                   >
                     Chat with Pathfinder AI
                   </Link>
@@ -583,8 +584,8 @@ export default function DashboardPage() {
         </div>
 
         {/* YOUR TOOLS SECTION */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-extrabold tracking-tight text-slate-900">
+        <div className="space-y-3 sm:space-y-4">
+          <h3 className="text-xs sm:text-sm font-extrabold tracking-tight text-slate-900">
             Your Tools
           </h3>
 
@@ -592,61 +593,61 @@ export default function DashboardPage() {
             {/* Tool 1 */}
             <Link
               href="/dashboard/ai-chat"
-              className="flex flex-col space-y-3 rounded-3xl border border-[#CCECE6]/50 bg-[#E6F4F1]/60 p-4 text-left transition-all hover:bg-[#E6F4F1]"
+              className="flex flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-[#CCECE6]/50 bg-[#E6F4F1]/60 p-3 sm:p-4 text-left transition-all hover:bg-[#E6F4F1] hover:shadow-md hover:border-[#CCECE6]"
             >
-              <div className="text-teal-650 flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-sm">
-                <MessageSquare className="h-5 w-5 fill-[#E6F4F1] stroke-teal-600" />
+              <div className="text-teal-650 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-white shadow-sm">
+                <MessageSquare className="h-4 sm:h-5 w-4 sm:w-5 fill-[#E6F4F1] stroke-teal-600" />
               </div>
               <div>
-                <h4 className="text-xs leading-tight font-black text-slate-900">
+                <h4 className="text-[10px] sm:text-xs leading-tight font-black text-slate-900">
                   AI Discovery
                 </h4>
-                <p className="text-slate-450 mt-0.5 text-[9px] leading-tight font-bold">
+                <p className="text-slate-450 mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
                   Chat & explore careers
                 </p>
               </div>
             </Link>
 
             {/* Tool 2 */}
-            <div className="flex cursor-pointer flex-col space-y-3 rounded-3xl border border-[#DCFCE7]/60 bg-[#F0FDF4]/80 p-4 text-left transition-all hover:bg-[#F0FDF4]">
-              <div className="text-emerald-650 flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-sm">
-                <Zap className="h-5 w-5 fill-emerald-100 text-emerald-500" />
+            <div className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-[#DCFCE7]/60 bg-[#F0FDF4]/80 p-3 sm:p-4 text-left transition-all hover:bg-[#F0FDF4] hover:shadow-md hover:border-[#DCFCE7]">
+              <div className="text-emerald-650 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-white shadow-sm">
+                <Zap className="h-4 sm:h-5 w-4 sm:w-5 fill-emerald-100 text-emerald-500" />
               </div>
               <div>
-                <h4 className="text-xs leading-tight font-black text-slate-900">
+                <h4 className="text-[10px] sm:text-xs leading-tight font-black text-slate-900">
                   Skill Gap Analysis
                 </h4>
-                <p className="text-slate-450 mt-0.5 text-[9px] leading-tight font-bold">
+                <p className="text-slate-450 mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
                   Find & fix your gaps
                 </p>
               </div>
             </div>
 
             {/* Tool 3 */}
-            <div className="flex cursor-pointer flex-col space-y-3 rounded-3xl border border-[#FEF3C7] bg-[#FFFBEB] p-4 text-left transition-all hover:bg-[#FFFBEB]">
-              <div className="text-amber-650 flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-sm">
-                <Map className="h-5 w-5 text-amber-500" />
+            <div className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-[#FEF3C7] bg-[#FFFBEB] p-3 sm:p-4 text-left transition-all hover:bg-[#FFFBEB] hover:shadow-md hover:border-[#FECACA]">
+              <div className="text-amber-650 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-white shadow-sm">
+                <Map className="h-4 sm:h-5 w-4 sm:w-5 text-amber-500" />
               </div>
               <div>
-                <h4 className="text-xs leading-tight font-black text-slate-900">
+                <h4 className="text-[10px] sm:text-xs leading-tight font-black text-slate-900">
                   Career Roadmaps
                 </h4>
-                <p className="text-slate-450 mt-0.5 text-[9px] leading-tight font-bold">
+                <p className="text-slate-450 mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
                   Step-by-step guides
                 </p>
               </div>
             </div>
 
             {/* Tool 4 */}
-            <div className="flex cursor-pointer flex-col space-y-3 rounded-3xl border border-[#EDE9FE]/60 bg-[#F5F3FF]/80 p-4 text-left transition-all hover:bg-[#F5F3FF]">
-              <div className="text-indigo-650 flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-sm">
-                <BookOpen className="h-5 w-5 text-indigo-500" />
+            <div className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-[#EDE9FE]/60 bg-[#F5F3FF]/80 p-3 sm:p-4 text-left transition-all hover:bg-[#F5F3FF] hover:shadow-md hover:border-[#E9D5FF]">
+              <div className="text-indigo-650 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-white shadow-sm">
+                <BookOpen className="h-4 sm:h-5 w-4 sm:w-5 text-indigo-500" />
               </div>
               <div>
-                <h4 className="text-xs leading-tight font-black text-slate-900">
+                <h4 className="text-[10px] sm:text-xs leading-tight font-black text-slate-900">
                   Courses & Scholarships
                 </h4>
-                <p className="text-slate-450 mt-0.5 text-[9px] leading-tight font-bold">
+                <p className="text-slate-450 mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
                   Find opportunities
                 </p>
               </div>
@@ -655,37 +656,37 @@ export default function DashboardPage() {
         </div>
 
         {/* BOTTOM KEEP GOING CTA BANNER */}
-        <div className="group relative flex items-center justify-between overflow-hidden rounded-3xl bg-[#054E45] p-5 shadow-md">
-          <div className="flex items-center gap-3">
-            <span className="flex-shrink-0 text-3xl drop-shadow-sm filter select-none">
+        <div className="group relative flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 overflow-hidden rounded-2xl sm:rounded-3xl bg-[#054E45] p-3 sm:p-5 shadow-md hover:shadow-lg transition-all">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="flex-shrink-0 text-2xl sm:text-3xl drop-shadow-sm filter select-none">
               🏆
             </span>
             <div>
-              <h3 className="text-xs leading-tight font-extrabold text-white">
+              <h3 className="text-[10px] sm:text-xs leading-tight font-extrabold text-white">
                 Keep going, {user?.name?.split(" ")[0] || "Brian"}! 🎯
               </h3>
-              <p className="mt-0.5 text-[10px] font-medium text-white/90">
+              <p className="mt-0.5 text-[8px] sm:text-[9px] font-medium text-white/90">
                 You're {progress?.overallProgress || 68}% closer to your career
                 goal.
               </p>
             </div>
           </div>
-          <button className="relative z-10 rounded-full bg-white px-5 py-2.5 text-[10px] font-black whitespace-nowrap text-[#054E45] shadow-md transition-all hover:bg-slate-50 active:scale-95">
+          <button className="relative z-10 rounded-full bg-white px-4 sm:px-5 py-2 sm:py-2.5 text-[8px] sm:text-[9px] font-black whitespace-nowrap text-[#054E45] shadow-md transition-all hover:bg-slate-50 active:scale-95">
             Continue Roadmap
           </button>
         </div>
       </main>
 
       {/* STICKY BOTTOM NAV BAR */}
-      <nav className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-100 bg-white/90 px-4 py-2 backdrop-blur-md">
-        <div className="mx-auto flex max-w-md items-center justify-between">
+      <nav className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-100 bg-white/90 px-2 sm:px-4 py-2 sm:py-3 backdrop-blur-md">
+        <div className="mx-auto flex max-w-md items-center justify-between md:max-w-6xl">
           <NavItem icon={Home} label="Dashboard" active />
           <NavItem icon={Compass} label="Explore" />
-          <button className="relative z-50 flex -translate-y-4 flex-col items-center justify-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#F8FAFC] bg-teal-600 text-white shadow-lg transition-all active:scale-95">
-              <Plus className="h-6 w-6 stroke-[3]" />
+          <button className="relative z-50 flex -translate-y-4 flex-col items-center justify-center min-h-11 min-w-11">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#F8FAFC] bg-teal-600 text-white shadow-lg transition-all active:scale-95 hover:shadow-xl">
+              <Plus className="h-5 w-5 sm:h-6 sm:w-6 stroke-[3]" />
             </div>
-            <span className="mt-1 text-[9px] font-black text-slate-500">
+            <span className="mt-1 text-[8px] sm:text-[9px] font-black text-slate-500">
               Plan
             </span>
           </button>
@@ -711,11 +712,11 @@ interface NavItemProps {
 function NavItem({ icon: Icon, label, active, href }: NavItemProps) {
   const content = (
     <button
-      className={`flex flex-col items-center justify-center rounded-xl px-3 py-1.5 transition-all duration-300 ${active ? "text-teal-650" : "text-slate-400 hover:text-slate-600"
+      className={`flex flex-col items-center justify-center min-h-11 min-w-11 rounded-xl px-2 py-1.5 sm:px-3 sm:py-2 transition-all duration-300 ${active ? "text-teal-650" : "text-slate-400 hover:text-slate-600 hover:bg-slate-100/80"
         }`}
     >
-      <Icon className="mb-0.5 h-5 w-5" />
-      <span className="text-[9px] leading-none font-black">{label}</span>
+      <Icon className="mb-0.5 h-5 w-5 sm:h-6 sm:w-6" />
+      <span className="text-[8px] sm:text-[9px] leading-none font-black">{label}</span>
     </button>
   )
 

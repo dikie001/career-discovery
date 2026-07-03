@@ -4,7 +4,7 @@ import React, { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
-import { Mail, Lock, User, ArrowRight, CheckCircle2 } from "lucide-react"
+import { Mail, Lock, User, AlertCircle, Eye, EyeOff, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 import OnboardingQuestionnaire, { OnboardingData } from "@/components/onboarding/onboarding-questionnaire"
 
@@ -21,7 +21,8 @@ export default function SignupPage() {
     confirmPassword: "",
   })
   const [validationError, setValidationError] = useState<string | null>(null)
-  const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,16 +50,13 @@ export default function SignupPage() {
       return
     }
 
-    // Move to onboarding
     setStep("onboarding")
   }
 
   const handleOnboardingComplete = async (data: OnboardingData) => {
     try {
-      setOnboardingData(data)
       setSuccessMessage("Creating your profile...")
 
-      // Create account with onboarding data
       await signup({
         name: formData.name,
         email: formData.email,
@@ -67,12 +65,10 @@ export default function SignupPage() {
 
       setStep("success")
 
-      // Redirect after short delay to show success state
       setTimeout(() => {
         router.push("/dashboard")
       }, 2000)
     } catch {
-      // Error is handled by context
       setStep("onboarding")
     }
   }
@@ -80,39 +76,41 @@ export default function SignupPage() {
   return (
     <>
       {step === "credentials" && (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center px-4">
-          <div className="w-full max-w-md space-y-8">
-            {/* Header */}
-            <div className="text-center space-y-2">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-600 mx-auto">
-                <span className="text-lg font-bold text-white">P</span>
-              </div>
-              <h1 className="text-3xl font-bold text-slate-50">Pathfinder</h1>
-              <p className="text-sm text-slate-400">Discover. Plan. Succeed.</p>
-            </div>
+        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center px-4 py-8 sm:px-6">
+          {/* Background decoration */}
+          <div className="fixed inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+          </div>
 
-            {/* Step Indicator */}
-            <div className="flex items-center justify-center gap-2">
-              <div className="h-2 w-8 rounded-full bg-teal-500"></div>
-              <div className="h-2 w-2 rounded-full bg-slate-700"></div>
-              <div className="h-2 w-2 rounded-full bg-slate-700"></div>
+          <div className="w-full max-w-sm space-y-8 relative z-10">
+            {/* Header */}
+            <div className="text-center space-y-3">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 mx-auto shadow-lg shadow-teal-500/50">
+                <span className="text-xl font-bold text-white">P</span>
+              </div>
+              <div className="space-y-1">
+                <h1 className="text-3xl font-bold text-white">Join Pathfinder</h1>
+                <p className="text-sm text-slate-400">Step 1 of 2</p>
+              </div>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5 animate-fadeInUp">
               {(error || validationError) && (
-                <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400 animate-in fade-in duration-300">
-                  {error || validationError}
+                <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-4 flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-red-300">{error || validationError}</span>
                 </div>
               )}
 
               {/* Name */}
               <div className="space-y-2">
-                <label htmlFor="name" className="block text-sm font-medium text-slate-200">
+                <label htmlFor="name" className="block text-sm font-semibold text-slate-200">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 pointer-events-none" />
                   <input
                     id="name"
                     name="name"
@@ -120,7 +118,7 @@ export default function SignupPage() {
                     value={formData.name}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 transition-colors disabled:opacity-50"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
                     placeholder="John Doe"
                   />
                 </div>
@@ -128,11 +126,11 @@ export default function SignupPage() {
 
               {/* Email */}
               <div className="space-y-2">
-                <label htmlFor="email" className="block text-sm font-medium text-slate-200">
+                <label htmlFor="email" className="block text-sm font-semibold text-slate-200">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 pointer-events-none" />
                   <input
                     id="email"
                     name="email"
@@ -140,7 +138,7 @@ export default function SignupPage() {
                     value={formData.email}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 transition-colors disabled:opacity-50"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -148,81 +146,80 @@ export default function SignupPage() {
 
               {/* Password */}
               <div className="space-y-2">
-                <label htmlFor="password" className="block text-sm font-medium text-slate-200">
+                <label htmlFor="password" className="block text-sm font-semibold text-slate-200">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 pointer-events-none" />
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 transition-colors disabled:opacity-50"
+                    className="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
                     placeholder="••••••••"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-400 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
                 </div>
               </div>
 
               {/* Confirm Password */}
               <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-200">
+                <label htmlFor="confirmPassword" className="block text-sm font-semibold text-slate-200">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 pointer-events-none" />
                   <input
                     id="confirmPassword"
                     name="confirmPassword"
-                    type="password"
+                    type={showConfirm ? "text" : "password"}
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 transition-colors disabled:opacity-50"
+                    className="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
                     placeholder="••••••••"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-400 transition-colors"
+                  >
+                    {showConfirm ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
                 </div>
               </div>
 
-              {/* Submit */}
+              {/* Submit Button */}
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-10 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full h-12 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold rounded-xl transition-all disabled:opacity-60 shadow-lg shadow-teal-500/20 mt-2"
               >
-                {isLoading ? (
-                  <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    Validating...
-                  </>
-                ) : (
-                  <>
-                    Next Step
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
+                {isLoading ? "Creating account..." : "Continue"}
               </Button>
+
+              {/* Footer */}
+              <div className="pt-2 text-center space-y-3">
+                <p className="text-sm text-slate-400">
+                  Already have an account?{" "}
+                  <Link href="/auth/login" className="text-teal-400 hover:text-teal-300 font-semibold transition-colors">
+                    Sign in
+                  </Link>
+                </p>
+                <p className="text-xs text-slate-500 px-4">
+                  By signing up, you agree to our Terms of Service and Privacy Policy
+                </p>
+              </div>
             </form>
-
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-700"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-slate-950 text-slate-400">or</span>
-              </div>
-            </div>
-
-            {/* Login Link */}
-            <p className="text-center text-sm text-slate-400">
-              Already have an account?{" "}
-              <Link href="/auth/login" className="font-semibold text-teal-400 hover:text-teal-300 transition-colors">
-                Login
-              </Link>
-            </p>
           </div>
         </div>
       )}
@@ -232,29 +229,18 @@ export default function SignupPage() {
       )}
 
       {step === "success" && (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center px-4">
-          <div className="w-full max-w-md text-center space-y-6 animate-in fade-in duration-500">
-            <div className="flex justify-center">
-              <div className="relative w-20 h-20">
-                <div className="absolute inset-0 bg-teal-500/20 rounded-full animate-pulse" />
-                <div className="relative flex items-center justify-center h-full rounded-full bg-teal-500/10 border-2 border-teal-500">
-                  <CheckCircle2 className="h-10 w-10 text-teal-400" />
+        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center px-4 py-8">
+          <div className="w-full max-w-sm space-y-8 text-center relative z-10">
+            <div className="space-y-4">
+              <div className="flex justify-center">
+                <div className="rounded-full bg-gradient-to-br from-teal-500/20 to-cyan-500/20 border border-teal-500/50 p-4">
+                  <CheckCircle2 className="h-12 w-12 text-teal-400" />
                 </div>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-slate-50">Welcome! 🎉</h2>
-              <p className="text-slate-400">Your account has been created successfully.</p>
-            </div>
-
-            <div className="p-4 rounded-lg bg-teal-500/10 border border-teal-500/20 space-y-2">
-              <p className="text-sm text-slate-300">{successMessage}</p>
-              <p className="text-xs text-slate-400">Redirecting to your dashboard...</p>
-            </div>
-
-            <div className="h-1 w-16 rounded-full bg-teal-500/20 mx-auto overflow-hidden">
-              <div className="h-full bg-teal-500 animate-pulse" style={{ animation: "slideIn 2s ease-in-out" }} />
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold text-white">Account Created!</h1>
+                <p className="text-sm text-slate-400">{successMessage}</p>
+              </div>
             </div>
           </div>
         </div>
