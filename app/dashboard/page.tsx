@@ -61,6 +61,7 @@ export default function DashboardPage() {
     }>
   >([])
   const [recommendationsLoading, setRecommendationsLoading] = useState(false)
+  const [savedRecs, setSavedRecs] = useState<string[]>([])
 
   useEffect(() => {
     loadData()
@@ -125,13 +126,39 @@ export default function DashboardPage() {
     }
   }, [token])
 
+  // Load saved recommendation ids from localStorage for quick client-side favorites
+  useEffect(() => {
+    if (!user?.id) return
+    try {
+      const raw = localStorage.getItem(`pathfinder:saved-recommendations:${user.id}`)
+      if (raw) setSavedRecs(JSON.parse(raw))
+    } catch (e) {
+      console.warn("Failed to load saved recommendations", e)
+    }
+  }, [user?.id])
+
+  const toggleSaveRecommendation = (id: string) => {
+    setSavedRecs((prev) => {
+      const exists = prev.includes(id)
+      const next = exists ? prev.filter((x) => x !== id) : [id, ...prev]
+      if (user?.id) {
+        try {
+          localStorage.setItem(`pathfinder:saved-recommendations:${user.id}`, JSON.stringify(next))
+        } catch (e) {
+          console.warn("Failed to persist saved recommendations", e)
+        }
+      }
+      return next
+    })
+  }
+
   const recommendationCards = useMemo(() => {
     if (recommendations.length > 0) {
       return recommendations.map((item, index) => ({
         id: item.id,
         title: item.title,
         description: item.description || "Recommended by Pathfinder AI.",
-        salary: item.salaryRange || "Tailored for your profile",
+        salary: item.salaryRange || "",
         matchPercentage: item.matchPercentage || Math.max(78, 90 - index),
         badge:
           index === 0
@@ -148,11 +175,12 @@ export default function DashboardPage() {
         accentColor: index === 0 ? "teal" : index === 1 ? "indigo" : "amber",
         reason: item.reason || item.description,
         category: item.category || "Career",
+        isSaved: savedRecs.includes(item.id),
       }))
     }
 
     return []
-  }, [recommendations])
+  }, [recommendations, savedRecs])
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
