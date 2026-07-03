@@ -4,7 +4,7 @@ import React, { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
-import { Mail, Lock, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react"
+import { Mail, Lock, CheckCircle2, AlertCircle, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 
 type LoginStep = "form" | "verifying" | "success" | "error"
@@ -18,7 +18,7 @@ export default function LoginPage() {
     password: "",
   })
   const [localError, setLocalError] = useState<string | null>(null)
-  const [verifyingEmail, setVerifyingEmail] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -36,14 +36,10 @@ export default function LoginPage() {
     }
 
     try {
-      setVerifyingEmail(formData.email)
       setStep("verifying")
-
       await login(formData)
-
       setStep("success")
 
-      // Redirect after showing success
       setTimeout(() => {
         router.push("/dashboard")
       }, 1500)
@@ -60,183 +56,157 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center px-4 py-8 sm:px-6">
+      {/* Background decoration */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="w-full max-w-sm space-y-8 relative z-10">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-600 mx-auto">
-            <span className="text-lg font-bold text-white">P</span>
+        <div className="text-center space-y-3">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 mx-auto shadow-lg shadow-teal-500/50">
+            <span className="text-xl font-bold text-white">P</span>
           </div>
-          <h1 className="text-3xl font-bold text-slate-50">Pathfinder</h1>
-          <p className="text-sm text-slate-400">Discover. Plan. Succeed.</p>
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold text-white">Pathfinder</h1>
+            <p className="text-sm text-slate-400">Welcome back</p>
+          </div>
         </div>
-
-        {/* Main Form */}
-        {step === "form" && (
-          <>
-            <form onSubmit={handleSubmit} className="space-y-4 animate-in fade-in duration-300">
-              {localError && (
-                <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400 flex items-start gap-2 animate-in shake">
-                  <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <span>{localError}</span>
-                </div>
-              )}
-
-              {/* Email */}
-              <div className="space-y-2">
-                <label htmlFor="email" className="block text-sm font-medium text-slate-200">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    disabled={isLoading}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    placeholder="you@example.com"
-                  />
-                </div>
-              </div>
-
-              {/* Password */}
-              <div className="space-y-2">
-                <label htmlFor="password" className="block text-sm font-medium text-slate-200">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    disabled={isLoading}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    placeholder="••••••••"
-                  />
-                </div>
-              </div>
-
-              {/* Submit */}
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full h-10 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    Logging in...
-                  </>
-                ) : (
-                  <>
-                    Login
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
-              </Button>
-            </form>
-
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-700"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-slate-950 text-slate-400">or</span>
-              </div>
-            </div>
-
-            {/* Sign Up Link */}
-            <p className="text-center text-sm text-slate-400">
-              Don&apos;t have an account?{" "}
-              <Link href="/auth/signup" className="font-semibold text-teal-400 hover:text-teal-300 transition-colors">
-                Create one
-              </Link>
-            </p>
-          </>
-        )}
 
         {/* Verifying State */}
         {step === "verifying" && (
-          <div className="space-y-6 animate-in fade-in duration-300">
-            <div className="flex flex-col items-center gap-4">
-              <div className="relative w-16 h-16">
-                <div className="absolute inset-0 bg-teal-500/20 rounded-full animate-pulse" />
-                <div className="relative flex items-center justify-center h-full rounded-full bg-teal-500/10 border-2 border-teal-500">
-                  <div className="h-8 w-8 animate-spin rounded-full border-3 border-teal-400 border-t-transparent" />
+          <div className="space-y-6 animate-fadeInUp">
+            <div className="text-center space-y-4">
+              <div className="flex justify-center">
+                <div className="relative w-16 h-16">
+                  <div className="absolute inset-0 rounded-full border-2 border-slate-700"></div>
+                  <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-teal-500 border-r-teal-500 animate-spin"></div>
                 </div>
               </div>
-
-              <div className="text-center space-y-1">
-                <h2 className="text-xl font-semibold text-slate-50">Verifying your credentials</h2>
-                <p className="text-sm text-slate-400">{verifyingEmail}</p>
+              <div className="space-y-1">
+                <p className="text-slate-300 font-medium">Signing you in...</p>
+                <p className="text-xs text-slate-500">{formData.email}</p>
               </div>
-            </div>
-
-            <div className="space-y-2 text-xs text-slate-400 text-center">
-              <p>Please wait while we verify your account...</p>
             </div>
           </div>
         )}
 
         {/* Success State */}
         {step === "success" && (
-          <div className="space-y-6 animate-in fade-in duration-300">
-            <div className="flex justify-center">
-              <div className="relative w-16 h-16">
-                <div className="absolute inset-0 bg-teal-500/20 rounded-full animate-pulse" />
-                <div className="relative flex items-center justify-center h-full rounded-full bg-teal-500/10 border-2 border-teal-500">
-                  <CheckCircle2 className="h-8 w-8 text-teal-400 animate-in zoom-in-50 duration-500" />
+          <div className="space-y-6 animate-scaleIn">
+            <div className="text-center space-y-4">
+              <div className="flex justify-center">
+                <div className="rounded-full bg-gradient-to-br from-teal-500/20 to-cyan-500/20 border border-teal-500/50 p-4">
+                  <CheckCircle2 className="h-8 w-8 text-teal-400" />
                 </div>
               </div>
-            </div>
-
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-semibold text-slate-50">Welcome back! 👋</h2>
-              <p className="text-sm text-slate-400">Redirecting to your dashboard...</p>
+              <div className="space-y-1">
+                <p className="text-slate-50 font-semibold">Welcome!</p>
+                <p className="text-sm text-slate-400">Redirecting to your dashboard...</p>
+              </div>
             </div>
           </div>
         )}
 
         {/* Error State */}
         {step === "error" && (
-          <div className="space-y-6 animate-in fade-in duration-300">
-            <div className="flex justify-center">
-              <div className="relative w-16 h-16">
-                <div className="absolute inset-0 bg-red-500/20 rounded-full" />
-                <div className="relative flex items-center justify-center h-full rounded-full bg-red-500/10 border-2 border-red-500">
-                  <AlertCircle className="h-8 w-8 text-red-400" />
+          <div className="space-y-6 animate-fadeInUp">
+            <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-4 space-y-3">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+                <div className="flex-1 space-y-1">
+                  <p className="font-semibold text-red-300">Login Failed</p>
+                  <p className="text-sm text-red-200">{localError}</p>
                 </div>
               </div>
             </div>
-
-            <div className="text-center space-y-3">
-              <h2 className="text-xl font-semibold text-slate-50">Login Failed</h2>
-              <p className="text-sm text-red-400">{localError}</p>
-
-              <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700">
-                <p className="text-xs text-slate-400">Make sure your email and password are correct.</p>
-              </div>
-
-              <button
-                onClick={handleRetry}
-                className="w-full px-4 py-2.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold transition-colors flex items-center justify-center gap-2"
-              >
-                Try Again
-                <ArrowRight className="h-4 w-4" />
-              </button>
-
-              <Link href="/auth/signup" className="block text-sm text-teal-400 hover:text-teal-300 transition-colors">
-                Create a new account
-              </Link>
-            </div>
+            <Button
+              onClick={handleRetry}
+              className="w-full h-12 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition-colors"
+            >
+              Try Again
+            </Button>
           </div>
+        )}
+
+        {/* Form State */}
+        {step === "form" && (
+          <form onSubmit={handleSubmit} className="space-y-5 animate-fadeInUp">
+            {localError && (
+              <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-4 flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+                <span className="text-sm text-red-300">{localError}</span>
+              </div>
+            )}
+
+            {/* Email */}
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-slate-200">
+                Email
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 pointer-events-none" />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
+                  placeholder="you@example.com"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div className="space-y-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-slate-200">
+                Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 pointer-events-none" />
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                  className="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-400 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-12 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold rounded-xl transition-all disabled:opacity-60 shadow-lg shadow-teal-500/20"
+            >
+              {isLoading ? "Signing in..." : "Sign In"}
+            </Button>
+
+            {/* Footer */}
+            <div className="pt-4 text-center space-y-4">
+              <p className="text-sm text-slate-400">
+                Don't have an account?{" "}
+                <Link href="/auth/signup" className="text-teal-400 hover:text-teal-300 font-semibold transition-colors">
+                  Sign up
+                </Link>
+              </p>
+            </div>
+          </form>
         )}
       </div>
     </div>

@@ -238,29 +238,29 @@ export default function DashboardPage() {
   const activeCareers = recommendationCards
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] pb-24 font-sans text-slate-800 antialiased">
-      {/* HEADER SECTION */}
-      <header className="sticky top-0 z-40 border-b border-slate-100 bg-white shadow-sm">
-        <div className="mx-auto flex max-w-md items-center justify-between px-4 py-3.5 md:max-w-4xl">
-          <div className="flex items-center gap-3">
-            <div className="text-teal-650 flex h-10 w-10 items-center justify-center rounded-2xl border border-teal-100/80 bg-teal-50 text-xl font-black shadow-sm">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 pb-28 sm:pb-24 font-sans text-slate-800 antialiased">
+      {/* HEADER - Mobile Optimized */}
+      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-sm">
+        <div className="mx-auto flex w-full items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 md:max-w-6xl md:mx-auto">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1">
+            <div className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-teal-200 bg-gradient-to-br from-teal-50 to-cyan-50 text-base sm:text-lg font-black text-teal-700 shadow-sm">
               P
             </div>
-            <div>
-              <h1 className="text-base leading-tight font-black text-slate-900">
+            <div className="min-w-0">
+              <h1 className="text-xs sm:text-sm leading-tight font-black text-slate-900 truncate">
                 Pathfinder
               </h1>
-              <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              <p className="text-[8px] sm:text-[9px] font-bold tracking-wider text-slate-400 uppercase hidden xs:block">
                 Discover. Plan. Succeed.
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <button className="relative rounded-xl p-2 text-slate-400 transition-colors hover:text-slate-600">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <button className="relative rounded-lg sm:rounded-xl p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 transition-colors hover:shadow-md">
+              <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-red-500 ring-2 ring-white"></span>
             </button>
-            <div className="bg-slate-105 relative h-9 w-9 overflow-hidden rounded-full border border-slate-200 shadow-sm">
+            <div className="bg-slate-100 relative h-8 sm:h-9 w-8 sm:w-9 overflow-hidden rounded-full border border-slate-300 shadow-sm flex-shrink-0">
               <Image
                 src="/bot.png"
                 alt="Profile"
@@ -272,34 +272,33 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* DASHBOARD HERO */}
-      <main className="mx-auto max-w-md space-y-6 px-4 pt-5 md:max-w-4xl">
-        {/* GREETING & LOCATION ROW */}
-        <div className="flex items-center justify-between">
+      {/* MAIN CONTENT - Mobile Optimized */}
+      <main className="mx-auto w-full max-w-md space-y-4 sm:space-y-6 px-3 sm:px-4 pt-4 sm:pt-5 md:max-w-6xl md:mx-auto">
+        {/* GREETING ROW */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
           <div className="space-y-0.5">
-            <h2 className="text-2xl font-black tracking-tight text-slate-900">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 leading-tight">
               Hey {user?.name?.split(" ")[0] || "Brian"}! 👋
             </h2>
-            <p className="text-xs font-semibold text-slate-400">
-              Ready to build a career that fits you?
+            <p className="text-xs sm:text-sm font-semibold text-slate-500">
+              Ready to build your perfect career?
             </p>
           </div>
-          <div className="border-slate-150 flex cursor-pointer items-center gap-1.5 rounded-full border bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50">
+          <div className="border border-slate-200 flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs sm:text-sm font-bold text-slate-700 shadow-sm hover:shadow-md transition-all cursor-pointer hover:bg-slate-50 w-fit">
             <span>🇰🇪</span>
-            <span>{user?.location || "Nairobi, Kenya"}</span>
-            <span className="text-slate-450 text-[10px]">▼</span>
+            <span className="truncate">{user?.location || "Nairobi"}</span>
           </div>
         </div>
 
-        {/* ASK PATHFINDER AI GRADIENT CARD */}
+        {/* ASK PATHFINDER AI CARD - Mobile Optimized */}
         <Link
           href="/dashboard/ai-chat"
-          className="group relative block min-h-40 overflow-hidden rounded-3xl bg-linear-to-r from-[#0F766E] to-[#044E44] px-5 pt-5 pb-4 shadow-sm transition-all duration-300 hover:shadow-xl"
+          className="group relative block min-h-36 sm:min-h-40 overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-teal-600 to-teal-700 px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4 shadow-md hover:shadow-lg transition-all duration-300"
         >
           <div className="absolute top-0 right-0 -mt-16 -mr-16 h-48 w-48 rounded-full bg-white/5 blur-3xl" />
 
           {/* Robot — absolute, bottom-left, behind everything */}
-          <div className="absolute top-2 left-[-26] z-0 h-32 w-40 drop-shadow-xl">
+          <div className="absolute top-1 sm:top-2 left-[-20] sm:left-[-26] z-0 h-28 sm:h-32 w-36 sm:w-40 drop-shadow-lg">
             <Image
               src="/bot.png"
               alt="Pathfinder AI"
@@ -309,62 +308,62 @@ export default function DashboardPage() {
             />
           </div>
 
-          {/* Content — z-10 so it floats on top of robot */}
-          <div className="relative z-10 flex flex-col gap-3">
-            {/* Title — left padding clears the robot width */}
-            <div className="pl-24">
-              <h3 className="text-[15px] leading-tight font-bold tracking-tight text-white">
+          {/* Content - z-10 to float on top */}
+          <div className="relative z-10 flex flex-col gap-2 sm:gap-3">
+            {/* Title with padding to clear robot */}
+            <div className="pl-20 sm:pl-24">
+              <h3 className="text-xs sm:text-sm leading-tight font-bold tracking-tight text-white">
                 Ask Pathfinder AI
               </h3>
-              <p className="mt-0.5 text-[11px] font-medium text-teal-100">
+              <p className="mt-0.5 text-[9px] sm:text-[10px] font-medium text-teal-100">
                 Your personal career guide
               </p>
             </div>
 
-            {/* Search bar — full width, sits on top of robot lower body */}
-            <div className="flex w-full items-center justify-between rounded-full bg-white py-1.5 pr-1.5 pl-5 shadow-md">
-              <span className="truncate pr-4 text-[13px] font-medium text-slate-400">
-                What would you like to explore today?
+            {/* Search bar */}
+            <div className="flex w-full items-center justify-between rounded-full bg-white py-1.5 pr-1.5 pl-4 sm:pl-5 shadow-md">
+              <span className="truncate pr-3 sm:pr-4 text-xs sm:text-[13px] font-medium text-slate-400">
+                Explore careers...
               </span>
               <button
                 disabled
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#059669] text-white shadow-sm"
+                className="flex h-8 sm:h-9 w-8 sm:w-9 shrink-0 items-center justify-center rounded-full bg-teal-600 text-white shadow-sm hover:bg-teal-700 transition-colors"
               >
-                <Send className="-ml-0.5 h-4 w-4 fill-white" />
+                <Send className="-ml-0.5 h-3.5 w-3.5 sm:h-4 sm:w-4 fill-white" />
               </button>
             </div>
 
-            {/* Pills — full width, also on top of robot */}
-            <div className="flex flex-wrap gap-2">
-              <span className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[10px] font-medium text-white">
-                <Sparkles className="h-3 w-3" /> Best careers for me
+            {/* Pills - responsive text size */}
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
+              <span className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 sm:px-3 py-1 text-[8px] sm:text-[9px] font-medium text-white hover:bg-white/20 transition-colors">
+                <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" /> Best for me
               </span>
-              <span className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[10px] font-medium text-white">
-                <BarChart2 className="h-3 w-3" /> Skills I need
+              <span className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 sm:px-3 py-1 text-[8px] sm:text-[9px] font-medium text-white hover:bg-white/20 transition-colors">
+                <BarChart2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" /> Skills needed
               </span>
-              <span className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[10px] font-medium text-white">
-                <BookOpen className="h-3 w-3" /> Courses to study
+              <span className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 sm:px-3 py-1 text-[8px] sm:text-[9px] font-medium text-white hover:bg-white/20 transition-colors">
+                <BookOpen className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" /> Courses
               </span>
             </div>
           </div>
         </Link>
 
         {/* YOUR CAREER PROGRESS CARD */}
-        <div className="space-y-5 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div className="space-y-4 sm:space-y-5 rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-extrabold tracking-tight text-slate-900">
+            <h3 className="text-xs sm:text-sm font-extrabold tracking-tight text-slate-900">
               Your Career Progress
             </h3>
             <Link
               href="#"
-              className="text-teal-650 text-xs font-bold transition-colors hover:text-teal-700"
+              className="text-teal-650 text-[10px] sm:text-xs font-bold transition-colors hover:text-teal-700"
             >
               View full report
             </Link>
           </div>
 
           {progress ? (
-            <div className="flex flex-col items-center gap-6 rounded-2xl border border-slate-100 bg-slate-50/50 p-4 md:flex-row md:gap-8">
+            <div className="flex flex-col items-center gap-4 sm:gap-6 rounded-2xl border border-slate-100 bg-slate-50/50 p-3 sm:p-4 md:flex-row md:gap-8">
               {/* Overall Ring */}
               <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
                 <svg
@@ -395,7 +394,7 @@ export default function DashboardPage() {
                   <span className="text-base leading-none font-black text-slate-900">
                     {progress.overallProgress}%
                   </span>
-                  <span className="mt-1 text-[8px] leading-none font-bold text-slate-400 uppercase">
+                  <span className="mt-1 text-[7px] sm:text-[8px] leading-none font-bold text-slate-400 uppercase">
                     Progress
                   </span>
                 </div>
@@ -421,27 +420,25 @@ export default function DashboardPage() {
                         className="z-10 flex flex-1 flex-col items-center gap-1.5"
                       >
                         <div
-                          className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-extrabold shadow-md ${
-                            isCompleted
-                              ? "bg-teal-600 text-white"
-                              : isActive
-                                ? "border-2 border-teal-600 bg-white text-teal-600"
-                                : "border border-slate-300 bg-white text-slate-400"
-                          }`}
+                          className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-extrabold shadow-md ${isCompleted
+                            ? "bg-teal-600 text-white"
+                            : isActive
+                              ? "border-2 border-teal-600 bg-white text-teal-600"
+                              : "border border-slate-300 bg-white text-slate-400"
+                            }`}
                         >
                           {isCompleted ? "✓" : index + 1}
                         </div>
-                        <span className="text-center text-[10px] leading-tight font-black text-slate-900">
+                        <span className="text-center text-[9px] sm:text-[10px] leading-tight font-black text-slate-900">
                           {stage.title}
                         </span>
                         <span
-                          className={`text-[8px] font-bold uppercase ${
-                            isCompleted
-                              ? "text-teal-650"
-                              : isActive
-                                ? "text-amber-500"
-                                : "text-slate-400"
-                          }`}
+                          className={`text-[7px] sm:text-[8px] font-bold uppercase ${isCompleted
+                            ? "text-teal-650"
+                            : isActive
+                              ? "text-amber-500"
+                              : "text-slate-400"
+                            }`}
                         >
                           {statusText}
                         </span>
@@ -451,7 +448,7 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-500">
+            <div className="rounded-2xl sm:rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-4 sm:p-6 text-xs sm:text-sm text-slate-500">
               Start chatting with Pathfinder AI and your career progress will
               update automatically here.
             </div>
@@ -459,42 +456,41 @@ export default function DashboardPage() {
         </div>
 
         {/* RECOMMENDED FOR YOU SECTION */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-extrabold tracking-tight text-slate-900">
+            <h3 className="text-xs sm:text-sm font-extrabold tracking-tight text-slate-900">
               Recommended for you
             </h3>
             <Link
               href="#"
-              className="text-teal-650 text-xs font-bold transition-colors hover:text-teal-700"
+              className="text-teal-650 text-[10px] sm:text-xs font-bold transition-colors hover:text-teal-700"
             >
               See all
             </Link>
           </div>
 
           {/* Cards carousel - horizontal scrolling on mobile, grid on desktop */}
-          <div className="custom-scrollbar -mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-1 pt-1 pb-3 md:mx-0 md:grid md:grid-cols-3 md:overflow-x-visible md:pb-0">
+          <div className="custom-scrollbar -mx-1 flex snap-x snap-mandatory gap-3 sm:gap-4 overflow-x-auto scroll-smooth px-1 pt-1 pb-3 md:mx-0 md:grid md:grid-cols-2 md:gap-3 md:overflow-x-visible md:pb-0">
             {recommendationsLoading && recommendations.length === 0 ? (
-              <div className="w-full rounded-3xl border border-slate-100 bg-white p-5 text-sm text-slate-500 shadow-sm md:col-span-3">
+              <div className="w-full rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-4 sm:p-5 text-xs sm:text-sm text-slate-500 shadow-sm md:col-span-2">
                 Loading your latest recommendations...
               </div>
             ) : activeCareers.length > 0 ? (
               activeCareers.map((career) => (
                 <div
                   key={career.id}
-                  className="flex w-72 shrink-0 snap-start flex-col justify-between space-y-4 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md md:w-auto"
+                  className="flex w-72 sm:w-80 shrink-0 snap-start flex-col justify-between space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-3 sm:p-4 shadow-sm transition-all duration-300 hover:shadow-md hover:bg-slate-50 md:w-auto"
                 >
                   {/* Header elements */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <span
-                        className={`rounded-full px-3 py-1 text-[9px] font-black tracking-wider uppercase ${
-                          career.badge === "Top Match"
-                            ? "bg-teal-50 text-teal-700"
-                            : career.badge === "Fresh insight"
-                              ? "bg-indigo-50 text-indigo-700"
-                              : "bg-amber-50 text-amber-700"
-                        }`}
+                        className={`rounded-full px-3 py-1 text-[9px] font-black tracking-wider uppercase ${career.badge === "Top Match"
+                          ? "bg-teal-50 text-teal-700"
+                          : career.badge === "Fresh insight"
+                            ? "bg-indigo-50 text-indigo-700"
+                            : "bg-amber-50 text-amber-700"
+                          }`}
                       >
                         {career.badge}
                       </span>
@@ -527,13 +523,12 @@ export default function DashboardPage() {
                     <div className="flex items-baseline justify-between gap-2">
                       {career.salary ? (
                         <span
-                          className={`text-xs font-black ${
-                            career.accentColor === "teal"
-                              ? "text-teal-650"
-                              : career.accentColor === "indigo"
-                                ? "text-indigo-650"
-                                : "text-amber-650"
-                          }`}
+                          className={`text-xs font-black ${career.accentColor === "teal"
+                            ? "text-teal-650"
+                            : career.accentColor === "indigo"
+                              ? "text-indigo-650"
+                              : "text-amber-650"
+                            }`}
                         >
                           {career.salary}
                         </span>
@@ -546,13 +541,12 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-2">
                       <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
                         <div
-                          className={`h-full rounded-full transition-all duration-1000 ${
-                            career.accentColor === "teal"
-                              ? "bg-teal-600"
-                              : career.accentColor === "indigo"
-                                ? "bg-indigo-600"
-                                : "bg-amber-600"
-                          }`}
+                          className={`h-full rounded-full transition-all duration-1000 ${career.accentColor === "teal"
+                            ? "bg-teal-600"
+                            : career.accentColor === "indigo"
+                              ? "bg-indigo-600"
+                              : "bg-amber-600"
+                            }`}
                           style={{
                             width: `${Math.min(100, Math.max(0, career.matchPercentage))}%`,
                           }}
@@ -717,9 +711,8 @@ interface NavItemProps {
 function NavItem({ icon: Icon, label, active, href }: NavItemProps) {
   const content = (
     <button
-      className={`flex flex-col items-center justify-center rounded-xl px-3 py-1.5 transition-all duration-300 ${
-        active ? "text-teal-650" : "text-slate-400 hover:text-slate-600"
-      }`}
+      className={`flex flex-col items-center justify-center rounded-xl px-3 py-1.5 transition-all duration-300 ${active ? "text-teal-650" : "text-slate-400 hover:text-slate-600"
+        }`}
     >
       <Icon className="mb-0.5 h-5 w-5" />
       <span className="text-[9px] leading-none font-black">{label}</span>
