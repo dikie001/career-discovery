@@ -124,7 +124,7 @@ export default function SignupPage() {
                     value={formData.name}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all disabled:opacity-50"
                     placeholder="John Doe"
                   />
                 </div>
@@ -144,7 +144,7 @@ export default function SignupPage() {
                     value={formData.email}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all disabled:opacity-50"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -164,7 +164,7 @@ export default function SignupPage() {
                     value={formData.password}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
+                    className="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all disabled:opacity-50"
                     placeholder="••••••••"
                   />
                   <button
@@ -191,7 +191,7 @@ export default function SignupPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
+                    className="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all disabled:opacity-50"
                     placeholder="••••••••"
                   />
                   <button

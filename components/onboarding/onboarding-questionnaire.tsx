@@ -252,7 +252,7 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
                   value={data.targetRole}
                   onChange={handleRoleChange}
                   placeholder="e.g., Product Manager, Data Analyst..."
-                  className="w-full px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl border-2 border-slate-700/50 bg-slate-800/30 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/30 transition-all outline-none text-base font-medium backdrop-blur-sm hover:border-slate-600/70"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl border-2 border-slate-700/50 bg-slate-800/30 text-slate-50 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all backdrop-blur-sm hover:border-slate-600/70"
                 />
                 <p className="text-xs sm:text-sm text-slate-400 px-2 flex items-center gap-2">
                   <Lightbulb className="h-3 w-3 sm:h-4 sm:w-4 text-teal-400 flex-shrink-0" />
@@ -289,11 +289,11 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
         </div>
 
         {/* Navigation */}
-        <div className="mt-8 sm:mt-10 flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 justify-between">
+        <div className="mt-8 sm:mt-10 flex gap-3 sm:gap-4 justify-between">
           <button
             onClick={handlePrev}
             disabled={currentStep === 0}
-            className="flex items-center justify-center sm:justify-start gap-2 px-5 sm:px-6 py-3 rounded-xl sm:rounded-2xl border-2 border-slate-700/50 text-slate-300 hover:border-slate-600 hover:bg-slate-800/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-semibold text-sm sm:text-base backdrop-blur-sm group"
+            className="flex items-center justify-center gap-2 px-5 sm:px-6 py-3 rounded-xl sm:rounded-2xl border-2 border-slate-700/50 text-slate-300 hover:border-slate-600 hover:bg-slate-800/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-semibold text-sm sm:text-base backdrop-blur-sm group"
           >
             <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 group-hover:-translate-x-1 transition-transform" />
             <span>Previous</span>
