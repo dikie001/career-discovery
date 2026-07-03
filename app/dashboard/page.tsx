@@ -752,34 +752,9 @@ export default function DashboardPage() {
           <button className="relative z-10 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 px-4 sm:px-5 py-2 sm:py-2.5 text-[8px] sm:text-[9px] font-black whitespace-nowrap text-white shadow-lg shadow-teal-500/30 transition-all active:scale-95">
             Continue Learning →
           </button>
-        </div>45] shadow-md transition-all hover:bg-slate-50 active:scale-95">
-        Continue Roadmap
-      </button>
+        </div>
+      </main>
     </div>
-      </main >
-
-    {/* STICKY BOTTOM NAV BAR */ }
-    < nav className = "fixed right-0 bottom-0 left-0 z-40 border-t border-slate-100 bg-white/90 px-2 sm:px-4 py-2 sm:py-3 backdrop-blur-md" >
-      <div className="mx-auto flex max-w-md items-center justify-between md:max-w-6xl">
-        <NavItem icon={Home} label="Dashboard" active />
-        <NavItem icon={Compass} label="Explore" />
-        <button className="relative z-50 flex -translate-y-4 flex-col items-center justify-center min-h-11 min-w-11">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#F8FAFC] bg-teal-600 text-white shadow-lg transition-all active:scale-95 hover:shadow-xl">
-            <Plus className="h-5 w-5 sm:h-6 sm:w-6 stroke-[3]" />
-          </div>
-          <span className="mt-1 text-[8px] sm:text-[9px] font-black text-slate-500">
-            Plan
-          </span>
-        </button>
-        <NavItem
-          icon={MessageSquare}
-          label="Chats"
-          href="/dashboard/ai-chat"
-        />
-        <NavItem icon={User} label="Profile" />
-      </div>
-      </nav >
-    </div >
   )
 }
 
