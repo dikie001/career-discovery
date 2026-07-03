@@ -76,11 +76,17 @@ export default function SignupPage() {
   return (
     <>
       {step === "credentials" && (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center px-4 py-8 sm:px-6">
-          {/* Background decoration */}
+        <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex flex-col items-center justify-center px-4 py-8 sm:px-6 relative overflow-hidden">
+          {/* Background decoration - enhanced */}
           <div className="fixed inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+            {/* Top right - teal */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/8 rounded-full blur-3xl" />
+            {/* Bottom left - cyan */}
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/8 rounded-full blur-3xl" />
+            {/* Center - purple accent */}
+            <div className="absolute top-1/3 left-1/2 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+            {/* Grid pattern overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
           </div>
 
           <div className="w-full max-w-sm space-y-8 relative z-10">
@@ -229,18 +235,68 @@ export default function SignupPage() {
       )}
 
       {step === "success" && (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center px-4 py-8">
-          <div className="w-full max-w-sm space-y-8 text-center relative z-10">
-            <div className="space-y-4">
+        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black flex flex-col items-center justify-center px-4 py-8">
+          {/* Background decoration */}
+          <div className="fixed inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-500/3 rounded-full blur-3xl" />
+          </div>
+
+          {/* Modal backdrop */}
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
+
+          {/* Success Modal */}
+          <div className="relative z-10 w-full max-w-md">
+            <div className="rounded-3xl border border-teal-500/30 bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur-xl p-8 sm:p-10 shadow-2xl shadow-teal-500/10 space-y-8 animate-scaleIn">
+              {/* Icon */}
               <div className="flex justify-center">
-                <div className="rounded-full bg-gradient-to-br from-teal-500/20 to-cyan-500/20 border border-teal-500/50 p-4">
-                  <CheckCircle2 className="h-12 w-12 text-teal-400" />
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-full blur-xl opacity-40" />
+                  <div className="relative rounded-full bg-gradient-to-br from-teal-500/20 to-cyan-500/20 border border-teal-500/50 p-5">
+                    <CheckCircle2 className="h-16 w-16 text-teal-400" />
+                  </div>
                 </div>
               </div>
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold text-white">Account Created!</h1>
-                <p className="text-sm text-slate-400">{successMessage}</p>
+
+              {/* Content */}
+              <div className="space-y-3 text-center">
+                <h1 className="text-4xl font-black bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
+                  Welcome to Pathfinder!
+                </h1>
+                <p className="text-slate-400 text-base leading-relaxed">
+                  Your account is ready. Let's discover your ideal career path.
+                </p>
               </div>
+
+              {/* Decorative elements */}
+              <div className="grid grid-cols-3 gap-3 pt-2">
+                <div className="rounded-lg bg-teal-500/10 border border-teal-500/20 p-3 text-center">
+                  <div className="text-xs font-bold text-slate-400 mb-1">Step 1</div>
+                  <div className="text-lg font-black text-teal-400">✓</div>
+                </div>
+                <div className="rounded-lg bg-cyan-500/10 border border-cyan-500/20 p-3 text-center">
+                  <div className="text-xs font-bold text-slate-400 mb-1">Step 2</div>
+                  <div className="text-lg font-black text-cyan-400">✓</div>
+                </div>
+                <div className="rounded-lg bg-slate-700/20 border border-slate-600/20 p-3 text-center">
+                  <div className="text-xs font-bold text-slate-400 mb-1">Next</div>
+                  <div className="text-lg font-black text-slate-500">→</div>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-bold text-lg transition-all duration-300 shadow-lg shadow-teal-500/30 hover:shadow-teal-500/50 transform hover:scale-105 active:scale-95"
+              >
+                Get Started
+              </button>
+
+              {/* Footer message */}
+              <p className="text-xs text-slate-500 text-center">
+                Redirecting automatically in a moment...
+              </p>
             </div>
           </div>
         </div>

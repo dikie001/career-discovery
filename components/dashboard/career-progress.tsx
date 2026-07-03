@@ -10,12 +10,12 @@ interface CareerProgressProps {
 
 export function CareerProgressComponent({ progress }: CareerProgressProps) {
   return (
-    <div className="rounded-lg bg-white border border-gray-200 p-4">
-      <h2 className="mb-4 text-sm font-semibold text-gray-900">
+    <div className="rounded-2xl bg-slate-900/40 border border-slate-800/50 backdrop-blur-sm p-6 shadow-lg shadow-slate-950/20">
+      <h2 className="mb-6 text-sm font-bold text-slate-100 uppercase tracking-wider">
         Career Progress
       </h2>
 
-      <div className="mb-4 flex items-center justify-center">
+      <div className="mb-6 flex items-center justify-center">
         <div className="relative h-32 w-32">
           <svg className="h-full w-full" viewBox="0 0 100 100">
             <circle
@@ -23,7 +23,7 @@ export function CareerProgressComponent({ progress }: CareerProgressProps) {
               cy="50"
               r="45"
               fill="none"
-              stroke="#e5e7eb"
+              stroke="rgb(30, 41, 59)"
               strokeWidth="6"
             />
             <circle
@@ -31,7 +31,7 @@ export function CareerProgressComponent({ progress }: CareerProgressProps) {
               cy="50"
               r="45"
               fill="none"
-              stroke="#14b8a6"
+              stroke="rgb(20, 184, 166)"
               strokeWidth="6"
               strokeDasharray={`${(progress.overallProgress / 100) * 282.6} 282.6`}
               strokeLinecap="round"
@@ -39,15 +39,15 @@ export function CareerProgressComponent({ progress }: CareerProgressProps) {
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-3xl font-bold text-teal-600">
+            <span className="text-3xl font-bold text-teal-400">
               {progress.overallProgress}%
             </span>
-            <span className="text-xs text-gray-600">Progress</span>
+            <span className="text-xs text-slate-400 font-medium">Progress</span>
           </div>
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {progress.stages.map((stage, index) => (
           <ProgressStageItem key={stage.id} stage={stage} index={index} />
         ))}
@@ -66,53 +66,60 @@ function ProgressStageItem({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
-        return "bg-teal-100";
+        return "bg-teal-500/20 border-teal-500/40";
       case "in_progress":
-        return "bg-yellow-100";
+        return "bg-amber-500/20 border-amber-500/40";
       case "pending":
-        return "bg-gray-100";
+        return "bg-slate-800/20 border-slate-700/40";
       default:
-        return "bg-gray-100";
+        return "bg-slate-800/20 border-slate-700/40";
     }
   };
 
   const getStatusTextColor = (status: string) => {
     switch (status) {
       case "completed":
-        return "text-teal-700";
+        return "text-teal-400";
       case "in_progress":
-        return "text-yellow-700";
+        return "text-amber-400";
       case "pending":
-        return "text-gray-700";
+        return "text-slate-500";
       default:
-        return "text-gray-700";
+        return "text-slate-500";
+    }
+  };
+
+  const getCircleStyle = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "bg-teal-500";
+      case "in_progress":
+        return "bg-amber-500 ring-2 ring-amber-500/50";
+      case "pending":
+        return "bg-slate-700";
+      default:
+        return "bg-slate-700";
     }
   };
 
   return (
-    <div className="flex items-start gap-3">
+    <div className="flex items-start gap-4 p-3 rounded-lg border border-slate-800/30 bg-slate-800/20 hover:bg-slate-800/30 transition-all">
       <div className="flex flex-col items-center">
         <div
-          className={`flex h-8 w-8 items-center justify-center rounded-full text-white ${stage.status === "completed"
-              ? "bg-teal-600"
-              : stage.status === "in_progress"
-                ? "bg-yellow-500"
-                : "bg-gray-300"
-            }`}
+          className={`flex h-9 w-9 items-center justify-center rounded-full text-white font-bold shadow-lg ${getCircleStyle(stage.status)}`}
         >
           {stage.status === "completed" ? (
-            <Check className="h-4 w-4" />
+            <Check className="h-5 w-5" />
           ) : (
-            <Circle className="h-4 w-4" />
+            <span className="text-xs">{index + 1}</span>
           )}
         </div>
-        {index < 3 && <div className="h-6 w-0.5 bg-gray-300" />}
       </div>
       <div className="flex-1 pt-0.5">
-        <div className="flex items-center gap-2">
-          <h3 className="font-medium text-gray-900 text-xs">{stage.title}</h3>
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="font-semibold text-slate-100">{stage.title}</h3>
           <span
-            className={`text-xs font-medium ${getStatusTextColor(stage.status)} ${getStatusColor(stage.status)} rounded-full px-1.5 py-0.5`}
+            className={`text-xs font-bold px-2 py-1 rounded-full border ${getStatusColor(stage.status)} ${getStatusTextColor(stage.status)} uppercase tracking-wider`}
           >
             {stage.status === "in_progress"
               ? "In Progress"
@@ -121,7 +128,7 @@ function ProgressStageItem({
                 : "Pending"}
           </span>
         </div>
-        <p className="text-xs text-gray-600 mt-0.5">{stage.description}</p>
+        <p className="text-xs text-slate-400">{stage.description}</p>
       </div>
     </div>
   );

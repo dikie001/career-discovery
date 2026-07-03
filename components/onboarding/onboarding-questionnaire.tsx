@@ -119,11 +119,13 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center px-4 py-6 sm:px-6 lg:py-8 overflow-hidden">
-      {/* Animated background */}
+    <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex flex-col items-center justify-center px-4 py-6 sm:px-6 lg:py-8 overflow-hidden relative">
+      {/* Animated background - enhanced */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-teal-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 sm:w-96 sm:h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-teal-500/8 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 sm:w-96 sm:h-96 bg-cyan-500/8 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/3 w-64 h-64 sm:w-96 sm:h-96 bg-purple-500/5 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
       </div>
 
       <div className="w-full max-w-2xl relative z-10">

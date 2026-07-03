@@ -218,16 +218,16 @@ export default function DashboardPage() {
 
   if (isLoading && !progress) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50">
+      <div className="flex h-screen items-center justify-center bg-slate-950">
         <div className="animate-fadeInUp text-center">
           <div className="relative mx-auto mb-6 h-16 w-16">
             <div className="absolute inset-0 rounded-full border-4 border-teal-600/30"></div>
-            <div className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-teal-600 border-r-teal-600"></div>
+            <div className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-teal-400 border-r-teal-400"></div>
           </div>
-          <p className="text-slate-650 font-bold">
+          <p className="font-bold text-slate-100">
             Loading your career journey...
           </p>
-          <p className="text-slate-450 mt-2 text-xs">
+          <p className="text-slate-400 mt-2 text-xs">
             Preparing personalized insights
           </p>
         </div>
@@ -238,29 +238,29 @@ export default function DashboardPage() {
   const activeCareers = recommendationCards
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 pb-28 sm:pb-24 font-sans text-slate-800 antialiased">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 pb-28 sm:pb-24 font-sans text-slate-100 antialiased">
       {/* HEADER - Mobile Optimized */}
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-sm">
+      <header className="sticky top-0 z-40 border-b border-slate-800/50 bg-slate-950/95 backdrop-blur-lg shadow-lg shadow-slate-950/50">
         <div className="mx-auto flex w-full items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 md:max-w-6xl md:mx-auto">
           <div className="flex items-center gap-2 sm:gap-3 flex-1">
-            <div className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-teal-200 bg-gradient-to-br from-teal-50 to-cyan-50 text-base sm:text-lg font-black text-teal-700 shadow-sm">
+            <div className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-teal-500/40 bg-gradient-to-br from-teal-500/30 to-cyan-500/20 text-base sm:text-lg font-black text-teal-300 shadow-lg shadow-teal-500/20">
               P
             </div>
             <div className="min-w-0">
-              <h1 className="text-xs sm:text-sm leading-tight font-black text-slate-900 truncate">
+              <h1 className="text-xs sm:text-sm leading-tight font-black text-slate-100 truncate">
                 Pathfinder
               </h1>
-              <p className="text-[8px] sm:text-[9px] font-bold tracking-wider text-slate-400 uppercase hidden xs:block">
+              <p className="text-[8px] sm:text-[9px] font-bold tracking-wider text-slate-500 uppercase hidden xs:block">
                 Discover. Plan. Succeed.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            <button className="relative rounded-lg sm:rounded-xl p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 transition-colors hover:shadow-md">
+            <button className="relative rounded-lg sm:rounded-xl p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-all">
               <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-red-500 ring-2 ring-white"></span>
+              <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-red-500 ring-2 ring-slate-950 shadow-lg shadow-red-500/50"></span>
             </button>
-            <div className="bg-slate-100 relative h-8 sm:h-9 w-8 sm:w-9 overflow-hidden rounded-full border border-slate-300 shadow-sm flex-shrink-0">
+            <div className="bg-slate-800 relative h-8 sm:h-9 w-8 sm:w-9 overflow-hidden rounded-full border border-slate-700/50 shadow-md flex-shrink-0">
               <Image
                 src="/bot.png"
                 alt="Profile"
@@ -277,14 +277,14 @@ export default function DashboardPage() {
         {/* GREETING ROW */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
           <div className="space-y-0.5">
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 leading-tight">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-100 leading-tight">
               Hey {user?.name?.split(" ")[0] || "Brian"}! 👋
             </h2>
-            <p className="text-xs sm:text-sm font-semibold text-slate-500">
+            <p className="text-xs sm:text-sm font-semibold text-slate-400">
               Ready to build your perfect career?
             </p>
           </div>
-          <div className="border border-slate-200 flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs sm:text-sm font-bold text-slate-700 shadow-sm hover:shadow-md transition-all cursor-pointer hover:bg-slate-50 w-fit">
+          <div className="border border-slate-700/50 flex items-center gap-1.5 rounded-full bg-slate-800/40 px-3 py-1.5 text-xs sm:text-sm font-bold text-slate-300 shadow-md hover:shadow-lg hover:bg-slate-800/60 transition-all cursor-pointer w-fit">
             <span>🇰🇪</span>
             <span className="truncate">{user?.location || "Nairobi"}</span>
           </div>
@@ -293,12 +293,12 @@ export default function DashboardPage() {
         {/* ASK PATHFINDER AI CARD - Mobile Optimized */}
         <Link
           href="/dashboard/ai-chat"
-          className="group relative block min-h-36 sm:min-h-40 overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-teal-600 to-teal-700 px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4 shadow-md hover:shadow-lg transition-all duration-300"
+          className="group relative block min-h-36 sm:min-h-40 overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-teal-600/80 to-teal-700/80 px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4 shadow-xl shadow-teal-600/20 hover:shadow-2xl hover:shadow-teal-600/30 transition-all duration-300 border border-teal-500/20"
         >
           <div className="absolute top-0 right-0 -mt-16 -mr-16 h-48 w-48 rounded-full bg-white/5 blur-3xl" />
 
           {/* Robot — absolute, bottom-left, behind everything */}
-          <div className="absolute top-1 sm:top-2 left-[-20] sm:left-[-26] z-0 h-28 sm:h-32 w-36 sm:w-40 drop-shadow-lg">
+          <div className="absolute top-1 sm:top-2 left-[-20] sm:left-[-26] z-0 h-28 sm:h-32 w-36 sm:w-40 drop-shadow-lg opacity-90">
             <Image
               src="/bot.png"
               alt="Pathfinder AI"
@@ -349,21 +349,21 @@ export default function DashboardPage() {
         </Link>
 
         {/* YOUR CAREER PROGRESS CARD */}
-        <div className="space-y-4 sm:space-y-5 rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md transition-all">
+        <div className="space-y-4 sm:space-y-5 rounded-2xl sm:rounded-3xl border border-slate-800/50 bg-slate-900/40 backdrop-blur-sm p-4 sm:p-5 shadow-lg shadow-slate-950/20 hover:shadow-lg hover:bg-slate-900/50 transition-all">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs sm:text-sm font-extrabold tracking-tight text-slate-900">
+            <h3 className="text-xs sm:text-sm font-extrabold tracking-tight text-slate-100">
               Your Career Progress
             </h3>
             <Link
               href="#"
-              className="text-teal-650 text-[10px] sm:text-xs font-bold transition-colors hover:text-teal-700"
+              className="text-teal-400 hover:text-teal-300 text-[10px] sm:text-xs font-bold transition-colors"
             >
               View full report
             </Link>
           </div>
 
           {progress ? (
-            <div className="flex flex-col items-center gap-4 sm:gap-6 rounded-2xl border border-slate-100 bg-slate-50/50 p-3 sm:p-4 md:flex-row md:gap-8">
+            <div className="flex flex-col items-center gap-4 sm:gap-6 rounded-2xl border border-slate-800/50 bg-slate-800/30 p-3 sm:p-4 md:flex-row md:gap-8">
               {/* Overall Ring */}
               <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
                 <svg
@@ -421,23 +421,23 @@ export default function DashboardPage() {
                       >
                         <div
                           className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-extrabold shadow-md ${isCompleted
-                            ? "bg-teal-600 text-white"
+                            ? "bg-teal-500 text-white"
                             : isActive
-                              ? "border-2 border-teal-600 bg-white text-teal-600"
-                              : "border border-slate-300 bg-white text-slate-400"
+                              ? "border-2 border-teal-500 bg-slate-800 text-teal-400"
+                              : "border border-slate-700 bg-slate-800 text-slate-400"
                             }`}
                         >
                           {isCompleted ? "✓" : index + 1}
                         </div>
-                        <span className="text-center text-[9px] sm:text-[10px] leading-tight font-black text-slate-900">
+                        <span className="text-center text-[9px] sm:text-[10px] leading-tight font-black text-slate-100">
                           {stage.title}
                         </span>
                         <span
                           className={`text-[7px] sm:text-[8px] font-bold uppercase ${isCompleted
-                            ? "text-teal-650"
+                            ? "text-teal-400"
                             : isActive
-                              ? "text-amber-500"
-                              : "text-slate-400"
+                              ? "text-amber-400"
+                              : "text-slate-500"
                             }`}
                         >
                           {statusText}
@@ -448,7 +448,7 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl sm:rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-4 sm:p-6 text-xs sm:text-sm text-slate-500">
+            <div className="rounded-2xl sm:rounded-3xl border border-dashed border-slate-200 bg-white p-4 sm:p-6 text-xs sm:text-sm text-slate-500 shadow-sm md:col-span-2">
               Start chatting with Pathfinder AI and your career progress will
               update automatically here.
             </div>
@@ -458,12 +458,12 @@ export default function DashboardPage() {
         {/* RECOMMENDED FOR YOU SECTION */}
         <div className="space-y-3 sm:space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs sm:text-sm font-extrabold tracking-tight text-slate-900">
+            <h3 className="text-xs sm:text-sm font-extrabold tracking-tight text-slate-100">
               Recommended for you
             </h3>
             <Link
               href="#"
-              className="text-teal-650 text-[10px] sm:text-xs font-bold transition-colors hover:text-teal-700"
+              className="text-teal-400 hover:text-teal-300 text-[10px] sm:text-xs font-bold transition-colors"
             >
               See all
             </Link>
@@ -472,24 +472,24 @@ export default function DashboardPage() {
           {/* Cards carousel - horizontal scrolling on mobile, grid on desktop */}
           <div className="custom-scrollbar -mx-1 flex snap-x snap-mandatory gap-3 sm:gap-4 overflow-x-auto scroll-smooth px-1 pt-1 pb-3 md:mx-0 md:grid md:grid-cols-2 md:gap-3 md:overflow-x-visible md:pb-0">
             {recommendationsLoading && recommendations.length === 0 ? (
-              <div className="w-full rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-4 sm:p-5 text-xs sm:text-sm text-slate-500 shadow-sm md:col-span-2">
+              <div className="w-full rounded-2xl sm:rounded-3xl border border-slate-800/50 bg-slate-900/40 p-4 sm:p-5 text-xs sm:text-sm text-slate-400 shadow-lg md:col-span-2">
                 Loading your latest recommendations...
               </div>
             ) : activeCareers.length > 0 ? (
               activeCareers.map((career) => (
                 <div
                   key={career.id}
-                  className="flex w-72 sm:w-80 shrink-0 snap-start flex-col justify-between space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-3 sm:p-4 shadow-sm transition-all duration-300 hover:shadow-md hover:bg-slate-50 md:w-auto"
+                  className="flex w-72 sm:w-80 shrink-0 snap-start flex-col justify-between space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl border border-slate-800/50 bg-slate-900/40 backdrop-blur-sm p-3 sm:p-4 shadow-lg shadow-slate-950/20 transition-all duration-300 hover:shadow-xl hover:bg-slate-900/60 hover:border-slate-700/50 md:w-auto"
                 >
                   {/* Header elements */}
                   <div className="space-y-2 sm:space-y-3">
                     <div className="flex items-center justify-between">
                       <span
                         className={`rounded-full px-2.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-[9px] font-black tracking-wider uppercase ${career.badge === "Top Match"
-                          ? "bg-teal-50 text-teal-700"
+                          ? "bg-teal-500/30 text-teal-300 border border-teal-500/50"
                           : career.badge === "Fresh insight"
-                            ? "bg-indigo-50 text-indigo-700"
-                            : "bg-amber-50 text-amber-700"
+                            ? "bg-indigo-500/30 text-indigo-300 border border-indigo-500/50"
+                            : "bg-amber-500/30 text-amber-300 border border-amber-500/50"
                           }`}
                       >
                         {career.badge}
@@ -504,16 +504,16 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Recommendation preview */}
-                    <div className="flex justify-center rounded-2xl border border-slate-100/50 bg-slate-50/50 py-4 sm:py-6">
-                      <Briefcase className="h-5 sm:h-6 w-5 sm:w-6 text-slate-400" />
+                    <div className="flex justify-center rounded-2xl border border-slate-800/50 bg-slate-800/30 py-4 sm:py-6">
+                      <Briefcase className="h-5 sm:h-6 w-5 sm:w-6 text-slate-500" />
                     </div>
 
                     {/* Title & info */}
                     <div>
-                      <h4 className="text-xs sm:text-sm font-black text-slate-900">
+                      <h4 className="text-xs sm:text-sm font-black text-slate-100">
                         {career.title}
                       </h4>
-                      <p className="mt-1 line-clamp-3 text-[10px] sm:text-[11px] leading-4 sm:leading-5 text-slate-500">
+                      <p className="mt-1 line-clamp-3 text-[10px] sm:text-[11px] leading-4 sm:leading-5 text-slate-400">
                         {career.description}
                       </p>
                     </div>
@@ -585,7 +585,7 @@ export default function DashboardPage() {
 
         {/* YOUR TOOLS SECTION */}
         <div className="space-y-3 sm:space-y-4">
-          <h3 className="text-xs sm:text-sm font-extrabold tracking-tight text-slate-900">
+          <h3 className="text-xs sm:text-sm font-extrabold tracking-tight text-slate-100">
             Your Tools
           </h3>
 
@@ -593,61 +593,61 @@ export default function DashboardPage() {
             {/* Tool 1 */}
             <Link
               href="/dashboard/ai-chat"
-              className="flex flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-[#CCECE6]/50 bg-[#E6F4F1]/60 p-3 sm:p-4 text-left transition-all hover:bg-[#E6F4F1] hover:shadow-md hover:border-[#CCECE6]"
+              className="flex flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-teal-600/30 bg-teal-500/15 backdrop-blur-sm p-3 sm:p-4 text-left transition-all hover:bg-teal-500/20 hover:shadow-lg hover:shadow-teal-600/20 hover:border-teal-500/50"
             >
-              <div className="text-teal-650 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-white shadow-sm">
-                <MessageSquare className="h-4 sm:h-5 w-4 sm:w-5 fill-[#E6F4F1] stroke-teal-600" />
+              <div className="text-teal-400 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-slate-800/50 shadow-md">
+                <MessageSquare className="h-4 sm:h-5 w-4 sm:w-5 fill-teal-400/20 stroke-teal-400" />
               </div>
               <div>
-                <h4 className="text-[10px] sm:text-xs leading-tight font-black text-slate-900">
+                <h4 className="text-[10px] sm:text-xs leading-tight font-black text-slate-100">
                   AI Discovery
                 </h4>
-                <p className="text-slate-450 mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
+                <p className="text-slate-400 mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
                   Chat & explore careers
                 </p>
               </div>
             </Link>
 
             {/* Tool 2 */}
-            <div className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-[#DCFCE7]/60 bg-[#F0FDF4]/80 p-3 sm:p-4 text-left transition-all hover:bg-[#F0FDF4] hover:shadow-md hover:border-[#DCFCE7]">
-              <div className="text-emerald-650 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-white shadow-sm">
-                <Zap className="h-4 sm:h-5 w-4 sm:w-5 fill-emerald-100 text-emerald-500" />
+            <div className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-emerald-600/30 bg-emerald-500/15 backdrop-blur-sm p-3 sm:p-4 text-left transition-all hover:bg-emerald-500/20 hover:shadow-lg hover:shadow-emerald-600/20 hover:border-emerald-500/50">
+              <div className="text-emerald-400 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-slate-800/50 shadow-md">
+                <Zap className="h-4 sm:h-5 w-4 sm:w-5 fill-emerald-400/20 text-emerald-400" />
               </div>
               <div>
-                <h4 className="text-[10px] sm:text-xs leading-tight font-black text-slate-900">
+                <h4 className="text-[10px] sm:text-xs leading-tight font-black text-slate-100">
                   Skill Gap Analysis
                 </h4>
-                <p className="text-slate-450 mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
+                <p className="text-slate-400 mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
                   Find & fix your gaps
                 </p>
               </div>
             </div>
 
             {/* Tool 3 */}
-            <div className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-[#FEF3C7] bg-[#FFFBEB] p-3 sm:p-4 text-left transition-all hover:bg-[#FFFBEB] hover:shadow-md hover:border-[#FECACA]">
-              <div className="text-amber-650 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-white shadow-sm">
-                <Map className="h-4 sm:h-5 w-4 sm:w-5 text-amber-500" />
+            <div className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-amber-600/30 bg-amber-500/15 backdrop-blur-sm p-3 sm:p-4 text-left transition-all hover:bg-amber-500/20 hover:shadow-lg hover:shadow-amber-600/20 hover:border-amber-500/50">
+              <div className="text-amber-400 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-slate-800/50 shadow-md">
+                <Map className="h-4 sm:h-5 w-4 sm:w-5 text-amber-400" />
               </div>
               <div>
-                <h4 className="text-[10px] sm:text-xs leading-tight font-black text-slate-900">
+                <h4 className="text-[10px] sm:text-xs leading-tight font-black text-slate-100">
                   Career Roadmaps
                 </h4>
-                <p className="text-slate-450 mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
+                <p className="text-slate-400 mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
                   Step-by-step guides
                 </p>
               </div>
             </div>
 
             {/* Tool 4 */}
-            <div className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-[#EDE9FE]/60 bg-[#F5F3FF]/80 p-3 sm:p-4 text-left transition-all hover:bg-[#F5F3FF] hover:shadow-md hover:border-[#E9D5FF]">
-              <div className="text-indigo-650 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-white shadow-sm">
-                <BookOpen className="h-4 sm:h-5 w-4 sm:w-5 text-indigo-500" />
+            <div className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-indigo-600/30 bg-indigo-500/15 backdrop-blur-sm p-3 sm:p-4 text-left transition-all hover:bg-indigo-500/20 hover:shadow-lg hover:shadow-indigo-600/20 hover:border-indigo-500/50">
+              <div className="text-indigo-400 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-slate-800/50 shadow-md">
+                <BookOpen className="h-4 sm:h-5 w-4 sm:w-5 text-indigo-400" />
               </div>
               <div>
-                <h4 className="text-[10px] sm:text-xs leading-tight font-black text-slate-900">
+                <h4 className="text-[10px] sm:text-xs leading-tight font-black text-slate-100">
                   Courses & Scholarships
                 </h4>
-                <p className="text-slate-450 mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
+                <p className="text-slate-400 mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
                   Find opportunities
                 </p>
               </div>
