@@ -127,17 +127,7 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
       </div>
 
       <div className="w-full max-w-2xl relative z-10">
-        {/* Header */}
-        <div className="mb-8 sm:mb-12 text-center space-y-3 sm:space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-full bg-teal-500/15 border border-teal-500/40 backdrop-blur-md">
-            <Zap className="h-4 w-4 text-teal-400 animate-pulse flex-shrink-0" />
-            <span className="text-xs sm:text-sm font-semibold text-teal-400">Career Discovery</span>
-          </div>
-          <div className="space-y-2">
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">Build Your Career Path</h1>
-            <p className="text-sm sm:text-base text-slate-400 px-2">Tell us about yourself for personalized recommendations</p>
-          </div>
-        </div>
+
 
         {/* Progress */}
         <div className="mb-8 sm:mb-10 space-y-3 sm:space-y-4">
@@ -180,7 +170,7 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
                   >
                     <div className="space-y-2 sm:space-y-3 flex flex-col items-center">
                       <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300 ${isSelected ? "bg-teal-500/40 scale-110" : "bg-slate-800/50 group-hover:scale-105"}`}>
-                        <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${isSelected ? "text-teal-300 animate-bounce" : "text-slate-400 group-hover:text-teal-400"}`} />
+                        <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${isSelected ? "text-teal-300 " : "text-slate-400 group-hover:text-teal-400"}`} />
                       </div>
                       <span className={`font-semibold text-xs sm:text-sm text-center leading-tight ${isSelected ? "text-teal-50" : "text-slate-300 group-hover:text-slate-100"}`}>
                         {option.label}
@@ -232,7 +222,7 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
                 >
                   <div className="space-y-2 sm:space-y-3">
                     <div className={`inline-flex p-2 sm:p-3 rounded-lg sm:rounded-xl transition-all ${data.experienceLevel === option.id ? "bg-teal-500/40 scale-110" : "bg-slate-800/50 group-hover:scale-105"}`}>
-                      <Target className={`h-5 w-5 sm:h-6 sm:w-6 ${data.experienceLevel === option.id ? "text-teal-300 animate-bounce" : "text-slate-400 group-hover:text-teal-400"}`} />
+                      <Target className={`h-5 w-5 sm:h-6 sm:w-6 ${data.experienceLevel === option.id ? "text-teal-300" : "text-slate-400 group-hover:text-teal-400"}`} />
                     </div>
                     <div>
                       <div className={`font-bold text-base sm:text-lg ${data.experienceLevel === option.id ? "text-teal-50" : "text-slate-200 group-hover:text-slate-100"}`}>
