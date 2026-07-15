@@ -23,6 +23,8 @@ import {
   Compass,
   BarChart2,
   Briefcase,
+  Moon,
+  Sun,
 } from "lucide-react"
 import Link from "next/link"
 import { CareerProgressComponent } from "@/components/dashboard/career-progress"
@@ -65,6 +67,12 @@ export default function DashboardPage() {
   const [recommendationsLoading, setRecommendationsLoading] = useState(false)
   const [savedRecs, setSavedRecs] = useState<string[]>([])
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("dashboard-theme") as "light" | "dark") || "light"
+    }
+    return "light"
+  })
 
   useEffect(() => {
     loadData()
@@ -751,6 +759,42 @@ export default function DashboardPage() {
           </button>
         </div>
       </main>
+
+      {/* STICKY BOTTOM NAV BAR */}
+      <nav className={`fixed right-0 bottom-0 left-0 z-40 border-t transition-all duration-300 ${theme === "light"
+        ? "border-slate-100 bg-white/90 text-slate-900"
+        : "border-slate-800 bg-slate-950/90 text-slate-100"
+        } px-2 sm:px-4 py-2 sm:py-3 backdrop-blur-md`}>
+        <div className="mx-auto flex max-w-md items-center justify-between md:max-w-6xl">
+          <NavItem icon={Home} label="Dashboard" active theme={theme} />
+          <NavItem icon={Compass} label="Explore" theme={theme} />
+          <button
+            onClick={() => {
+              const newTheme = theme === "light" ? "dark" : "light"
+              setTheme(newTheme)
+              localStorage.setItem("dashboard-theme", newTheme)
+            }}
+            className="relative z-50 flex -translate-y-4 flex-col items-center justify-center min-h-11 min-w-11">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 transition-all active:scale-95 hover:shadow-xl"
+              style={{
+                borderColor: theme === "light" ? "#F8FAFC" : "#1e293b",
+                backgroundColor: theme === "light" ? "#0d9488" : "#0f766e",
+                color: "white"
+              }}>
+              {theme === "light" ? (
+                <Moon className="h-5 w-5 sm:h-6 sm:w-6 stroke-[3]" />
+              ) : (
+                <Sun className="h-5 w-5 sm:h-6 sm:w-6 stroke-[3]" />
+              )}
+            </div>
+            <span className={`mt-1 text-[8px] sm:text-[9px] font-black ${theme === "light" ? "text-slate-500" : "text-slate-400"}`}>
+              {theme === "light" ? "Dark" : "Light"}
+            </span>
+          </button>
+          <NavItem icon={MessageSquare} label="Chats" href="/dashboard/ai-chat" theme={theme} />
+          <NavItem icon={User} label="Profile" theme={theme} />
+        </div>
+      </nav>
     </div>
   )
 }
@@ -760,12 +804,19 @@ interface NavItemProps {
   label: string
   active?: boolean
   href?: string
+  theme?: "light" | "dark"
 }
 
-function NavItem({ icon: Icon, label, active, href }: NavItemProps) {
+function NavItem({ icon: Icon, label, active, href, theme = "light" }: NavItemProps) {
   const content = (
     <button
-      className={`flex flex-col items-center justify-center min-h-11 min-w-11 rounded-xl px-2 py-1.5 sm:px-3 sm:py-2 transition-all duration-300 ${active ? "text-teal-650" : "text-slate-400 hover:text-slate-600 hover:bg-slate-100/80"
+      className={`flex flex-col items-center justify-center min-h-11 min-w-11 rounded-xl px-2 py-1.5 sm:px-3 sm:py-2 transition-all duration-300 ${active
+          ? theme === "light"
+            ? "text-teal-600"
+            : "text-teal-400"
+          : theme === "light"
+            ? "text-slate-400 hover:text-slate-600 hover:bg-slate-100/80"
+            : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
         }`}
     >
       <Icon className="mb-0.5 h-5 w-5 sm:h-6 sm:w-6" />

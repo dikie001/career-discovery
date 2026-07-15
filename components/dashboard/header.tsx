@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Bell, Settings, LogOut, Menu } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -43,6 +44,8 @@ export function Header() {
               <Bell className="h-5 w-5" />
               <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-red-500 shadow-lg shadow-red-500/50"></span>
             </button>
+
+            <ThemeToggle />
 
             <div className="hidden items-center gap-3 sm:flex">
               <div className="h-9 w-9 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-teal-500/20">

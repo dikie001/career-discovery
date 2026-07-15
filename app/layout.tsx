@@ -4,6 +4,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/contexts/auth-context"
 import { PWARegister } from "@/components/pwa-register"
+import { AppNav } from "@/components/app-nav"
 import { cn } from "@/lib/utils";
 
 const figtree = Figtree({ subsets: ['latin'], variable: '--font-sans' })
@@ -50,7 +51,10 @@ export default function RootLayout({
       </head>
       <body className="bg-slate-950 text-slate-50">
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <AppNav />
+            {children}
+          </AuthProvider>
         </ThemeProvider>
         <PWARegister />
       </body>
