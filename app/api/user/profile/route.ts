@@ -70,7 +70,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       avatar: user.avatar || "",
       interests: userProfile?.interests || [],
       skills: userProfile?.skills || [],
-      experienceLevel: userProfile?.experienceLevel || "beginner",
+      experienceLevel: (userProfile?.experienceLevel || "beginner") as "beginner" | "intermediate" | "advanced",
       targetRole: userProfile?.targetRole || "",
       careerGoal: userProfile?.careerGoal || "",
     }
@@ -154,7 +154,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
       avatar: updatedUser.avatar || "",
       interests: updatedProfile.interests,
       skills: updatedProfile.skills,
-      experienceLevel: updatedProfile.experienceLevel,
+      experienceLevel: updatedProfile.experienceLevel as "beginner" | "intermediate" | "advanced",
       targetRole: updatedProfile.targetRole || "",
       careerGoal: updatedProfile.careerGoal || "",
     }

@@ -113,7 +113,7 @@ export function PWAInstallPrompt() {
                 Install Pathfinder
               </h3>
               <p className="text-xs text-slate-400">
-                Get app-like experience
+                Easy access & limited offline mode
               </p>
             </div>
           </div>
@@ -127,23 +127,23 @@ export function PWAInstallPrompt() {
 
         {/* Benefits */}
         <div className="space-y-2">
-          <p className="text-xs text-slate-300 font-medium">Benefits:</p>
+          <p className="text-xs text-slate-300 font-medium">Works offline:</p>
           <div className="grid grid-cols-2 gap-2">
             <div className="flex items-center gap-2 text-[11px] text-slate-400">
               <span className="text-teal-400">✓</span>
-              <span>Access offline</span>
+              <span>View profile</span>
+            </div>
+            <div className="flex items-center gap-2 text-[11px] text-slate-400">
+              <span className="text-teal-400">✓</span>
+              <span>Read history</span>
             </div>
             <div className="flex items-center gap-2 text-[11px] text-slate-400">
               <span className="text-teal-400">✓</span>
               <span>Home screen icon</span>
             </div>
             <div className="flex items-center gap-2 text-[11px] text-slate-400">
-              <span className="text-teal-400">✓</span>
-              <span>No app store needed</span>
-            </div>
-            <div className="flex items-center gap-2 text-[11px] text-slate-400">
-              <span className="text-teal-400">✓</span>
-              <span>Faster loading</span>
+              <span className="text-amber-400">✗</span>
+              <span>AI chat (needs internet)</span>
             </div>
           </div>
         </div>
