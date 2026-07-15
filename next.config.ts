@@ -1,12 +1,8 @@
 import type { NextConfig } from "next"
-import withPWA from "next-pwa"
 
-const nextConfig: NextConfig = withPWA({
-    dest: "public",
-    disable: process.env.NODE_ENV !== "production",
-    register: false, // We'll register manually with our custom service worker
-    skipWaiting: true,
-    reloadOnOnline: true,
-})
+const nextConfig: NextConfig = {
+    // PWA is configured via custom service worker and manifest
+    // See public/sw.js and public/manifest.json
+}
 
 export default nextConfig

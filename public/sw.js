@@ -2,16 +2,32 @@
 // This service worker is intentionally disabled for offline use.
 // It only works in production and prevents offline functionality.
 
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const CACHE_NAME = 'pathfinder-v1';
 
-if (!IS_PRODUCTION) {
-  // Unregister service worker in non-production environments
+// Check if running in production via checking the server origin
+function isProduction() {
+  // In production, the origin should be the actual domain
+  // In development, it's typically localhost
+  const origin = typeof self !== 'undefined' ? self.location.origin : '';
+  return !origin.includes('localhost') && !origin.includes('127.0.0.1');
+}
+
+if (!isProduction()) {
+  // Non-production: Unregister or skip service worker
   self.addEventListener('install', (event) => {
     event.waitUntil(self.skipWaiting());
   });
 
   self.addEventListener('activate', (event) => {
     event.waitUntil(self.clients.claim());
+    // Clean up all caches in development
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => caches.delete(cacheName))
+        );
+      })
+    );
   });
 
   self.addEventListener('fetch', (event) => {
@@ -19,8 +35,6 @@ if (!IS_PRODUCTION) {
   });
 } else {
   // Production: Limited functionality, no offline support
-  const CACHE_NAME = 'pathfinder-v1';
-
   // Cache only essential assets on install
   self.addEventListener('install', (event) => {
     event.waitUntil(
@@ -29,7 +43,10 @@ if (!IS_PRODUCTION) {
         return cache.addAll([
           '/',
           '/offline.html',
-        ]);
+        ]).catch(() => {
+          // Offline.html might not exist yet during first install
+          console.log('Some assets could not be cached during install');
+        });
       })
     );
     self.skipWaiting();

@@ -400,16 +400,13 @@ export default function DashboardPage() {
             </div>
 
             {/* Search bar */}
-            <div className="flex w-full items-center justify-between rounded-full bg-white py-1.5 pr-1.5 pl-4 sm:pl-5 shadow-md">
+            <div className="flex w-full items-center justify-between rounded-full bg-white py-1.5 pr-1.5 pl-4 sm:pl-5 shadow-md hover:shadow-lg transition-shadow cursor-pointer">
               <span className="truncate pr-3 sm:pr-4 text-xs sm:text-[13px] font-medium text-slate-400">
                 Explore careers...
               </span>
-              <button
-                disabled
-                className="flex h-8 sm:h-9 w-8 sm:w-9 shrink-0 items-center justify-center rounded-full bg-teal-600 text-white shadow-sm hover:bg-teal-700 transition-colors"
-              >
+              <div className="flex h-8 sm:h-9 w-8 sm:w-9 shrink-0 items-center justify-center rounded-full bg-teal-600 text-white shadow-sm hover:bg-teal-700 transition-colors">
                 <Send className="-ml-0.5 h-3.5 w-3.5 sm:h-4 sm:w-4 fill-white" />
-              </button>
+              </div>
             </div>
 
             {/* Pills - responsive text size */}

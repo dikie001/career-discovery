@@ -4,14 +4,19 @@ import { useEffect } from 'react';
 
 export function PWARegister() {
   useEffect(() => {
-    // Only register service worker in production
-    if (process.env.NODE_ENV !== 'production') {
-      return;
-    }
-
     // Check if service workers are supported
     if (!('serviceWorker' in navigator)) {
       console.log('Service Workers are not supported in this browser');
+      return;
+    }
+
+    // Check if we're in production
+    const isProduction =
+      !window.location.origin.includes('localhost') &&
+      !window.location.origin.includes('127.0.0.1');
+
+    if (!isProduction) {
+      console.log('Development environment - Service Worker not registered');
       return;
     }
 
