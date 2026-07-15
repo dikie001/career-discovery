@@ -9,21 +9,18 @@ import {
   Bell,
   Send,
   Home,
-  MessageSquare,
   Plus,
   BookOpen,
   User,
   Zap,
   Map,
   Heart,
-  TrendingUp,
   Star,
   ArrowRight,
   Sparkles,
-  Compass,
   BarChart2,
   Briefcase,
-  Sun,
+  MessageSquare,
 } from "lucide-react"
 import Link from "next/link"
 import { CareerProgressComponent } from "@/components/dashboard/career-progress"
@@ -66,7 +63,6 @@ export default function DashboardPage() {
   const [recommendationsLoading, setRecommendationsLoading] = useState(false)
   const [savedRecs, setSavedRecs] = useState<string[]>([])
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
-  const [theme] = useState<"dark">("dark")
 
   useEffect(() => {
     loadData()
@@ -774,8 +770,6 @@ export default function DashboardPage() {
               New
             </span>
           </button>
-          <NavItem icon={TrendingUp} label="Progress" theme="dark" />
-          <NavItem icon={Briefcase} label="Careers" theme="dark" />
         </div>
       </nav>
     </div>
