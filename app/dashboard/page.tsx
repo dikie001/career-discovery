@@ -753,7 +753,7 @@ export default function DashboardPage() {
       {/* STICKY BOTTOM NAV BAR */}
       <nav className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-800 bg-slate-950/95 text-slate-100 px-2 sm:px-4 py-2 sm:py-3 backdrop-blur-md shadow-2xl shadow-slate-950/50">
         <div className="mx-auto flex max-w-md items-center justify-between md:max-w-6xl">
-          <NavItem icon={Home} label="Dashboard" active theme="dark" />
+          <NavItem icon={Home} label="Dashboard" active href="/dashboard" theme="dark" />
           <div className="w-12"></div>
           <button
             onClick={() => router.push("/dashboard/ai-chat")}
@@ -768,7 +768,7 @@ export default function DashboardPage() {
             </div>
           </button>
           <div className="w-12"></div>
-          <NavItem icon={User} label="Profile" theme="dark" />
+          <NavItem icon={User} label="Profile" href="/dashboard/profile" theme="dark" />
         </div>
       </nav>
     </div>
