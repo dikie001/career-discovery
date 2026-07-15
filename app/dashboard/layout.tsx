@@ -21,9 +21,10 @@ export default function DashboardLayout({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
+      <div className="flex min-h-screen items-center justify-center bg-slate-950">
         <div className="text-center">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-teal-200 border-t-teal-600 mx-auto mb-4"></div>
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-700 border-t-teal-500 mx-auto mb-4"></div>
+          <p className="text-slate-400 mt-4">Loading...</p>
         </div>
       </div>
     );
