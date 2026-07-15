@@ -23,6 +23,7 @@ import {
   Compass,
   BarChart2,
   Briefcase,
+  Sun,
 } from "lucide-react"
 import Link from "next/link"
 import { CareerProgressComponent } from "@/components/dashboard/career-progress"
@@ -65,6 +66,7 @@ export default function DashboardPage() {
   const [recommendationsLoading, setRecommendationsLoading] = useState(false)
   const [savedRecs, setSavedRecs] = useState<string[]>([])
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
+  const [theme] = useState<"dark">("dark")
 
   useEffect(() => {
     loadData()
@@ -756,15 +758,24 @@ export default function DashboardPage() {
       <nav className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-800 bg-slate-950/95 text-slate-100 px-2 sm:px-4 py-2 sm:py-3 backdrop-blur-md shadow-2xl shadow-slate-950/50">
         <div className="mx-auto flex max-w-md items-center justify-between md:max-w-6xl">
           <NavItem icon={Home} label="Dashboard" active theme="dark" />
-          <NavItem icon={Compass} label="Explore" theme="dark" />
+          <NavItem icon={User} label="Profile" theme="dark" />
           <button
             onClick={() => router.push("/dashboard/ai-chat")}
-            className="flex flex-col items-center justify-center min-h-11 min-w-11 rounded-xl px-2 py-1.5 sm:px-3 sm:py-2 transition-all duration-300 text-teal-400 hover:text-teal-300 hover:bg-slate-800/50"
-          >
-            <MessageSquare className="mb-0.5 h-5 w-5 sm:h-6 sm:w-6" />
-            <span className="text-[8px] sm:text-[9px] leading-none font-black">Chat</span>
+            className="relative z-50 flex -translate-y-4 flex-col items-center justify-center min-h-11 min-w-11">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 transition-all active:scale-95 hover:shadow-xl"
+              style={{
+                borderColor: "#1e293b",
+                backgroundColor: "#0f766e",
+                color: "white"
+              }}>
+              <Plus className="h-5 w-5 sm:h-6 sm:w-6 stroke-[3]" />
+            </div>
+            <span className="mt-1 text-[8px] sm:text-[9px] font-black text-slate-400">
+              New
+            </span>
           </button>
-          <NavItem icon={User} label="Profile" theme="dark" />
+          <NavItem icon={TrendingUp} label="Progress" theme="dark" />
+          <NavItem icon={Briefcase} label="Careers" theme="dark" />
         </div>
       </nav>
     </div>
