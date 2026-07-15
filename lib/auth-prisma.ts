@@ -14,6 +14,37 @@ function generateToken(userId: string): string {
   return Buffer.from(`${userId}:${Date.now()}`).toString("base64")
 }
 
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    const message = error.message
+
+    // Handle database connection errors
+    if (message.includes("Can't reach database server") ||
+      message.includes("connect ECONNREFUSED") ||
+      message.includes("ENOTFOUND") ||
+      message.includes("timeout")) {
+      return "Service temporarily unavailable. Please check your connection and try again."
+    }
+
+    // Handle Prisma-specific errors without exposing internal details
+    if (message.includes("Prisma") || message.includes("prisma")) {
+      return "A database error occurred. Please try again later."
+    }
+
+    // Return message for expected application errors
+    if (message.includes("Email already registered") ||
+      message.includes("User not found") ||
+      message.includes("Invalid password")) {
+      return message
+    }
+
+    // Generic fallback for unexpected errors
+    return "An error occurred. Please try again."
+  }
+
+  return "An unexpected error occurred. Please try again."
+}
+
 export async function signupPrisma(request: SignupRequest): Promise<AuthResponse> {
   try {
     // Check if user already exists
@@ -79,7 +110,7 @@ export async function signupPrisma(request: SignupRequest): Promise<AuthResponse
     console.error("Signup error:", error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Signup failed",
+      error: getErrorMessage(error),
     }
   }
 }
@@ -120,7 +151,7 @@ export async function loginPrisma(request: LoginRequest): Promise<AuthResponse> 
     console.error("Login error:", error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Login failed",
+      error: getErrorMessage(error),
     }
   }
 }
