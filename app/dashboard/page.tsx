@@ -754,7 +754,7 @@ export default function DashboardPage() {
       <nav className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-800 bg-slate-950/95 text-slate-100 px-2 sm:px-4 py-2 sm:py-3 backdrop-blur-md shadow-2xl shadow-slate-950/50">
         <div className="mx-auto flex max-w-md items-center justify-between md:max-w-6xl">
           <NavItem icon={Home} label="Dashboard" active theme="dark" />
-          <NavItem icon={User} label="Profile" theme="dark" />
+          <div className="w-12"></div>
           <button
             onClick={() => router.push("/dashboard/ai-chat")}
             className="relative z-50 flex -translate-y-4 flex-col items-center justify-center min-h-11 min-w-11">
@@ -766,10 +766,9 @@ export default function DashboardPage() {
               }}>
               <Plus className="h-5 w-5 sm:h-6 sm:w-6 stroke-[3]" />
             </div>
-            <span className="mt-1 text-[8px] sm:text-[9px] font-black text-slate-400">
-              New
-            </span>
           </button>
+          <div className="w-12"></div>
+          <NavItem icon={User} label="Profile" theme="dark" />
         </div>
       </nav>
     </div>
