@@ -109,17 +109,17 @@ export function PWAInstallPrompt() {
               <span className="text-lg font-black text-white">P</span>
             </div>
             <div>
-              <h3 className="text-sm sm:text-base font-bold text-slate-100">
+              <h3 className="text-sm sm:text-base font-bold text-foreground">
                 Install Pathfinder
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 Add to your home screen
               </p>
             </div>
           </div>
           <button
             onClick={handleDismiss}
-            className="p-1 text-slate-400 hover:text-slate-200 transition-colors flex-shrink-0"
+            className="p-1 text-muted-foreground hover:text-card-foreground transition-colors flex-shrink-0"
           >
             <X className="h-4 w-4" />
           </button>
@@ -127,21 +127,21 @@ export function PWAInstallPrompt() {
 
         {/* Benefits */}
         <div className="space-y-2">
-          <p className="text-xs text-slate-300 font-medium">Benefits:</p>
+          <p className="text-xs text-muted-foreground font-medium">Benefits:</p>
           <div className="grid grid-cols-2 gap-2">
-            <div className="flex items-center gap-2 text-[11px] text-slate-400">
+            <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
               <span className="text-teal-400">✓</span>
               <span>Home screen icon</span>
             </div>
-            <div className="flex items-center gap-2 text-[11px] text-slate-400">
+            <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
               <span className="text-teal-400">✓</span>
               <span>Faster loading</span>
             </div>
-            <div className="flex items-center gap-2 text-[11px] text-slate-400">
+            <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
               <span className="text-teal-400">✓</span>
               <span>No app store</span>
             </div>
-            <div className="flex items-center gap-2 text-[11px] text-slate-400">
+            <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
               <span className="text-teal-400">✓</span>
               <span>App-like experience</span>
             </div>
@@ -152,7 +152,7 @@ export function PWAInstallPrompt() {
         <div className="flex gap-2 pt-2">
           <button
             onClick={handleDismiss}
-            className="flex-1 px-3 py-2.5 rounded-lg bg-slate-800/50 hover:bg-slate-800 text-slate-300 text-sm font-semibold transition-all"
+            className="flex-1 px-3 py-2.5 rounded-lg bg-muted/50 hover:bg-muted text-muted-foreground text-sm font-semibold transition-all"
           >
             Maybe later
           </button>

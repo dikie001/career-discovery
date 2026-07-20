@@ -76,7 +76,7 @@ export default function SignupPage() {
   return (
     <>
       {step === "credentials" && (
-        <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex flex-col items-center justify-center px-4 py-8 sm:px-6 relative overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-card flex flex-col items-center justify-center px-4 py-8 sm:px-6 relative overflow-hidden">
           {/* Background decoration - enhanced */}
           <div className="fixed inset-0 overflow-hidden pointer-events-none">
             {/* Top right - teal */}
@@ -97,7 +97,7 @@ export default function SignupPage() {
               </div>
               <div className="space-y-1">
                 <h1 className="text-3xl font-bold text-white">Join Pathfinder</h1>
-                <p className="text-sm text-slate-400">Step 1 of 2</p>
+                <p className="text-sm text-muted-foreground">Step 1 of 2</p>
               </div>
             </div>
 
@@ -112,11 +112,11 @@ export default function SignupPage() {
 
               {/* Name */}
               <div className="space-y-2">
-                <label htmlFor="name" className="block text-sm font-semibold text-slate-200">
+                <label htmlFor="name" className="block text-sm font-semibold text-card-foreground">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 pointer-events-none" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
                   <input
                     id="name"
                     name="name"
@@ -124,7 +124,7 @@ export default function SignupPage() {
                     value={formData.name}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all disabled:opacity-50"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-border bg-card/50 text-foreground placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all disabled:opacity-50"
                     placeholder="John Doe"
                   />
                 </div>
@@ -132,11 +132,11 @@ export default function SignupPage() {
 
               {/* Email */}
               <div className="space-y-2">
-                <label htmlFor="email" className="block text-sm font-semibold text-slate-200">
+                <label htmlFor="email" className="block text-sm font-semibold text-card-foreground">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 pointer-events-none" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
                   <input
                     id="email"
                     name="email"
@@ -144,7 +144,7 @@ export default function SignupPage() {
                     value={formData.email}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all disabled:opacity-50"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-border bg-card/50 text-foreground placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all disabled:opacity-50"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -152,11 +152,11 @@ export default function SignupPage() {
 
               {/* Password */}
               <div className="space-y-2">
-                <label htmlFor="password" className="block text-sm font-semibold text-slate-200">
+                <label htmlFor="password" className="block text-sm font-semibold text-card-foreground">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 pointer-events-none" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
                   <input
                     id="password"
                     name="password"
@@ -164,13 +164,13 @@ export default function SignupPage() {
                     value={formData.password}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all disabled:opacity-50"
+                    className="w-full pl-12 pr-12 py-3 rounded-xl border border-border bg-card/50 text-foreground placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all disabled:opacity-50"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-400 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -179,11 +179,11 @@ export default function SignupPage() {
 
               {/* Confirm Password */}
               <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="block text-sm font-semibold text-slate-200">
+                <label htmlFor="confirmPassword" className="block text-sm font-semibold text-card-foreground">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 pointer-events-none" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
                   <input
                     id="confirmPassword"
                     name="confirmPassword"
@@ -191,13 +191,13 @@ export default function SignupPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all disabled:opacity-50"
+                    className="w-full pl-12 pr-12 py-3 rounded-xl border border-border bg-card/50 text-foreground placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all disabled:opacity-50"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirm(!showConfirm)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-400 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground transition-colors"
                   >
                     {showConfirm ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -215,13 +215,13 @@ export default function SignupPage() {
 
               {/* Footer */}
               <div className="pt-2 text-center space-y-3">
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   Already have an account?{" "}
                   <Link href="/auth/login" className="text-teal-400 hover:text-teal-300 font-semibold transition-colors">
                     Sign in
                   </Link>
                 </p>
-                <p className="text-xs text-slate-500 px-4">
+                <p className="text-xs text-muted-foreground px-4">
                   By signing up, you agree to our Terms of Service and Privacy Policy
                 </p>
               </div>
@@ -235,7 +235,7 @@ export default function SignupPage() {
       )}
 
       {step === "success" && (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black flex flex-col items-center justify-center px-4 py-8">
+        <div className="min-h-screen bg-gradient-to-br from-background via-card to-black flex flex-col items-center justify-center px-4 py-8">
           {/* Background decoration */}
           <div className="fixed inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
@@ -264,7 +264,7 @@ export default function SignupPage() {
                 <h1 className="text-4xl font-black bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
                   Welcome to Pathfinder!
                 </h1>
-                <p className="text-slate-400 text-base leading-relaxed">
+                <p className="text-muted-foreground text-base leading-relaxed">
                   Your account is ready. Let's discover your ideal career path.
                 </p>
               </div>
@@ -272,16 +272,16 @@ export default function SignupPage() {
               {/* Decorative elements */}
               <div className="grid grid-cols-3 gap-3 pt-2">
                 <div className="rounded-lg bg-teal-500/10 border border-teal-500/20 p-3 text-center">
-                  <div className="text-xs font-bold text-slate-400 mb-1">Step 1</div>
+                  <div className="text-xs font-bold text-muted-foreground mb-1">Step 1</div>
                   <div className="text-lg font-black text-teal-400">✓</div>
                 </div>
                 <div className="rounded-lg bg-cyan-500/10 border border-cyan-500/20 p-3 text-center">
-                  <div className="text-xs font-bold text-slate-400 mb-1">Step 2</div>
+                  <div className="text-xs font-bold text-muted-foreground mb-1">Step 2</div>
                   <div className="text-lg font-black text-cyan-400">✓</div>
                 </div>
                 <div className="rounded-lg bg-slate-700/20 border border-slate-600/20 p-3 text-center">
-                  <div className="text-xs font-bold text-slate-400 mb-1">Next</div>
-                  <div className="text-lg font-black text-slate-500">→</div>
+                  <div className="text-xs font-bold text-muted-foreground mb-1">Next</div>
+                  <div className="text-lg font-black text-muted-foreground">→</div>
                 </div>
               </div>
 
@@ -294,7 +294,7 @@ export default function SignupPage() {
               </button>
 
               {/* Footer message */}
-              <p className="text-xs text-slate-500 text-center">
+              <p className="text-xs text-muted-foreground text-center">
                 Redirecting automatically in a moment...
               </p>
             </div>

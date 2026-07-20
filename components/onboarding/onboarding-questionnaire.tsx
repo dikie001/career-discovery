@@ -119,7 +119,7 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex flex-col items-center justify-center px-4 py-6 sm:px-6 lg:py-8 overflow-hidden relative">
+    <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-card flex flex-col items-center justify-center px-4 py-6 sm:px-6 lg:py-8 overflow-hidden relative">
       {/* Animated background - enhanced */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-teal-500/8 rounded-full blur-3xl" />
@@ -136,7 +136,7 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex-1">
               <h2 className="text-xl sm:text-3xl font-bold text-white leading-tight">{steps[currentStep].title}</h2>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">{steps[currentStep].subtitle}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">{steps[currentStep].subtitle}</p>
             </div>
             <div className="text-right">
               <div className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
@@ -145,7 +145,7 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
             </div>
           </div>
 
-          <div className="h-1.5 sm:h-2 bg-slate-800/50 rounded-full overflow-hidden backdrop-blur-md border border-slate-700/30">
+          <div className="h-1.5 sm:h-2 bg-muted/50 rounded-full overflow-hidden backdrop-blur-md border border-border/30">
             <div
               className="h-full bg-gradient-to-r from-teal-500 via-cyan-400 to-teal-400 transition-all duration-700 shadow-lg shadow-teal-500/50"
               style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
@@ -154,7 +154,7 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
         </div>
 
         {/* Content */}
-        <div className="rounded-2xl sm:rounded-3xl border border-slate-800/50 bg-slate-900/40 backdrop-blur-xl p-5 sm:p-8 md:p-12 space-y-6 sm:space-y-8 shadow-2xl shadow-slate-900/50">
+        <div className="rounded-2xl sm:rounded-3xl border border-border/50 bg-card/40 backdrop-blur-xl p-5 sm:p-8 md:p-12 space-y-6 sm:space-y-8 shadow-2xl shadow-slate-900/50">
           {currentStep === 0 && (
             <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:gap-5">
               {INTERESTS_OPTIONS.map((option, idx) => {
@@ -166,15 +166,15 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
                     onClick={() => handleInterestToggle(option.id)}
                     className={`group p-4 sm:p-5 lg:p-6 rounded-xl sm:rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 active:scale-95 ${isSelected
                       ? "border-teal-500 bg-gradient-to-br from-teal-500/30 to-cyan-500/20 shadow-lg shadow-teal-500/30"
-                      : "border-slate-700/50 bg-slate-800/30 hover:border-teal-500/50 hover:bg-slate-800/50"
+                      : "border-border/50 bg-muted/30 hover:border-teal-500/50 hover:bg-muted/50"
                       }`}
                     style={{ animation: `slideInUp 0.6s ease-out ${idx * 0.05}s both` }}
                   >
                     <div className="space-y-2 sm:space-y-3 flex flex-col items-center">
-                      <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300 ${isSelected ? "bg-teal-500/40 scale-110" : "bg-slate-800/50 group-hover:scale-105"}`}>
-                        <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${isSelected ? "text-teal-300 " : "text-slate-400 group-hover:text-teal-400"}`} />
+                      <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300 ${isSelected ? "bg-teal-500/40 scale-110" : "bg-muted/50 group-hover:scale-105"}`}>
+                        <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${isSelected ? "text-teal-300 " : "text-muted-foreground group-hover:text-teal-400"}`} />
                       </div>
-                      <span className={`font-semibold text-xs sm:text-sm text-center leading-tight ${isSelected ? "text-teal-50" : "text-slate-300 group-hover:text-slate-100"}`}>
+                      <span className={`font-semibold text-xs sm:text-sm text-center leading-tight ${isSelected ? "text-teal-50" : "text-muted-foreground group-hover:text-foreground"}`}>
                         {option.label}
                       </span>
                     </div>
@@ -192,17 +192,17 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
                   onClick={() => handleSkillToggle(option.id)}
                   className={`group p-4 sm:p-5 rounded-xl sm:rounded-2xl border-2 transition-all duration-300 text-left font-semibold flex items-center gap-3 transform hover:scale-102 active:scale-95 ${data.skills.includes(option.id)
                     ? "border-teal-500 bg-gradient-to-r from-teal-500/30 to-cyan-500/20 shadow-lg shadow-teal-500/30"
-                    : "border-slate-700/50 bg-slate-800/30 hover:border-teal-500/50 hover:bg-slate-800/50"
+                    : "border-border/50 bg-muted/30 hover:border-teal-500/50 hover:bg-muted/50"
                     }`}
                   style={{ animation: `slideInRight 0.6s ease-out ${idx * 0.05}s both` }}
                 >
                   <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-lg border-2 flex items-center justify-center flex-shrink-0 transition-all ${data.skills.includes(option.id)
                     ? "border-teal-300 bg-gradient-to-br from-teal-500 to-cyan-400"
-                    : "border-slate-600 group-hover:border-teal-400"
+                    : "border-input group-hover:border-teal-400"
                     }`}>
                     {data.skills.includes(option.id) && <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-white" />}
                   </div>
-                  <span className={`text-sm sm:text-base ${data.skills.includes(option.id) ? "text-teal-50" : "text-slate-300 group-hover:text-slate-100"}`}>
+                  <span className={`text-sm sm:text-base ${data.skills.includes(option.id) ? "text-teal-50" : "text-muted-foreground group-hover:text-foreground"}`}>
                     {option.label}
                   </span>
                 </button>
@@ -218,19 +218,19 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
                   onClick={() => handleExperienceSelect(option.id as "beginner" | "intermediate" | "advanced")}
                   className={`group p-5 sm:p-6 lg:p-7 rounded-xl sm:rounded-2xl border-2 transition-all duration-300 text-center space-y-2 sm:space-y-3 transform hover:scale-105 active:scale-95 ${data.experienceLevel === option.id
                     ? "border-teal-500 bg-gradient-to-br from-teal-500/30 to-cyan-500/20 shadow-lg shadow-teal-500/30"
-                    : "border-slate-700/50 bg-slate-800/30 hover:border-teal-500/50 hover:bg-slate-800/50"
+                    : "border-border/50 bg-muted/30 hover:border-teal-500/50 hover:bg-muted/50"
                     }`}
                   style={{ animation: `scaleIn 0.6s ease-out ${idx * 0.1}s both` }}
                 >
                   <div className="space-y-2 sm:space-y-3">
-                    <div className={`inline-flex p-2 sm:p-3 rounded-lg sm:rounded-xl transition-all ${data.experienceLevel === option.id ? "bg-teal-500/40 scale-110" : "bg-slate-800/50 group-hover:scale-105"}`}>
-                      <Target className={`h-5 w-5 sm:h-6 sm:w-6 ${data.experienceLevel === option.id ? "text-teal-300" : "text-slate-400 group-hover:text-teal-400"}`} />
+                    <div className={`inline-flex p-2 sm:p-3 rounded-lg sm:rounded-xl transition-all ${data.experienceLevel === option.id ? "bg-teal-500/40 scale-110" : "bg-muted/50 group-hover:scale-105"}`}>
+                      <Target className={`h-5 w-5 sm:h-6 sm:w-6 ${data.experienceLevel === option.id ? "text-teal-300" : "text-muted-foreground group-hover:text-teal-400"}`} />
                     </div>
                     <div>
-                      <div className={`font-bold text-base sm:text-lg ${data.experienceLevel === option.id ? "text-teal-50" : "text-slate-200 group-hover:text-slate-100"}`}>
+                      <div className={`font-bold text-base sm:text-lg ${data.experienceLevel === option.id ? "text-teal-50" : "text-card-foreground group-hover:text-foreground"}`}>
                         {option.label}
                       </div>
-                      <div className={`text-xs sm:text-sm ${data.experienceLevel === option.id ? "text-teal-200/80" : "text-slate-400 group-hover:text-slate-300"}`}>
+                      <div className={`text-xs sm:text-sm ${data.experienceLevel === option.id ? "text-teal-200/80" : "text-muted-foreground group-hover:text-muted-foreground"}`}>
                         {option.description}
                       </div>
                     </div>
@@ -243,7 +243,7 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
           {currentStep === 3 && (
             <div className="space-y-4 sm:space-y-6">
               <div className="space-y-3 sm:space-y-4">
-                <label className="block text-xs sm:text-sm font-bold text-slate-200 flex items-center gap-2">
+                <label className="block text-xs sm:text-sm font-bold text-card-foreground flex items-center gap-2">
                   <Briefcase className="h-4 w-4 text-teal-400 flex-shrink-0" />
                   Target Role
                 </label>
@@ -252,9 +252,9 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
                   value={data.targetRole}
                   onChange={handleRoleChange}
                   placeholder="e.g., Product Manager, Data Analyst..."
-                  className="w-full px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl border-2 border-slate-700/50 bg-slate-800/30 text-slate-50 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all backdrop-blur-sm hover:border-slate-600/70"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl border-2 border-border/50 bg-muted/30 text-foreground placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all backdrop-blur-sm hover:border-slate-600/70"
                 />
-                <p className="text-xs sm:text-sm text-slate-400 px-2 flex items-center gap-2">
+                <p className="text-xs sm:text-sm text-muted-foreground px-2 flex items-center gap-2">
                   <Lightbulb className="h-3 w-3 sm:h-4 sm:w-4 text-teal-400 flex-shrink-0" />
                   Be specific about the role.
                 </p>
@@ -266,20 +266,20 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
                   <h3 className="text-sm sm:text-base font-bold text-teal-300">Your Profile Summary</h3>
                 </div>
                 <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4">
-                  <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
-                    <p className="text-xs text-slate-400 font-semibold mb-1 uppercase tracking-wider">Interests</p>
+                  <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/50 backdrop-blur-sm border border-border/50">
+                    <p className="text-xs text-muted-foreground font-semibold mb-1 uppercase tracking-wider">Interests</p>
                     <p className="text-lg sm:text-2xl font-bold text-teal-400">{data.interests.length}</p>
                   </div>
-                  <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
-                    <p className="text-xs text-slate-400 font-semibold mb-1 uppercase tracking-wider">Skills</p>
+                  <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/50 backdrop-blur-sm border border-border/50">
+                    <p className="text-xs text-muted-foreground font-semibold mb-1 uppercase tracking-wider">Skills</p>
                     <p className="text-lg sm:text-2xl font-bold text-cyan-400">{data.skills.length}</p>
                   </div>
-                  <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
-                    <p className="text-xs text-slate-400 font-semibold mb-1 uppercase tracking-wider">Experience</p>
+                  <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/50 backdrop-blur-sm border border-border/50">
+                    <p className="text-xs text-muted-foreground font-semibold mb-1 uppercase tracking-wider">Experience</p>
                     <p className="text-sm sm:text-lg font-bold text-teal-300 capitalize">{data.experienceLevel}</p>
                   </div>
-                  <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
-                    <p className="text-xs text-slate-400 font-semibold mb-1 uppercase tracking-wider">Role</p>
+                  <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/50 backdrop-blur-sm border border-border/50">
+                    <p className="text-xs text-muted-foreground font-semibold mb-1 uppercase tracking-wider">Role</p>
                     <p className="text-sm sm:text-lg font-bold text-cyan-300">{data.targetRole ? "✓" : "-"}</p>
                   </div>
                 </div>
@@ -293,7 +293,7 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
           <button
             onClick={handlePrev}
             disabled={currentStep === 0}
-            className="flex items-center justify-center gap-2 px-5 sm:px-6 py-3 rounded-xl sm:rounded-2xl border-2 border-slate-700/50 text-slate-300 hover:border-slate-600 hover:bg-slate-800/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-semibold text-sm sm:text-base backdrop-blur-sm group"
+            className="flex items-center justify-center gap-2 px-5 sm:px-6 py-3 rounded-xl sm:rounded-2xl border-2 border-border/50 text-muted-foreground hover:border-input hover:bg-muted/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-semibold text-sm sm:text-base backdrop-blur-sm group"
           >
             <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 group-hover:-translate-x-1 transition-transform" />
             <span>Previous</span>
@@ -333,7 +333,7 @@ export default function OnboardingQuestionnaire({ onComplete, isLoading }: Onboa
                 ? "w-8 sm:w-10 h-2 sm:h-3 bg-gradient-to-r from-teal-500 to-cyan-400 shadow-lg shadow-teal-500/50"
                 : idx < currentStep
                   ? "w-2 sm:w-3 h-2 sm:h-3 bg-teal-500/60 hover:bg-teal-500"
-                  : "w-2 sm:w-3 h-2 sm:h-3 bg-slate-700 hover:bg-slate-600"
+                  : "w-2 sm:w-3 h-2 sm:h-3 bg-accent hover:bg-slate-600"
                 }`}
             />
           ))}

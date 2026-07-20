@@ -49,7 +49,7 @@ export function SelectionCards({
 
   return (
     <div className="w-full space-y-3">
-      {title && <p className="text-sm font-medium text-slate-300">{title}</p>}
+      {title && <p className="text-sm font-medium text-muted-foreground">{title}</p>}
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {options.map((option) => {
           const isSelectedItem = isSelected(option.id);
@@ -61,7 +61,7 @@ export function SelectionCards({
               className={`group relative overflow-hidden rounded-xl border-2 p-3 text-left transition-all duration-200 ${
                 isSelectedItem
                   ? "border-teal-500 bg-teal-500/10 shadow-lg shadow-teal-500/20"
-                  : "border-slate-700 bg-slate-800/50 hover:border-slate-600 hover:bg-slate-800"
+                  : "border-border bg-muted/50 hover:border-input hover:bg-muted"
               } disabled:opacity-50`}
             >
               {/* Animated background on hover */}
@@ -83,7 +83,7 @@ export function SelectionCards({
                     <p className="font-semibold text-white">{option.label}</p>
                   </div>
                   {option.description && (
-                    <p className="mt-1 text-xs text-slate-400">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {option.description}
                     </p>
                   )}

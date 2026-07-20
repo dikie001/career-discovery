@@ -195,7 +195,7 @@ export function AiPathfinderCard({
             {/* Question/Response */}
             {(message.type === "question" || message.type === "response") && (
               <div className="flex justify-start">
-                <div className="max-w-[85%] rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 text-xs sm:text-sm shadow-lg">
+                <div className="max-w-[85%] rounded-lg bg-muted border border-border px-3 py-2 text-xs sm:text-sm shadow-lg">
                   {message.type === "response" ? (
                     <MarkdownRenderer
                       content={message.content}
@@ -225,14 +225,14 @@ export function AiPathfinderCard({
                     key={option.id}
                     onClick={() => handleSendSelection(option.id)}
                     disabled={sending || externalLoading}
-                    className="w-full rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 px-2.5 py-2 text-left text-xs font-medium text-white backdrop-blur-sm transition-all hover:border-teal-400 disabled:opacity-50"
+                    className="w-full rounded-lg border border-input bg-slate-800/80 hover:bg-accent px-2.5 py-2 text-left text-xs font-medium text-white backdrop-blur-sm transition-all hover:border-teal-400 disabled:opacity-50"
                   >
                     <div className="flex items-center gap-1.5">
                       <span className="text-base flex-shrink-0">{option.icon}</span>
                       <div className="min-w-0">
                         <p className="font-semibold truncate">{option.label}</p>
                         {option.description && (
-                          <p className="text-xs text-slate-300 opacity-85 truncate">
+                          <p className="text-xs text-muted-foreground opacity-85 truncate">
                             {option.description}
                           </p>
                         )}
@@ -246,7 +246,7 @@ export function AiPathfinderCard({
             {/* Loading indicator */}
             {message.isLoading && (
               <div className="flex justify-start">
-                <div className="rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+                <div className="rounded-lg bg-muted border border-border px-3 py-2">
                   <div className="flex gap-1.5">
                     {[0, 1, 2].map((i) => (
                       <div
@@ -264,7 +264,7 @@ export function AiPathfinderCard({
 
         {sending && (
           <div className="flex justify-start animate-fadeInUp">
-            <div className="rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+            <div className="rounded-lg bg-muted border border-border px-3 py-2">
               <div className="flex gap-1.5">
                 {[0, 1, 2].map((i) => (
                   <div

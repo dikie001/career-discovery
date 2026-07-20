@@ -10,7 +10,8 @@ function ThemeProvider({
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="dark"
+      defaultTheme="light"
+      storageKey="pathfinder-theme-v2"
       enableSystem={false}
       disableTransitionOnChange
       {...props}

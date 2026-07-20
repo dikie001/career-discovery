@@ -18,7 +18,7 @@ export function AppNav() {
   if (isLoading || !isAuthenticated) {
     // Show minimal nav on auth pages with theme toggle
     return (
-      <nav className="sticky top-0 z-40 border-b border-slate-800/50 bg-slate-950/95 backdrop-blur-lg shadow-lg shadow-slate-950/50">
+      <nav className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-lg shadow-lg shadow-black/10 dark:shadow-black/50">
         <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             {/* Logo */}
@@ -26,7 +26,7 @@ export function AppNav() {
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-600 shadow-lg shadow-teal-500/20 group-hover:shadow-teal-500/40 transition-all">
                 <span className="text-sm font-bold text-white">P</span>
               </div>
-              <span className="font-bold text-slate-100 text-lg group-hover:text-white transition-colors">Pathfinder</span>
+              <span className="font-bold text-foreground text-lg group-hover:text-white transition-colors">Pathfinder</span>
             </Link>
 
             {/* Theme Toggle */}

@@ -20,7 +20,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-800/50 bg-slate-950/95 backdrop-blur-lg shadow-lg shadow-slate-950/50">
+    <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-lg shadow-lg shadow-black/10 dark:shadow-black/50">
       <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -28,7 +28,7 @@ export function Header() {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-600 shadow-lg shadow-teal-500/20 group-hover:shadow-teal-500/40 transition-all">
               <span className="text-sm font-bold text-white">P</span>
             </div>
-            <span className="font-bold text-slate-100 text-lg group-hover:text-white transition-colors">Pathfinder</span>
+            <span className="font-bold text-foreground text-lg group-hover:text-white transition-colors">Pathfinder</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -40,7 +40,7 @@ export function Header() {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-2 sm:gap-4">
-            <button className="relative p-2.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-lg transition-all">
+            <button className="relative p-2.5 text-muted-foreground hover:text-card-foreground hover:bg-muted/50 rounded-lg transition-all">
               <Bell className="h-5 w-5" />
               <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-red-500 shadow-lg shadow-red-500/50"></span>
             </button>
@@ -54,20 +54,20 @@ export function Header() {
                 </span>
               </div>
               <div className="text-sm">
-                <p className="font-semibold text-slate-100">{user?.name}</p>
-                <p className="text-xs text-slate-400">
+                <p className="font-semibold text-foreground">{user?.name}</p>
+                <p className="text-xs text-muted-foreground">
                   {user?.location || "Nairobi, Kenya"}
                 </p>
               </div>
             </div>
 
-            <button className="p-2.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-lg transition-all">
+            <button className="p-2.5 text-muted-foreground hover:text-card-foreground hover:bg-muted/50 rounded-lg transition-all">
               <Settings className="h-5 w-5" />
             </button>
 
             <Button
               onClick={handleLogout}
-              className="hidden gap-2 sm:flex bg-slate-800/50 hover:bg-slate-800 text-slate-200 border border-slate-700/50 rounded-lg"
+              className="hidden gap-2 sm:flex bg-muted/50 hover:bg-muted text-card-foreground border border-border/50 rounded-lg"
             >
               <LogOut className="h-4 w-4" />
               Logout
@@ -76,7 +76,7 @@ export function Header() {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-400 hover:text-slate-200"
+              className="md:hidden p-2 text-muted-foreground hover:text-card-foreground"
             >
               <Menu className="h-5 w-5" />
             </button>
@@ -85,13 +85,13 @@ export function Header() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="mt-3 space-y-2 border-t border-slate-800/50 pt-3 md:hidden">
+          <div className="mt-3 space-y-2 border-t border-border/50 pt-3 md:hidden">
             <MobileNavLink href="/dashboard">Dashboard</MobileNavLink>
             <MobileNavLink href="/dashboard/explore">Explore</MobileNavLink>
             <MobileNavLink href="/dashboard/progress">Progress</MobileNavLink>
             <Button
               onClick={handleLogout}
-              className="w-full justify-start bg-slate-800/50 hover:bg-slate-800 text-slate-200 border border-slate-700/50"
+              className="w-full justify-start bg-muted/50 hover:bg-muted text-card-foreground border border-border/50"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Logout
@@ -113,7 +113,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      className="rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 transition-all"
+      className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
     >
       {children}
     </Link>
@@ -130,7 +130,7 @@ function MobileNavLink({
   return (
     <Link
       href={href}
-      className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 transition-all"
+      className="block rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
     >
       {children}
     </Link>

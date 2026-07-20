@@ -46,7 +46,7 @@ const STARTER_PROMPTS: ChatStarterButton[] = [
 export function ChatStarters({ onSelect, isLoading = false }: ChatStartersProps) {
   return (
     <div className="w-full max-w-2xl mx-auto space-y-2 mt-4 text-center">
-      {/* <p className="text-xs font-semibold text-slate-500 tracking-wider uppercase mb-3">Suggested Topics</p> */}
+      {/* <p className="text-xs font-semibold text-muted-foreground tracking-wider uppercase mb-3">Suggested Topics</p> */}
       <div className="flex flex-col sm:flex-row gap-2.5 justify-center items-stretch">
         {STARTER_PROMPTS.map((starter) => (
           <button
@@ -59,10 +59,10 @@ export function ChatStarters({ onSelect, isLoading = false }: ChatStartersProps)
               {starter.icon}
             </div>
             <div className="space-y-0.5 min-w-0">
-              <span className="block text-sm font-bold text-slate-200 group-hover:text-white transition-colors truncate">
+              <span className="block text-sm font-bold text-card-foreground group-hover:text-white transition-colors truncate">
                 {starter.label}
               </span>
-              <p className="text-sm text-slate-500 group-hover:text-slate-400 transition-colors line-clamp-1 leading-normal">
+              <p className="text-sm text-muted-foreground group-hover:text-muted-foreground transition-colors line-clamp-1 leading-normal">
                 {starter.description}
               </p>
             </div>

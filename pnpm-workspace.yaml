@@ -6,5 +6,5 @@ allowBuilds:
   msw: false
   '@prisma/engines': true
   prisma: true
-  esbuild: set this to true or false
+  esbuild: true
   '@prisma/client': true

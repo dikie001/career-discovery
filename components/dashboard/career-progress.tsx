@@ -10,8 +10,8 @@ interface CareerProgressProps {
 
 export function CareerProgressComponent({ progress }: CareerProgressProps) {
   return (
-    <div className="rounded-2xl bg-slate-900/40 border border-slate-800/50 backdrop-blur-sm p-6 shadow-lg shadow-slate-950/20">
-      <h2 className="mb-6 text-sm font-bold text-slate-100 uppercase tracking-wider">
+    <div className="rounded-2xl bg-card/40 border border-border/50 backdrop-blur-sm p-6 shadow-lg shadow-black/5 dark:shadow-black/20">
+      <h2 className="mb-6 text-sm font-bold text-foreground uppercase tracking-wider">
         Career Progress
       </h2>
 
@@ -42,7 +42,7 @@ export function CareerProgressComponent({ progress }: CareerProgressProps) {
             <span className="text-3xl font-bold text-teal-400">
               {progress.overallProgress}%
             </span>
-            <span className="text-xs text-slate-400 font-medium">Progress</span>
+            <span className="text-xs text-muted-foreground font-medium">Progress</span>
           </div>
         </div>
       </div>
@@ -83,9 +83,9 @@ function ProgressStageItem({
       case "in_progress":
         return "text-amber-400";
       case "pending":
-        return "text-slate-500";
+        return "text-muted-foreground";
       default:
-        return "text-slate-500";
+        return "text-muted-foreground";
     }
   };
 
@@ -96,14 +96,14 @@ function ProgressStageItem({
       case "in_progress":
         return "bg-amber-500 ring-2 ring-amber-500/50";
       case "pending":
-        return "bg-slate-700";
+        return "bg-accent";
       default:
-        return "bg-slate-700";
+        return "bg-accent";
     }
   };
 
   return (
-    <div className="flex items-start gap-4 p-3 rounded-lg border border-slate-800/30 bg-slate-800/20 hover:bg-slate-800/30 transition-all">
+    <div className="flex items-start gap-4 p-3 rounded-lg border border-slate-800/30 bg-slate-800/20 hover:bg-muted/30 transition-all">
       <div className="flex flex-col items-center">
         <div
           className={`flex h-9 w-9 items-center justify-center rounded-full text-white font-bold shadow-lg ${getCircleStyle(stage.status)}`}
@@ -117,7 +117,7 @@ function ProgressStageItem({
       </div>
       <div className="flex-1 pt-0.5">
         <div className="flex items-center gap-2 mb-1">
-          <h3 className="font-semibold text-slate-100">{stage.title}</h3>
+          <h3 className="font-semibold text-foreground">{stage.title}</h3>
           <span
             className={`text-xs font-bold px-2 py-1 rounded-full border ${getStatusColor(stage.status)} ${getStatusTextColor(stage.status)} uppercase tracking-wider`}
           >
@@ -128,7 +128,7 @@ function ProgressStageItem({
                 : "Pending"}
           </span>
         </div>
-        <p className="text-xs text-slate-400">{stage.description}</p>
+        <p className="text-xs text-muted-foreground">{stage.description}</p>
       </div>
     </div>
   );

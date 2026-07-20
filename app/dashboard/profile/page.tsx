@@ -175,31 +175,31 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-background to-card flex items-center justify-center">
         <div className="text-center">
           <div className="relative mx-auto mb-6 h-16 w-16">
             <div className="absolute inset-0 rounded-full border-4 border-teal-600/30"></div>
             <div className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-teal-400 border-r-teal-400"></div>
           </div>
-          <p className="font-bold text-slate-100">Loading your profile...</p>
+          <p className="font-bold text-foreground">Loading your profile...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 pb-28 sm:pb-24 font-sans text-slate-100 antialiased">
+    <div className="min-h-screen bg-gradient-to-b from-background to-card pb-28 sm:pb-24 font-sans text-foreground antialiased">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-slate-800/50 bg-slate-950/95 backdrop-blur-lg shadow-lg shadow-slate-950/50">
+      <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-lg shadow-lg shadow-black/10 dark:shadow-black/50">
         <div className="mx-auto flex w-full items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 md:max-w-6xl md:mx-auto">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors"
+            className="flex items-center gap-2 text-muted-foreground hover:text-card-foreground transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
             <span className="text-sm font-semibold hidden sm:inline">Back</span>
           </button>
-          <h1 className="text-lg sm:text-xl font-bold text-slate-100">My Profile</h1>
+          <h1 className="text-lg sm:text-xl font-bold text-foreground">My Profile</h1>
           <div className="w-16"></div>
         </div>
       </header>
@@ -223,20 +223,20 @@ export default function ProfilePage() {
         )}
 
         {/* Profile Header Card */}
-        <div className="rounded-2xl sm:rounded-3xl border border-slate-800/50 bg-gradient-to-br from-slate-900/50 to-slate-900/20 backdrop-blur-sm p-4 sm:p-6 shadow-lg shadow-slate-950/20">
+        <div className="rounded-2xl sm:rounded-3xl border border-border/50 bg-gradient-to-br from-slate-900/50 to-slate-900/20 backdrop-blur-sm p-4 sm:p-6 shadow-lg shadow-black/5 dark:shadow-black/20">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white font-bold text-xl shadow-lg shadow-teal-500/30">
                 {formData.name.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-lg sm:text-xl font-bold text-slate-100">{formData.name}</h2>
-                <p className="text-xs sm:text-sm text-slate-400">{formData.email}</p>
+                <h2 className="text-lg sm:text-xl font-bold text-foreground">{formData.name}</h2>
+                <p className="text-xs sm:text-sm text-muted-foreground">{formData.email}</p>
               </div>
             </div>
             <button
               onClick={() => (isEditing ? handleCancel() : setIsEditing(true))}
-              className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-lg transition-all"
+              className="p-2 text-muted-foreground hover:text-card-foreground hover:bg-muted/50 rounded-lg transition-all"
             >
               {isEditing ? <X className="h-5 w-5" /> : <Edit2 className="h-5 w-5" />}
             </button>
@@ -244,8 +244,8 @@ export default function ProfilePage() {
         </div>
 
         {/* Personal Information Section */}
-        <div className="rounded-2xl sm:rounded-3xl border border-slate-800/50 bg-slate-900/40 backdrop-blur-sm p-4 sm:p-6 space-y-4 shadow-lg shadow-slate-950/20">
-          <h3 className="text-sm sm:text-base font-bold text-slate-100 flex items-center gap-2">
+        <div className="rounded-2xl sm:rounded-3xl border border-border/50 bg-card/40 backdrop-blur-sm p-4 sm:p-6 space-y-4 shadow-lg shadow-black/5 dark:shadow-black/20">
+          <h3 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
             <User className="h-4 w-4 text-teal-400" />
             Personal Information
           </h3>
@@ -253,7 +253,7 @@ export default function ProfilePage() {
           <div className="space-y-3">
             {/* Name */}
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs sm:text-sm font-semibold text-muted-foreground mb-1.5">
                 Full Name
               </label>
               <input
@@ -262,14 +262,14 @@ export default function ProfilePage() {
                 value={formData.name}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-100 placeholder-slate-500 disabled:opacity-60 disabled:cursor-not-allowed focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
+                className="w-full px-4 py-2.5 rounded-lg border border-border bg-card/50 text-foreground placeholder-slate-500 disabled:opacity-60 disabled:cursor-not-allowed focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
                 placeholder="Your name"
               />
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs sm:text-sm font-semibold text-muted-foreground mb-1.5">
                 Email Address
               </label>
               <input
@@ -277,14 +277,14 @@ export default function ProfilePage() {
                 name="email"
                 value={formData.email}
                 disabled
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 cursor-not-allowed opacity-60"
+                className="w-full px-4 py-2.5 rounded-lg border border-border bg-card/50 text-muted-foreground cursor-not-allowed opacity-60"
               />
-              <p className="text-xs text-slate-500 mt-1">Email cannot be changed</p>
+              <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
             </div>
 
             {/* Location */}
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-2">
+              <label className="block text-xs sm:text-sm font-semibold text-muted-foreground mb-1.5 flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
                 Location
               </label>
@@ -294,7 +294,7 @@ export default function ProfilePage() {
                 value={formData.location}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-100 placeholder-slate-500 disabled:opacity-60 disabled:cursor-not-allowed focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
+                className="w-full px-4 py-2.5 rounded-lg border border-border bg-card/50 text-foreground placeholder-slate-500 disabled:opacity-60 disabled:cursor-not-allowed focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
                 placeholder="Your location"
               />
             </div>
@@ -302,8 +302,8 @@ export default function ProfilePage() {
         </div>
 
         {/* Career Profile Section */}
-        <div className="rounded-2xl sm:rounded-3xl border border-slate-800/50 bg-slate-900/40 backdrop-blur-sm p-4 sm:p-6 space-y-4 shadow-lg shadow-slate-950/20">
-          <h3 className="text-sm sm:text-base font-bold text-slate-100 flex items-center gap-2">
+        <div className="rounded-2xl sm:rounded-3xl border border-border/50 bg-card/40 backdrop-blur-sm p-4 sm:p-6 space-y-4 shadow-lg shadow-black/5 dark:shadow-black/20">
+          <h3 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
             <Target className="h-4 w-4 text-teal-400" />
             Career Profile
           </h3>
@@ -311,7 +311,7 @@ export default function ProfilePage() {
           <div className="space-y-3">
             {/* Target Role */}
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs sm:text-sm font-semibold text-muted-foreground mb-1.5">
                 Target Role
               </label>
               <input
@@ -320,14 +320,14 @@ export default function ProfilePage() {
                 value={formData.targetRole}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-100 placeholder-slate-500 disabled:opacity-60 disabled:cursor-not-allowed focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
+                className="w-full px-4 py-2.5 rounded-lg border border-border bg-card/50 text-foreground placeholder-slate-500 disabled:opacity-60 disabled:cursor-not-allowed focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
                 placeholder="e.g., Product Manager, UX Designer"
               />
             </div>
 
             {/* Career Goal */}
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-2">
+              <label className="block text-xs sm:text-sm font-semibold text-muted-foreground mb-1.5 flex items-center gap-2">
                 <GraduationCap className="h-4 w-4" />
                 Career Goal
               </label>
@@ -336,7 +336,7 @@ export default function ProfilePage() {
                 value={formData.careerGoal}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-100 placeholder-slate-500 disabled:opacity-60 disabled:cursor-not-allowed focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all resize-none"
+                className="w-full px-4 py-2.5 rounded-lg border border-border bg-card/50 text-foreground placeholder-slate-500 disabled:opacity-60 disabled:cursor-not-allowed focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all resize-none"
                 placeholder="Describe your career aspirations"
                 rows={3}
               />
@@ -344,7 +344,7 @@ export default function ProfilePage() {
 
             {/* Experience Level */}
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-2">
+              <label className="block text-xs sm:text-sm font-semibold text-muted-foreground mb-1.5 flex items-center gap-2">
                 <Zap className="h-4 w-4" />
                 Experience Level
               </label>
@@ -353,7 +353,7 @@ export default function ProfilePage() {
                 value={formData.experienceLevel}
                 onChange={handleInputChange}
                 disabled={!isEditing}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-100 disabled:opacity-60 disabled:cursor-not-allowed focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
+                className="w-full px-4 py-2.5 rounded-lg border border-border bg-card/50 text-foreground disabled:opacity-60 disabled:cursor-not-allowed focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
               >
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
@@ -364,8 +364,8 @@ export default function ProfilePage() {
         </div>
 
         {/* Interests Section */}
-        <div className="rounded-2xl sm:rounded-3xl border border-slate-800/50 bg-slate-900/40 backdrop-blur-sm p-4 sm:p-6 space-y-4 shadow-lg shadow-slate-950/20">
-          <h3 className="text-sm sm:text-base font-bold text-slate-100 flex items-center gap-2">
+        <div className="rounded-2xl sm:rounded-3xl border border-border/50 bg-card/40 backdrop-blur-sm p-4 sm:p-6 space-y-4 shadow-lg shadow-black/5 dark:shadow-black/20">
+          <h3 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
             <Heart className="h-4 w-4 text-teal-400" />
             Interests
           </h3>
@@ -379,7 +379,7 @@ export default function ProfilePage() {
                   onChange={(e) => setNewInterest(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleAddInterest()}
                   placeholder="Add an interest"
-                  className="flex-1 px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-100 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
+                  className="flex-1 px-4 py-2.5 rounded-lg border border-border bg-card/50 text-foreground placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
                 />
                 <button
                   onClick={handleAddInterest}
@@ -409,15 +409,15 @@ export default function ProfilePage() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-slate-500">No interests added yet</p>
+                <p className="text-sm text-muted-foreground">No interests added yet</p>
               )}
             </div>
           </div>
         </div>
 
         {/* Skills Section */}
-        <div className="rounded-2xl sm:rounded-3xl border border-slate-800/50 bg-slate-900/40 backdrop-blur-sm p-4 sm:p-6 space-y-4 shadow-lg shadow-slate-950/20">
-          <h3 className="text-sm sm:text-base font-bold text-slate-100 flex items-center gap-2">
+        <div className="rounded-2xl sm:rounded-3xl border border-border/50 bg-card/40 backdrop-blur-sm p-4 sm:p-6 space-y-4 shadow-lg shadow-black/5 dark:shadow-black/20">
+          <h3 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
             <Zap className="h-4 w-4 text-teal-400" />
             Skills
           </h3>
@@ -431,7 +431,7 @@ export default function ProfilePage() {
                   onChange={(e) => setNewSkill(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleAddSkill()}
                   placeholder="Add a skill"
-                  className="flex-1 px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-100 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
+                  className="flex-1 px-4 py-2.5 rounded-lg border border-border bg-card/50 text-foreground placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all"
                 />
                 <button
                   onClick={handleAddSkill}
@@ -461,7 +461,7 @@ export default function ProfilePage() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-slate-500">No skills added yet</p>
+                <p className="text-sm text-muted-foreground">No skills added yet</p>
               )}
             </div>
           </div>
@@ -481,7 +481,7 @@ export default function ProfilePage() {
               </button>
               <button
                 onClick={handleCancel}
-                className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-lg transition-all"
+                className="flex-1 px-4 py-3 bg-muted hover:bg-accent text-card-foreground font-semibold rounded-lg transition-all"
               >
                 Cancel
               </button>

@@ -101,9 +101,9 @@ export function ChatOptions({
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1">
-                <p className="font-semibold text-slate-100 text-sm">{option.label}</p>
+                <p className="font-semibold text-foreground text-sm">{option.label}</p>
                 {option.description && (
-                  <p className="text-sm text-slate-400 mt-1">{option.description}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{option.description}</p>
                 )}
               </div>
               {isSelected(option.id) && (

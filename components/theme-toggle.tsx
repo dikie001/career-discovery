@@ -16,7 +16,7 @@ export function ThemeToggle() {
   if (!mounted) {
     return (
       <button
-        className="p-2.5 text-slate-400 rounded-lg transition-all"
+        className="p-2.5 text-muted-foreground rounded-lg transition-all"
         disabled
         aria-label="Toggle theme"
       >
@@ -30,7 +30,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="p-2.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-lg transition-all duration-200"
+      className="p-2.5 text-muted-foreground hover:text-card-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
       aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
       title={`Switch to ${isDark ? "light" : "dark"} theme (Press 'd')`}
     >

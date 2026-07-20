@@ -37,10 +37,10 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased dark", fontMono.variable, "font-sans", figtree.variable)}
+      className={cn("antialiased", fontMono.variable, "font-sans", figtree.variable)}
     >
       <head>
-        <meta name="theme-color" content="#0f172a" />
+        <meta name="theme-color" content="#ffffff" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -49,7 +49,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="bg-slate-950 text-slate-50">
+      <body>
         <ThemeProvider>
           <AuthProvider>
             <AppNav />

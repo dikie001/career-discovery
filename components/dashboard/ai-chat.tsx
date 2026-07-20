@@ -121,15 +121,15 @@ const THEMES = [
   {
     id: "slate",
     name: "Obsidian Teal",
-    bg: "bg-slate-950",
-    sidebar: "bg-slate-900 border-slate-800",
-    header: "bg-slate-950 border-slate-800",
+    bg: "bg-background",
+    sidebar: "bg-card border-border",
+    header: "bg-background border-border",
     accent: "teal",
     accentBg: "bg-teal-600 hover:bg-teal-700",
     accentText: "text-teal-400",
     accentBorder: "border-teal-800",
     chatUser: "bg-teal-700",
-    chatAssistant: "bg-slate-900 border-slate-800",
+    chatAssistant: "bg-card border-border",
     colorPreview: "bg-teal-500",
   },
   {
@@ -157,7 +157,7 @@ const THEMES = [
     accentText: "text-emerald-400",
     accentBorder: "border-emerald-900",
     chatUser: "bg-emerald-700",
-    chatAssistant: "bg-slate-900 border-slate-800",
+    chatAssistant: "bg-card border-border",
     colorPreview: "bg-emerald-500",
   },
 ]
@@ -522,7 +522,7 @@ export function AiChat({
         timestamp: new Date(),
       }
       setMessages((prev) => [...prev, errorMessage])
-    } finally {
+    } finally { 
       setSending(false)
     }
   }
@@ -753,7 +753,7 @@ export function AiChat({
     if (list.length === 0) return null
     return (
       <div className="mt-4 space-y-1.5">
-        <p className="mb-1.5 px-2.5 text-xs font-bold tracking-wider text-slate-500 uppercase">
+        <p className="mb-1.5 px-2.5 text-xs font-bold tracking-wider text-muted-foreground uppercase">
           {title}
         </p>
         {list.map((session) => (
@@ -765,12 +765,12 @@ export function AiChat({
             }}
             className={`flex w-full items-center gap-2.5 truncate rounded-xl p-2.5 text-left text-xs transition-all ${
               activeSessionId === session.id
-                ? "border border-slate-700/50 bg-slate-800/80 font-semibold text-white shadow-inner"
-                : "text-slate-400 hover:bg-slate-800/30 hover:text-slate-100"
+                ? "border border-border/50 bg-slate-800/80 font-semibold text-white shadow-inner"
+                : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
             }`}
           >
             <MessageSquare
-              className={`h-3.5 w-3.5 flex-shrink-0 ${activeSessionId === session.id ? activeTheme.accentText : "text-slate-500"}`}
+              className={`h-3.5 w-3.5 flex-shrink-0 ${activeSessionId === session.id ? activeTheme.accentText : "text-muted-foreground"}`}
             />
             <span className="truncate">{session.title}</span>
           </button>
@@ -797,7 +797,7 @@ export function AiChat({
         }`}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between border-b border-slate-800/50 p-4">
+        <div className="flex items-center justify-between border-b border-border/50 p-4">
           <div className="flex items-center gap-2.5">
             <div
               className={`flex h-9 w-9 items-center justify-center rounded-xl ${activeTheme.chatUser} shadow-lg shadow-teal-500/10`}
@@ -805,17 +805,17 @@ export function AiChat({
               <span className="text-base font-black text-white">P</span>
             </div>
             <div>
-              <span className="text-sm font-bold tracking-tight text-slate-100">
+              <span className="text-sm font-bold tracking-tight text-foreground">
                 Pathfinder AI
               </span>
-              <span className="block text-xs font-medium text-slate-400">
+              <span className="block text-xs font-medium text-muted-foreground">
                 Career advisor
               </span>
             </div>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white lg:hidden"
+            className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-white lg:hidden"
           >
             <X className="h-4 w-4" />
           </button>
@@ -834,7 +834,7 @@ export function AiChat({
 
           {/* Theme Selector swatch list */}
           <div className="space-y-2 px-1">
-            <span className="text-xs font-bold text-slate-500">
+            <span className="text-xs font-bold text-muted-foreground">
               Choose Theme
             </span>
             <div className="flex items-center gap-2 pt-1">
@@ -846,7 +846,7 @@ export function AiChat({
                   className={`flex h-7 w-7 items-center justify-center rounded-full border-2 transition-all ${
                     themeId === theme.id
                       ? "scale-110 border-slate-100 shadow-md"
-                      : "border-slate-800 hover:border-slate-600"
+                      : "border-border hover:border-input"
                   }`}
                 >
                   <span
@@ -860,7 +860,7 @@ export function AiChat({
           {/* AI Personality Selection */}
           <div className="space-y-2.5">
             <div className="px-1">
-              <span className="text-xs font-bold text-slate-500">
+              <span className="text-xs font-bold text-muted-foreground">
                 AI Persona Model
               </span>
             </div>
@@ -873,7 +873,7 @@ export function AiChat({
                   className={`relative flex h-20 flex-col justify-between rounded-xl border p-2.5 text-left shadow-sm transition-all ${
                     personality === pers.id
                       ? `border-${activeTheme.accent}-500 bg-slate-800/80`
-                      : "border-slate-800 bg-slate-800/20 hover:border-slate-700 hover:bg-slate-800/40"
+                      : "border-border bg-slate-800/20 hover:border-border hover:bg-muted/40"
                   }`}
                 >
                   <div
@@ -881,7 +881,7 @@ export function AiChat({
                   >
                     {pers.icon}
                   </div>
-                  <span className="mt-1 text-xs leading-tight font-bold text-slate-100">
+                  <span className="mt-1 text-xs leading-tight font-bold text-foreground">
                     {pers.name}
                   </span>
                 </button>
@@ -892,14 +892,14 @@ export function AiChat({
           {/* History Tab */}
           <div className="space-y-1">
             <div className="flex items-center gap-2 px-1 py-1">
-              <History className="h-3.5 w-3.5 text-slate-500" />
-              <span className="text-xs font-bold text-slate-500">
+              <History className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-xs font-bold text-muted-foreground">
                 Conversation History
               </span>
             </div>
             <div className="space-y-3">
               {sessions.length === 0 ? (
-                <div className="mt-2 rounded-xl border border-dashed border-slate-800 p-4 text-center text-xs text-slate-500">
+                <div className="mt-2 rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">
                   No past discussions saved.
                 </div>
               ) : (
@@ -923,7 +923,7 @@ export function AiChat({
         {/* Sidebar Footer - Back to Dashboard */}
         <div className="border-t border-slate-800/80 bg-slate-900/20 p-4">
           <Link href="/dashboard">
-            <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-800 px-4 py-2.5 text-xs font-bold text-slate-400 transition-all hover:border-slate-700 hover:bg-slate-800 hover:text-white">
+            <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-border px-4 py-2.5 text-xs font-bold text-muted-foreground transition-all hover:border-border hover:bg-muted hover:text-white">
               <ArrowLeft className="h-3.5 w-3.5" />
               Return to Hub
             </button>
@@ -948,7 +948,7 @@ export function AiChat({
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-800/50 hover:text-slate-100 lg:hidden"
+              className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground lg:hidden"
             >
               <Menu className="h-4.5 w-4.5" />
             </button>
@@ -959,10 +959,10 @@ export function AiChat({
                 {activePersonality.icon}
               </div>
               <div>
-                <h2 className="text-sm font-bold text-slate-100">
+                <h2 className="text-sm font-bold text-foreground">
                   {activePersonality.name}
                 </h2>
-                <span className="block text-xs font-medium text-slate-500">
+                <span className="block text-xs font-medium text-muted-foreground">
                   {activePersonality.description}
                 </span>
               </div>
@@ -977,10 +977,10 @@ export function AiChat({
               <div className="animate-fadeIn flex h-64 flex-col items-center justify-center px-4 py-12 text-center">
                 <div className="space-y-4">
                   <div className="relative mx-auto h-9 w-9">
-                    <div className="absolute inset-0 rounded-full border border-slate-800"></div>
+                    <div className="absolute inset-0 rounded-full border border-border"></div>
                     <div className="absolute inset-0 animate-spin rounded-full border border-transparent border-t-sky-500 border-r-sky-500"></div>
                   </div>
-                  <p className="text-xs font-bold tracking-wider text-slate-500 uppercase">
+                  <p className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
                     Syncing Secure History...
                   </p>
                 </div>
@@ -1003,7 +1003,7 @@ export function AiChat({
               if (message.role === "system") {
                 return (
                   <div key={message.id} className="my-2.5 flex justify-center">
-                    <span className="rounded-full border border-slate-800/80 bg-slate-900/60 px-3.5 py-1.5 text-xs font-bold tracking-wider text-slate-400 uppercase">
+                    <span className="rounded-full border border-slate-800/80 bg-slate-900/60 px-3.5 py-1.5 text-xs font-bold tracking-wider text-muted-foreground uppercase">
                       {message.content}
                     </span>
                   </div>
@@ -1032,11 +1032,11 @@ export function AiChat({
                       className={`w-fit max-w-xl rounded-2xl shadow-sm transition-all duration-300 md:max-w-2xl ${
                         message.role === "user"
                           ? `rounded-tr-none ${activeTheme.chatUser} px-4 py-2.5 text-sm font-medium text-white`
-                          : `rounded-tl-none ${activeTheme.chatAssistant} border px-4 py-2.5 text-sm text-slate-200`
+                          : `rounded-tl-none ${activeTheme.chatAssistant} border px-4 py-2.5 text-sm text-card-foreground`
                       }`}
                     >
                       {message.role === "assistant" ? (
-                        <div className="prose prose-invert prose-sm max-w-none leading-relaxed text-slate-200">
+                        <div className="prose prose-invert prose-sm max-w-none leading-relaxed text-card-foreground">
                           <MarkdownRenderer content={message.content} />
                         </div>
                       ) : (

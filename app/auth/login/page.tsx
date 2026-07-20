@@ -56,7 +56,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center px-4 py-8 sm:px-6">
+    <div className="min-h-screen bg-gradient-to-br from-background via-card to-background flex flex-col items-center justify-center px-4 py-8 sm:px-6">
       {/* Background decoration */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
@@ -71,7 +71,7 @@ export default function LoginPage() {
           </div>
           <div className="space-y-1">
             <h1 className="text-3xl font-bold text-white">Pathfinder</h1>
-            <p className="text-sm text-slate-400">Welcome back</p>
+            <p className="text-sm text-muted-foreground">Welcome back</p>
           </div>
         </div>
 
@@ -81,13 +81,13 @@ export default function LoginPage() {
             <div className="text-center space-y-4">
               <div className="flex justify-center">
                 <div className="relative w-16 h-16">
-                  <div className="absolute inset-0 rounded-full border-2 border-slate-700"></div>
+                  <div className="absolute inset-0 rounded-full border-2 border-border"></div>
                   <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-teal-500 border-r-teal-500 animate-spin"></div>
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-slate-300 font-medium">Signing you in...</p>
-                <p className="text-xs text-slate-500">{formData.email}</p>
+                <p className="text-muted-foreground font-medium">Signing you in...</p>
+                <p className="text-xs text-muted-foreground">{formData.email}</p>
               </div>
             </div>
           </div>
@@ -103,8 +103,8 @@ export default function LoginPage() {
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-slate-50 font-semibold">Welcome!</p>
-                <p className="text-sm text-slate-400">Redirecting to your dashboard...</p>
+                <p className="text-foreground font-semibold">Welcome!</p>
+                <p className="text-sm text-muted-foreground">Redirecting to your dashboard...</p>
               </div>
             </div>
           </div>
@@ -143,11 +143,11 @@ export default function LoginPage() {
 
             {/* Email */}
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-semibold text-slate-200">
+              <label htmlFor="email" className="block text-sm font-semibold text-card-foreground">
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 pointer-events-none" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
                 <input
                   id="email"
                   name="email"
@@ -155,7 +155,7 @@ export default function LoginPage() {
                   value={formData.email}
                   onChange={handleChange}
                   disabled={isLoading}
-                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-border bg-card/50 text-foreground placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
                   placeholder="you@example.com"
                 />
               </div>
@@ -163,11 +163,11 @@ export default function LoginPage() {
 
             {/* Password */}
             <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-semibold text-slate-200">
+              <label htmlFor="password" className="block text-sm font-semibold text-card-foreground">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 pointer-events-none" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
                 <input
                   id="password"
                   name="password"
@@ -175,13 +175,13 @@ export default function LoginPage() {
                   value={formData.password}
                   onChange={handleChange}
                   disabled={isLoading}
-                  className="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
+                  className="w-full pl-12 pr-12 py-3 rounded-xl border border-border bg-card/50 text-foreground placeholder-slate-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all disabled:opacity-50"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-400 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -199,7 +199,7 @@ export default function LoginPage() {
 
             {/* Footer */}
             <div className="pt-4 text-center space-y-4">
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 Don't have an account?{" "}
                 <Link href="/auth/signup" className="text-teal-400 hover:text-teal-300 font-semibold transition-colors">
                   Sign up
