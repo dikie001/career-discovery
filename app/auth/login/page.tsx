@@ -30,8 +30,20 @@ export default function LoginPage() {
     e.preventDefault()
     setLocalError(null)
 
-    if (!formData.email || !formData.password) {
-      setLocalError("Please fill in all fields")
+    // Validation feedback
+    const validationErrors: string[] = []
+    if (!formData.email) validationErrors.push("Email is required")
+    if (!formData.password) validationErrors.push("Password is required")
+
+    if (validationErrors.length > 0) {
+      setLocalError(validationErrors.join(" • "))
+      return
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      setLocalError("Please enter a valid email address")
       return
     }
 
@@ -45,7 +57,16 @@ export default function LoginPage() {
       }, 1500)
     } catch (err) {
       setStep("error")
-      setLocalError(authError || "Login failed. Please try again.")
+      // Provide friendly error messages
+      let friendlyError = authError || "Login failed. Please try again."
+      if (authError?.toLowerCase().includes("not found")) {
+        friendlyError = "Email not found. Please check your email or create an account."
+      } else if (authError?.toLowerCase().includes("invalid") || authError?.toLowerCase().includes("incorrect")) {
+        friendlyError = "Email or password is incorrect. Please try again."
+      } else if (authError?.toLowerCase().includes("network")) {
+        friendlyError = "Network error. Please check your connection and try again."
+      }
+      setLocalError(friendlyError)
     }
   }
 
@@ -116,18 +137,26 @@ export default function LoginPage() {
             <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-4 space-y-3">
               <div className="flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
-                <div className="flex-1 space-y-1">
-                  <p className="font-semibold text-red-300">Login Failed</p>
+                <div className="flex-1 space-y-2">
+                  <p className="font-semibold text-red-300">Login Unsuccessful</p>
                   <p className="text-sm text-red-200">{localError}</p>
+                  <p className="text-xs text-red-300 pt-1">💡 Tip: Make sure your email and password are correct. If you don't have an account yet, you can sign up instead.</p>
                 </div>
               </div>
             </div>
-            <Button
-              onClick={handleRetry}
-              className="w-full h-12 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition-colors"
-            >
-              Try Again
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                onClick={handleRetry}
+                className="flex-1 h-12 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition-colors"
+              >
+                Try Again
+              </Button>
+              <Link href="/auth/signup" className="flex-1">
+                <Button className="w-full h-12 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors">
+                  Sign Up
+                </Button>
+              </Link>
+            </div>
           </div>
         )}
 
@@ -137,7 +166,10 @@ export default function LoginPage() {
             {localError && (
               <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-4 flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-red-300">{localError}</span>
+                <div className="flex-1 space-y-1">
+                  <p className="text-sm font-semibold text-red-300">Unable to continue</p>
+                  <p className="text-sm text-red-200">{localError}</p>
+                </div>
               </div>
             )}
 
