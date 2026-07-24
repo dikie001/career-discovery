@@ -19,7 +19,7 @@ export async function GET(
     const resolvedParams = await params;
     const roadmapId = resolvedParams.id;
 
-    // 1. Fetch the roadmap along with its nodes and edges
+    // Fetch the roadmap along with its career, nodes, and edges
     const roadmap = await prisma.roadmap.findUnique({
       where: { id: roadmapId },
       include: {
@@ -33,7 +33,7 @@ export async function GET(
       return NextResponse.json({ error: "Roadmap not found" }, { status: 404 });
     }
 
-    // 2. Fetch user's completion progress for this roadmap
+    // Fetch user's completion progress for this specific roadmap
     const progress = await prisma.careerProgress.findMany({
       where: { userId },
     });

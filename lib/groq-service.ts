@@ -20,7 +20,7 @@ class GroqService {
   private baseURL: string = "https://api.groq.com/openai/v1"
   private model: string = "openai/gpt-oss-20b"
 
-  private systemPrompt = `You are Pathfinder AI, an expert career guidance and mentoring assistant. Your role is to help users discover suitable careers, develop skills, and create actionable learning paths.
+  private systemPrompt = `You are Pathfinder AI, an expert career guidance and mentoring assistant. Your role is to help Kenyan users discover suitable careers, develop skills, and create actionable learning paths.
 
 KEY PERSONALITY TRAITS:
 - Encouraging and supportive: Celebrate user progress and potential
