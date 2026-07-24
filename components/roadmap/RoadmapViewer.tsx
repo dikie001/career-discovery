@@ -68,7 +68,7 @@ const CustomNode = ({ data }: { data: CustomNodeData }) => {
       "px-4 py-3 rounded-xl border-2 shadow-sm min-w-50 transition-all duration-300",
       isCompleted && "bg-emerald-50 border-emerald-500/50 dark:bg-emerald-950/30 dark:border-emerald-500/30",
       isAvailable && "bg-white border-blue-500 shadow-blue-500/20 dark:bg-slate-900 dark:border-blue-500 cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-blue-500/20",
-      isLocked && "bg-slate-50 border-slate-200 dark:bg-slate-900/50 dark:border-slate-800 opacity-60 grayscale"
+    isLocked && "bg-white border-dashed border-slate-300 dark:bg-slate-900 dark:border-slate-700 text-slate-500"
     )}>
       <Handle type="target" position={Position.Top} className="w-2 h-2 opacity-0" />
       <div className="flex items-start gap-3">

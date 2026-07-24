@@ -1,124 +1,145 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { RoadmapViewer } from "@/components/roadmap/RoadmapViewer";
+import { RoadmapSidebar } from "@/components/roadmap/RoadmapSidebar";
+import { Loader2, Compass } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
-import { Loader2 } from "lucide-react";
-import{RoadmapSidebar} from "@/components/roadmap/RoadmapSidebar";
-import {RoadmapViewer} from "@/components/roadmap/RoadmapViewer";
 
-interface RoadmapNode {
-  id: string;
-  title: string;
+interface RoadmapResponse {
+  id?: string;
+  title?: string;
   description?: string;
-  type: string;
-  isRoot?: boolean;
-}
-
-interface RoadmapData {
-  id: string;
-  title: string;
-  description: string;
-  nodes: RoadmapNode[];
-  edges?: Array<{ sourceId: string; targetId: string }>;
+  nodes?: Array<{
+    id: string;
+    title: string;
+    description?: string;
+    type?: string;
+    status?: string;
+  }>;
 }
 
 export default function RoadmapDetailPage() {
   const params = useParams();
-  const id = params?.id as string;
+  const roadmapId = params.id as string;
   const { token } = useAuth();
 
-  const [roadmap, setRoadmap] = useState<RoadmapData | null>(null);
+  const [roadmap, setRoadmap] = useState<RoadmapResponse | null>(null);
   const [userProgress, setUserProgress] = useState<Record<string, string>[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  const fetchRoadmapData = useCallback(async () => {
-    if (!token || !id) return;
-    try {
-      const res = await fetch(`/api/roadmaps/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setRoadmap(data.roadmap);
-        setUserProgress(data.progress || []);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }, [token, id]);
-
-  // Use a ref to prevent cascading effect warnings on initial mount
-  const mountedRef = useRef(false);
   useEffect(() => {
-    if (mountedRef.current) return;
-    mountedRef.current = true;
-    fetchRoadmapData();
-  }, [fetchRoadmapData]);
+    const fetchRoadmapData = async () => {
+      if (!token) return; 
+
+      try {
+        const res = await fetch(`/api/roadmaps/${roadmapId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (!res.ok) throw new Error("Failed to fetch roadmap");
+        const rawData = await res.json();
+        
+        // --- THE FIX: Smart Data Unpacking ---
+        // If your API sends { data: { ... } } or { roadmap: { ... } }, this extracts it.
+        // If it sends the raw object, it just uses rawData.
+        const actualRoadmap = rawData.data || rawData.roadmap || rawData;
+        
+        console.log("Successfully unpacked Roadmap Data:", actualRoadmap);
+        setRoadmap(actualRoadmap);
+
+        const progressRes = await fetch(`/api/user/progress`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (progressRes.ok) {
+          const progressData = await progressRes.json();
+          // Unpack progress data safely as well
+          const actualProgress = progressData.data || progressData.progress || progressData;
+          setUserProgress(Array.isArray(actualProgress) ? actualProgress : []);
+        }
+      } catch (err) {
+        console.error("Error loading roadmap:", err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (roadmapId && token) {
+      fetchRoadmapData();
+    }
+  }, [roadmapId, token]); 
 
   const handleNodeSelect = (nodeId: string) => {
-    console.log("Selected node:", nodeId);
+    console.log("Navigated to node:", nodeId);
   };
 
   const handleNodeComplete = async (nodeId: string) => {
     if (!token) return;
-    try {
-      const res = await fetch(`/api/user/roadmaps/progress`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ roadmapId: id, nodeId })
-      });
-      if (res.ok) {
-        fetchRoadmapData(); 
+
+    setUserProgress((prev) => {
+      const exists = prev.find((p) => p.nodeId === nodeId);
+      if (exists) {
+        return prev.map((p) => (p.nodeId === nodeId ? { ...p, status: "completed" } : p));
       }
-    } catch (e) {
-      console.error(e);
+      return [...prev, { nodeId, status: "completed" }];
+    });
+
+    try {
+      await fetch('/api/user/progress', { 
+        method: 'POST', 
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ roadmapId, nodeId, status: 'completed' }) 
+      });
+    } catch (err) {
+      console.error("Failed to save progress", err);
     }
   };
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+      <div className="flex h-[calc(100vh-4rem)] w-full items-center justify-center bg-slate-50 dark:bg-[#0f172a]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+          <p className="text-sm font-medium text-slate-500">Loading your engineered roadmap...</p>
+        </div>
       </div>
     );
   }
 
-  if (!roadmap) {
+  // Adjusted safety check to ensure we have a roadmap object AND an ID
+  if (error || !roadmap || !roadmap.id) {
     return (
-      <div className="p-8 text-center text-slate-500">
-        Roadmap not found.
+      <div className="flex h-[calc(100vh-4rem)] w-full items-center justify-center bg-slate-50 dark:bg-[#0f172a]">
+        <div className="text-center flex flex-col items-center">
+          <div className="rounded-2xl bg-slate-200 dark:bg-slate-800 p-6 mb-6">
+            <Compass className="h-12 w-12 text-slate-400" />
+          </div>
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-2">Roadmap Not Found</h1>
+          <p className="text-slate-500 max-w-sm">{"We couldn't load this roadmap. It may have been deleted or the database connection failed."}</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] bg-slate-50 dark:bg-[#0f172a] rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
-      {/* Sidebar - Hidden on mobile, visible on medium+ screens */}
-      <div className="hidden md:block">
-        <RoadmapSidebar 
-          nodes={roadmap.nodes} 
-          userProgress={userProgress} 
-          onNodeSelect={handleNodeSelect} 
-        />
-      </div>
+    <div className="flex h-[calc(100vh-4rem)] w-full overflow-hidden bg-slate-50 dark:bg-[#0f172a]">
+      <RoadmapSidebar 
+        roadmap={roadmap} 
+        nodes={roadmap.nodes || []} 
+        userProgress={userProgress} 
+        onNodeSelect={handleNodeSelect} 
+      />
       
-      {/* Main Graph Area */}
-      <div className="flex-1 relative w-full h-full">
-        <div className="absolute top-4 left-4 md:top-6 md:left-6 z-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 py-3 md:px-6 md:py-4 rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-800/50 max-w-[75%] md:max-w-md pointer-events-none">
-          <h1 className="text-base md:text-2xl font-bold text-slate-900 dark:text-white mb-1 leading-tight">
-            {roadmap.title}
-          </h1>
-          <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 line-clamp-2 md:line-clamp-none">
-            {roadmap.description}
-          </p>
-        </div>
-        
+      <div className="flex-1 h-full relative">
         <RoadmapViewer 
           roadmap={roadmap} 
           userProgress={userProgress} 

@@ -62,21 +62,26 @@ export async function POST(request: NextRequest) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama3-8b-8192", // Fast and excellent at JSON
+        model: "llama-3.1-8b-instant", // The upgraded, currently supported fast model
         response_format: { type: "json_object" },
         messages: [
           {
             role: "system",
-            content: `You are an expert technical career advisor. Your job is to generate a realistic, industry-ready learning roadmap for a "${careerTitle}". 
+            content: `You are an expert technical career advisor. Your job is to generate a realistic, industry-ready, highly granular learning roadmap for a "${careerTitle}". 
             
             You MUST return ONLY a valid JSON object. Do not include any markdown, explanation, or text outside the JSON.
+            
+            CRITICAL INSTRUCTIONS FOR NODE CONTENT:
+            1. DO NOT use generic category names like 'Core Fundamentals' or 'Advanced Methodologies'. 
+            2. You MUST generate highly specific, granular technologies, languages, frameworks, or tools as the node titles (e.g., HTML5, CSS3, Tailwind CSS, JavaScript ES6, React.js, Node.js, Express.js, MongoDB, PostgreSQL, Git/GitHub, Figma, etc.).
+            3. In the "description" field, you MUST recommend specific learning platforms (e.g., "Recommended: Udemy, Coursera, freeCodeCamp, Codecademy, or specific YouTube channels").
             
             The JSON must follow this exact structure:
             {
               "nodes": [
-                { "id": "1", "title": "Phase 1: Foundations", "description": "Short description of basic skills.", "type": "milestone", "isRoot": true },
-                { "id": "2", "title": "Core Skill", "description": "Specific technology or concept.", "type": "skill" },
-                { "id": "3", "title": "Capstone Project", "description": "A portfolio project to prove competence.", "type": "project" }
+                { "id": "1", "title": "HTML5 & Semantic Web", "description": "Master document structure and accessibility. Recommended: freeCodeCamp or Udemy.", "type": "skill", "isRoot": true },
+                { "id": "2", "title": "Tailwind CSS", "description": "Learn utility-first styling. Recommended: Official Docs & YouTube.", "type": "skill" },
+                { "id": "3", "title": "Fullstack Capstone", "description": "Build a real-world MERN app to prove competence.", "type": "project" }
               ],
               "edges": [
                 { "sourceId": "1", "targetId": "2" },
@@ -85,7 +90,7 @@ export async function POST(request: NextRequest) {
             }
             
             Rules:
-            1. Generate exactly 5 to 7 nodes forming a logical progression.
+            1. Generate exactly 8 to 12 nodes forming a logical, granular technical progression.
             2. "id" must be a simple string number ("1", "2", etc.).
             3. "type" must be exactly one of: "milestone", "skill", "career_opportunity", or "project".
             4. Only one node should have "isRoot": true.
@@ -95,12 +100,13 @@ export async function POST(request: NextRequest) {
         temperature: 0.3
       })
     });
-if (!groqRes.ok) {
-  const errorText = await groqRes.text();
-  console.error("GROQ API REJECTED REQUEST. Status:", groqRes.status);
-  console.error("GROQ ERROR DETAILS:", errorText);
-  throw new Error(`Failed to communicate with Groq AI. Status: ${groqRes.status}`);
-}
+
+    if (!groqRes.ok) {
+      const errorText = await groqRes.text();
+      console.error("GROQ API REJECTED REQUEST. Status:", groqRes.status);
+      console.error("GROQ ERROR DETAILS:", errorText);
+      throw new Error(`Failed to communicate with Groq AI. Status: ${groqRes.status}`);
+    }
 
     const groqData = await groqRes.json();
     const content = JSON.parse(groqData.choices[0].message.content);
