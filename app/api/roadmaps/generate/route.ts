@@ -95,10 +95,12 @@ export async function POST(request: NextRequest) {
         temperature: 0.3
       })
     });
-
-    if (!groqRes.ok) {
-      throw new Error("Failed to communicate with Groq AI");
-    }
+if (!groqRes.ok) {
+  const errorText = await groqRes.text();
+  console.error("GROQ API REJECTED REQUEST. Status:", groqRes.status);
+  console.error("GROQ ERROR DETAILS:", errorText);
+  throw new Error(`Failed to communicate with Groq AI. Status: ${groqRes.status}`);
+}
 
     const groqData = await groqRes.json();
     const content = JSON.parse(groqData.choices[0].message.content);

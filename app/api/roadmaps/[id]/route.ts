@@ -25,7 +25,7 @@ export async function GET(
       include: {
         career: true,
         nodes: true,
-        edges: true,
+      
       },
     });
 
