@@ -92,10 +92,6 @@ export default function SignupPage() {
       return
     }
 
-    if (formData.password.length < 6) {
-      setValidationError("For better security, we recommend a password with at least 6 characters")
-      return
-    }
 
     // Password match validation
     if (formData.password !== formData.confirmPassword) {
