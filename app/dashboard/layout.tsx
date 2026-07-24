@@ -4,6 +4,7 @@ import React from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { DashboardProvider } from "@/contexts/dashboard-context";
 import { useRouter } from "next/navigation";
+import { BottomNav } from "@/components/dashboard/BottomNav";
 
 export default function DashboardLayout({
   children,
@@ -36,7 +37,15 @@ export default function DashboardLayout({
 
   return (
     <DashboardProvider>
-      {children}
+      <div className="relative min-h-screen bg-background">
+        {/* Main Content Area: Padding bottom ensures the nav doesn't cover content */}
+        <div className="pb-24 sm:pb-8">
+          {children}
+        </div>
+
+        {/* Global Bottom Navigation */}
+        <BottomNav />
+      </div>
     </DashboardProvider>
   );
 }
