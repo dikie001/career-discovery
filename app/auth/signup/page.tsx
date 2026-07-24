@@ -24,29 +24,82 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
+  const [passwordStrength, setPasswordStrength] = useState<"weak" | "fair" | "good" | null>(null)
+  const [passwordMatch, setPasswordMatch] = useState<boolean | null>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
     setValidationError(null)
+
+    // Real-time feedback for password strength
+    if (name === "password") {
+      if (value.length === 0) {
+        setPasswordStrength(null)
+      } else if (value.length < 6) {
+        setPasswordStrength("weak")
+      } else if (value.length < 12) {
+        setPasswordStrength("fair")
+      } else {
+        setPasswordStrength("good")
+      }
+
+      // Check if passwords match
+      if (formData.confirmPassword) {
+        setPasswordMatch(value === formData.confirmPassword)
+      }
+    }
+
+    // Real-time feedback for password confirm
+    if (name === "confirmPassword") {
+      setPasswordMatch(value === formData.password)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setValidationError(null)
 
-    if (!formData.name || !formData.email || !formData.password) {
-      setValidationError("All fields are required")
+    // Comprehensive validation with friendly feedback
+    const validationErrors: string[] = []
+
+    if (!formData.name) validationErrors.push("Full name is required")
+    if (!formData.email) validationErrors.push("Email address is required")
+    if (!formData.password) validationErrors.push("Password is required")
+    if (!formData.confirmPassword) validationErrors.push("Please confirm your password")
+
+    if (validationErrors.length > 0) {
+      setValidationError(validationErrors.join(" • "))
+      return
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      setValidationError("Please enter a valid email address (e.g., you@example.com)")
+      return
+    }
+
+    // Name validation
+    if (formData.name.trim().length < 2) {
+      setValidationError("Please enter your full name (at least 2 characters)")
+      return
+    }
+
+    // Password strength validation
+    if (formData.password.length < 6) {
+      setValidationError("Password must be at least 6 characters long for security")
       return
     }
 
     if (formData.password.length < 6) {
-      setValidationError("Password must be at least 6 characters")
+      setValidationError("For better security, we recommend a password with at least 6 characters")
       return
     }
 
+    // Password match validation
     if (formData.password !== formData.confirmPassword) {
-      setValidationError("Passwords do not match")
+      setValidationError("Passwords don't match. Please make sure they're identical")
       return
     }
 
@@ -106,7 +159,10 @@ export default function SignupPage() {
               {(error || validationError) && (
                 <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-4 flex items-start gap-3">
                   <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-red-300">{error || validationError}</span>
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-semibold text-red-300">Let's fix this</p>
+                    <p className="text-sm text-red-200">{error || validationError}</p>
+                  </div>
                 </div>
               )}
 
@@ -175,6 +231,23 @@ export default function SignupPage() {
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
+                {formData.password && (
+                  <div className="flex items-center gap-2 pt-1">
+                    <div className="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all ${passwordStrength === "weak" ? "w-1/3 bg-red-500" :
+                          passwordStrength === "fair" ? "w-2/3 bg-yellow-500" :
+                            "w-full bg-teal-500"
+                          }`}
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-slate-400">
+                      {passwordStrength === "weak" ? "Weak" :
+                        passwordStrength === "fair" ? "Fair" :
+                          "Strong"}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Confirm Password */}
@@ -191,7 +264,10 @@ export default function SignupPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 transition-all disabled:opacity-50"
+                    className={`w-full pl-12 pr-12 py-3 rounded-xl border bg-slate-900/50 text-slate-50 placeholder-slate-500 focus:outline-none focus:ring-2 transition-all disabled:opacity-50 ${passwordMatch === false ? "border-red-500 focus:border-red-500 focus:ring-red-500/40" :
+                        passwordMatch === true ? "border-teal-500 focus:border-teal-500 focus:ring-teal-500/40" :
+                          "border-slate-700 focus:border-teal-500 focus:ring-teal-500/40"
+                      }`}
                     placeholder="••••••••"
                   />
                   <button
@@ -202,6 +278,13 @@ export default function SignupPage() {
                     {showConfirm ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
+                {formData.confirmPassword && passwordMatch !== null && (
+                  <div className="flex items-center gap-2 pt-1">
+                    <div className={`text-xs font-medium ${passwordMatch ? "text-teal-400" : "text-red-400"}`}>
+                      {passwordMatch ? "✓ Passwords match" : "✗ Passwords don't match"}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Submit Button */}
