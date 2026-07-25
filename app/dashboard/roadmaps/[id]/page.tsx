@@ -143,7 +143,7 @@ export default function RoadmapDetailPage() {
         <RoadmapViewer 
           roadmap={roadmap} 
           userProgress={userProgress} 
-          onNodeComplete={handleNodeComplete} 
+          onNodeSelect={handleNodeSelect}
         />
       </div>
     </div>
