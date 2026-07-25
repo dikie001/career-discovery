@@ -125,11 +125,7 @@ export default function CareerExplorerPage() {
           return;
         }
 
-        // Format the category into a URL-friendly slug
-        const categorySlug = category
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '');
+    
 
         // Route to the correct category folder and ID
         router.push(`/dashboard/roadmaps/${correctId}`);
@@ -146,7 +142,7 @@ export default function CareerExplorerPage() {
   return (
     <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 pb-24">
       {/* Header Section */}
-      <div className="mb-10 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 p-8 text-white shadow-xl">
+     <div className="mb-10 rounded-3xl bg-linear-to-br from-slate-900 to-slate-800 p-8 text-white shadow-xl">
         <div className="flex items-start gap-5">
           <div className="rounded-2xl bg-teal-500/20 p-4 backdrop-blur-md">
             <Compass className="h-10 w-10 text-teal-400" />

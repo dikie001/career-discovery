@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { RoadmapViewer } from "@/components/roadmap/RoadmapViewer";
-import { RoadmapSidebar } from "@/components/roadmap/RoadmapSidebar";
+import { RoadmapSidebar, RoadmapNodeData } from "@/components/roadmap/RoadmapSidebar";
+import { NodeDetailsPanel } from "@/components/roadmap/NodeDetailsPanel"; // Added missing import
 import { Loader2, Compass } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -11,13 +12,7 @@ interface RoadmapResponse {
   id?: string;
   title?: string;
   description?: string;
-  nodes?: Array<{
-    id: string;
-    title: string;
-    description?: string;
-    type?: string;
-    status?: string;
-  }>;
+  nodes?: RoadmapNodeData[];
 }
 
 export default function RoadmapDetailPage() {
@@ -29,6 +24,9 @@ export default function RoadmapDetailPage() {
   const [userProgress, setUserProgress] = useState<Record<string, string>[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  // Added missing state for the sliding panel
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRoadmapData = async () => {
@@ -43,12 +41,7 @@ export default function RoadmapDetailPage() {
         if (!res.ok) throw new Error("Failed to fetch roadmap");
         const rawData = await res.json();
         
-        // --- THE FIX: Smart Data Unpacking ---
-        // If your API sends { data: { ... } } or { roadmap: { ... } }, this extracts it.
-        // If it sends the raw object, it just uses rawData.
         const actualRoadmap = rawData.data || rawData.roadmap || rawData;
-        
-        console.log("Successfully unpacked Roadmap Data:", actualRoadmap);
         setRoadmap(actualRoadmap);
 
         const progressRes = await fetch(`/api/user/progress`, {
@@ -58,7 +51,6 @@ export default function RoadmapDetailPage() {
         });
         if (progressRes.ok) {
           const progressData = await progressRes.json();
-          // Unpack progress data safely as well
           const actualProgress = progressData.data || progressData.progress || progressData;
           setUserProgress(Array.isArray(actualProgress) ? actualProgress : []);
         }
@@ -76,7 +68,7 @@ export default function RoadmapDetailPage() {
   }, [roadmapId, token]); 
 
   const handleNodeSelect = (nodeId: string) => {
-    console.log("Navigated to node:", nodeId);
+    setSelectedNodeId(nodeId); // Replaced console.log with actual state update
   };
 
   const handleNodeComplete = async (nodeId: string) => {
@@ -89,6 +81,8 @@ export default function RoadmapDetailPage() {
       }
       return [...prev, { nodeId, status: "completed" }];
     });
+
+    setSelectedNodeId(null); // Close the panel automatically on completion
 
     try {
       await fetch('/api/user/progress', { 
@@ -115,7 +109,6 @@ export default function RoadmapDetailPage() {
     );
   }
 
-  // Adjusted safety check to ensure we have a roadmap object AND an ID
   if (error || !roadmap || !roadmap.id) {
     return (
       <div className="flex h-[calc(100vh-4rem)] w-full items-center justify-center bg-slate-50 dark:bg-[#0f172a]">
@@ -130,8 +123,12 @@ export default function RoadmapDetailPage() {
     );
   }
 
+  // Added missing derived variables for the panel
+  const activeNode = roadmap.nodes?.find(n => n.id === selectedNodeId) || null;
+  const activeNodeStatus = userProgress.find(p => p.nodeId === selectedNodeId)?.status || 'locked';
+
   return (
-    <div className="flex h-[calc(100vh-4rem)] w-full overflow-hidden bg-slate-50 dark:bg-[#0f172a]">
+    <div className="flex h-[calc(100vh-4rem)] w-full overflow-hidden bg-slate-50 dark:bg-[#0f172a] relative">
       <RoadmapSidebar 
         roadmap={roadmap} 
         nodes={roadmap.nodes || []} 
@@ -143,9 +140,16 @@ export default function RoadmapDetailPage() {
         <RoadmapViewer 
           roadmap={roadmap} 
           userProgress={userProgress} 
-          onNodeSelect={handleNodeSelect}
+          onNodeSelect={handleNodeSelect} 
+        />
+        
+        <NodeDetailsPanel 
+          node={activeNode} 
+          status={activeNodeStatus}
+          onClose={() => setSelectedNodeId(null)} 
+          onComplete={handleNodeComplete} 
         />
       </div>
     </div>
   );
-}
+} 

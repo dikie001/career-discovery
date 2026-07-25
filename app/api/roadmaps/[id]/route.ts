@@ -11,6 +11,7 @@ export async function GET(
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    
     const userId = verifyToken(authHeader.substring(7));
     if (!userId) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
@@ -19,13 +20,12 @@ export async function GET(
     const resolvedParams = await params;
     const roadmapId = resolvedParams.id;
 
-    // Fetch the roadmap along with its career, nodes, and edges
+    // 1. Fetch the roadmap and nodes
     const roadmap = await prisma.roadmap.findUnique({
       where: { id: roadmapId },
       include: {
         career: true,
         nodes: true,
-      
       },
     });
 
@@ -33,12 +33,27 @@ export async function GET(
       return NextResponse.json({ error: "Roadmap not found" }, { status: 404 });
     }
 
-    // Fetch user's completion progress for this specific roadmap
+    // 2. Safely fetch edges using the exact Node IDs to satisfy strict TypeScript
+    const nodeIds = roadmap.nodes.map(node => node.id);
+    const edges = await prisma.roadmapEdge.findMany({
+      where: {
+        sourceId: { in: nodeIds }
+      }
+    });
+
+    // 3. Fetch user progress
     const progress = await prisma.careerProgress.findMany({
       where: { userId },
     });
 
-    return NextResponse.json({ roadmap, progress });
+    // 4. Combine
+    const roadmapWithEdges = {
+      ...roadmap,
+      edges: edges
+    };
+
+    return NextResponse.json({ roadmap: roadmapWithEdges, progress });
+    
   } catch (error) {
     console.error("Error fetching individual roadmap:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

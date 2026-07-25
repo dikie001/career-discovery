@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useEffect } from 'react';
+import React, {  useMemo, useEffect } from 'react';
 import ReactFlow, { 
   Controls, 
   Background, 
@@ -17,7 +17,6 @@ import { cn } from '@/lib/utils';
 import { CheckCircle2, Lock, PlayCircle } from 'lucide-react';
 import dagre from 'dagre';
 
-// 1. Strictly define the Node Data locally to include isRoot and remove 'any'
 export interface ViewerNodeData {
   id: string;
   title: string;
@@ -27,32 +26,35 @@ export interface ViewerNodeData {
   isRoot?: boolean;
 }
 
-// 2. Strictly define ViewerProps to match the roadmap structure
 interface ViewerProps {
   roadmap: {
     title?: string;
     description?: string;
     nodes?: ViewerNodeData[];
+    edges?: { id?: string; sourceId: string; targetId: string; label?: string }[];
   };
   userProgress: Record<string, string>[]; 
   onNodeSelect: (nodeId: string) => void; 
 }
 
-// 3. Remove 'any' from CustomNode by using our strict interface
-const CustomNode = ({ data }: { data: ViewerNodeData }) => {
-  const { title, description, status } = data;
+// FIX: Added direct onClick to the wrapper div to guarantee clickability
+const CustomNode = ({ data }: { data: ViewerNodeData & { onSelect: (id: string) => void } }) => {
+  const { id, title, description, status, onSelect } = data;
   
   const isCompleted = status === 'completed';
   const isAvailable = status === 'available';
   const isLocked = status === 'locked' || !status;
 
   return (
-    <div className={cn(
-      "px-4 py-3 rounded-xl border-2 shadow-sm min-w-64 transition-all duration-300 cursor-pointer hover:scale-105",
-      isCompleted && "bg-emerald-50 border-emerald-500/50 dark:bg-emerald-950/30 dark:border-emerald-500/30",
-      isAvailable && "bg-white border-blue-500 shadow-blue-500/20 dark:bg-slate-900 dark:border-blue-500",
-      isLocked && "bg-white border-dashed border-slate-300 dark:bg-slate-900 dark:border-slate-700 text-slate-500"
-    )}>
+    <div 
+      onClick={() => onSelect(id)}
+      className={cn(
+        "px-4 py-3 rounded-xl border-2 shadow-sm min-w-64 transition-all duration-300 cursor-pointer hover:scale-105 pointer-events-auto",
+        isCompleted && "bg-emerald-50 border-emerald-500/50 dark:bg-emerald-950/30 dark:border-emerald-500/30",
+        isAvailable && "bg-white border-blue-500 shadow-blue-500/20 dark:bg-slate-900 dark:border-blue-500",
+        isLocked && "bg-white border-dashed border-slate-300 dark:bg-slate-900 dark:border-slate-700 text-slate-500"
+      )}
+    >
       <Handle type="target" position={Position.Top} className="w-2 h-2 opacity-0" />
       <div className="flex items-start gap-3">
         <div className="mt-0.5">
@@ -79,15 +81,10 @@ dagreGraph.setDefaultEdgeLabel(() => ({}));
 
 const getLayoutedElements = (nodes: FlowNode[], edges: FlowEdge[], direction = 'TB') => {
   const isHorizontal = direction === 'LR';
-  dagreGraph.setGraph({ rankdir: direction, ranksep: 80, nodesep: 100 });
+  dagreGraph.setGraph({ rankdir: direction, ranksep: 80, nodesep: 150 }); // Increased nodesep for branching
 
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: 250, height: 120 });
-  });
-
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
-  });
+  nodes.forEach((node) => dagreGraph.setNode(node.id, { width: 260, height: 100 }));
+  edges.forEach((edge) => dagreGraph.setEdge(edge.source, edge.target));
 
   dagre.layout(dagreGraph);
 
@@ -97,7 +94,7 @@ const getLayoutedElements = (nodes: FlowNode[], edges: FlowEdge[], direction = '
       ...node,
       targetPosition: isHorizontal ? Position.Left : Position.Top,
       sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
-      position: { x: nodeWithPosition.x - 125, y: nodeWithPosition.y - 60 },
+      position: { x: nodeWithPosition.x - 130, y: nodeWithPosition.y - 50 },
     };
   });
 
@@ -110,67 +107,61 @@ export function RoadmapViewer({ roadmap, userProgress, onNodeSelect }: ViewerPro
   const progressMap = useMemo(() => {
     const map: Record<string, string> = {};
     if (userProgress && Array.isArray(userProgress)) {
-      userProgress.forEach((p) => {
-        if (p?.nodeId) map[p.nodeId] = p.status;
-      });
+      userProgress.forEach((p) => { if (p?.nodeId) map[p.nodeId] = p.status; });
     }
     return map;
   }, [userProgress]);
 
   const { nodes: layoutedNodes, edges: layoutedEdges } = useMemo(() => {
-    // 4. Safely extract nodes without using 'any'
-    const validNodes: ViewerNodeData[] = roadmap?.nodes || [];
-
-    // 5. Create a local copy of progressMap to prevent ESLint immutability mutation errors
+    const validNodes = roadmap?.nodes || [];
+    // FIX: Extract actual edges from DB to allow branching!
+    const validEdges = roadmap?.edges || []; 
     const localProgress = { ...progressMap };
 
-    // Auto-unlock the first node if nothing is started
-    if (validNodes.length > 0 && !validNodes.some(n => localProgress[n.id] === 'completed' || localProgress[n.id] === 'available')) {
-      const rootNode = validNodes.find(n => n.isRoot) || validNodes[0];
-      localProgress[rootNode.id] = 'available'; // Mutating the local copy is completely safe
-    }
+    // Find root nodes (nodes that are not a target of any edge)
+    const targetIds = new Set(validEdges.map(e => e.targetId));
+    const rootNodes = validNodes.filter(n => !targetIds.has(n.id) || n.isRoot);
+    
+    rootNodes.forEach(rn => {
+      if (!localProgress[rn.id]) localProgress[rn.id] = 'available';
+    });
+
+    // Determine availability based on DB edges
+    validEdges.forEach(edge => {
+      if (localProgress[edge.sourceId] === 'completed' && !localProgress[edge.targetId]) {
+        localProgress[edge.targetId] = 'available';
+      }
+    });
 
     const rNodes: FlowNode[] = validNodes.map((n) => ({
       id: n.id,
       type: 'custom',
-      data: { ...n, status: localProgress[n.id] || 'locked' },
+      // Pass onNodeSelect directly into the node data
+      data: { ...n, status: localProgress[n.id] || 'locked', onSelect: onNodeSelect },
       position: { x: 0, y: 0 },
     }));
 
-    const rEdges: FlowEdge[] = validNodes.flatMap((n, index, array) => {
-      if (index < array.length - 1) {
-        const nextNode = array[index + 1];
-        const targetStatus = localProgress[nextNode.id] || 'locked';
-        const sourceCompleted = localProgress[n.id] === 'completed';
-        
-        // Auto-unlock next node if current is completed
-        if (sourceCompleted && targetStatus === 'locked') {
-          localProgress[nextNode.id] = 'available';
-          // Update the node data so it renders correctly
-          const targetReactFlowNode = rNodes.find(rn => rn.id === nextNode.id);
-          if (targetReactFlowNode) {
-            targetReactFlowNode.data.status = 'available';
-          }
-        }
-
-        const updatedTargetStatus = localProgress[nextNode.id] || 'locked';
-        const color = updatedTargetStatus === 'locked' ? '#cbd5e1' : '#3b82f6';
-        
-        return [{
-          id: `e-${n.id}-${nextNode.id}`,
-          source: n.id,
-          target: nextNode.id,
-          type: 'smoothstep',
-          animated: sourceCompleted,
-          style: { stroke: color, strokeWidth: 2 },
-          markerEnd: { type: MarkerType.ArrowClosed, color },
-        }];
-      }
-      return [];
+    const rEdges: FlowEdge[] = validEdges.map((e, idx) => {
+      const sourceCompleted = localProgress[e.sourceId] === 'completed';
+      const targetStatus = localProgress[e.targetId] || 'locked';
+      const color = targetStatus === 'locked' ? '#cbd5e1' : '#3b82f6';
+      
+      return {
+        id: e.id || `e-${e.sourceId}-${e.targetId}-${idx}`,
+        source: e.sourceId,
+        target: e.targetId,
+        label: e.label, // Show "Choose Frontend" labels if they exist
+        type: 'smoothstep',
+        animated: sourceCompleted,
+        style: { stroke: color, strokeWidth: 2 },
+        markerEnd: { type: MarkerType.ArrowClosed, color },
+        labelStyle: { fill: '#64748b', fontWeight: 600, fontSize: 11 },
+        labelBgStyle: { fill: '#ffffff', fillOpacity: 0.8 },
+      };
     });
 
     return getLayoutedElements(rNodes, rEdges);
-  }, [roadmap, progressMap]);
+  }, [roadmap, progressMap, onNodeSelect]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
@@ -180,10 +171,6 @@ export function RoadmapViewer({ roadmap, userProgress, onNodeSelect }: ViewerPro
     setEdges(layoutedEdges);
   }, [layoutedNodes, layoutedEdges, setNodes, setEdges]); 
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: FlowNode) => {
-    onNodeSelect(node.id);
-  }, [onNodeSelect]);
-
   return (
     <div className="w-full h-full bg-slate-50/50 dark:bg-[#0f172a] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800">
       <ReactFlow
@@ -191,7 +178,6 @@ export function RoadmapViewer({ roadmap, userProgress, onNodeSelect }: ViewerPro
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onNodeClick={onNodeClick}
         nodeTypes={nodeTypes}
         fitView
         fitViewOptions={{ padding: 0.3, minZoom: 0.5, maxZoom: 1.5 }}
