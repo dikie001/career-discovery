@@ -9,6 +9,10 @@ export interface RoadmapNodeData {
   description?: string;
   type?: string;
   status?: string;
+  resources?: any[];
+  skills?: any[];
+  projects?: any[];
+  certifications?: any[];
 }
 
 export interface RoadmapData {

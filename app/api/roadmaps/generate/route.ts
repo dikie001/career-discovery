@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant", // The upgraded, currently supported fast model
+        model: "llama-3.3-70b-versatile", // Use a smarter model to prevent hallucinations
         response_format: { type: "json_object" },
         messages: [
           {

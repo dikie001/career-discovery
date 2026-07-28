@@ -37,6 +37,7 @@ export async function signup(
       email: request.email,
       password: hashPassword(request.password),
       name: request.name,
+      role: "USER",
       createdAt: new Date(),
       updatedAt: new Date(),
     };

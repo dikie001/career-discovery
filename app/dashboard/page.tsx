@@ -15,23 +15,22 @@ import {
   Zap,
   Map,
   Heart,
-  Star,
   ArrowRight,
   Sparkles,
   BarChart2,
-  Briefcase,
   MessageSquare,
+  Smile,
+  MapPin,
+  Trophy,
+  Briefcase,
+  Target as TargetIcon,
 } from "lucide-react"
 import Link from "next/link"
-import { CareerProgressComponent } from "@/components/dashboard/career-progress"
 
 export default function DashboardPage() {
   const router = useRouter()
   const { user, token, logout } = useAuth()
   const {
-    profile,
-    careers,
-    courses,
     progress,
     isLoading,
     loadData,
@@ -43,7 +42,7 @@ export default function DashboardPage() {
     {
       id: "1",
       role: "assistant",
-      content: "Hey! 👋 What would you like to explore today?",
+      content: "Hey! What would you like to explore today?",
     },
   ])
   const [input, setInput] = useState("")
@@ -249,12 +248,12 @@ export default function DashboardPage() {
   const activeCareers = recommendationCards
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-card pb-28 sm:pb-24 font-sans text-foreground antialiased">
+    <div className="min-h-screen bg-linear-to-b from-background to-card pb-28 sm:pb-24 font-sans text-foreground antialiased">
       {/* HEADER - Mobile Optimized */}
       <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-lg shadow-lg shadow-black/10 dark:shadow-black/50">
         <div className="mx-auto flex w-full items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 md:max-w-6xl md:mx-auto">
           <div className="flex items-center gap-2 sm:gap-3 flex-1">
-            <div className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-teal-500/40 bg-gradient-to-br from-teal-500/30 to-cyan-500/20 text-base sm:text-lg font-black text-teal-300 shadow-lg shadow-teal-500/20">
+            <div className="flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-teal-500/40 bg-linear-to-br from-teal-500/30 to-cyan-500/20 text-base sm:text-lg font-black text-teal-300 shadow-lg shadow-teal-500/20">
               P
             </div>
             <div className="min-w-0">
@@ -266,7 +265,7 @@ export default function DashboardPage() {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <button className="relative rounded-lg sm:rounded-xl p-2 text-muted-foreground hover:text-card-foreground hover:bg-muted/50 transition-all">
               <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-red-500 ring-2 ring-slate-950 shadow-lg shadow-red-500/50"></span>
@@ -276,7 +275,7 @@ export default function DashboardPage() {
             <div className="relative">
               <button
                 onClick={() => setAccountMenuOpen(!accountMenuOpen)}
-                className="relative h-8 sm:h-9 w-8 sm:w-9 flex items-center justify-center rounded-full border-2 border-teal-500/40 bg-gradient-to-br from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:border-teal-500/60 transition-all font-bold text-xs sm:text-sm flex-shrink-0"
+                className="relative h-8 sm:h-9 w-8 sm:w-9 flex items-center justify-center rounded-full border-2 border-teal-500/40 bg-linear-to-br from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:border-teal-500/60 transition-all font-bold text-xs sm:text-sm shrink-0"
               >
                 {getUserInitials()}
               </button>
@@ -292,9 +291,9 @@ export default function DashboardPage() {
                   {/* Modal */}
                   <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl shadow-black/10 dark:shadow-black/50 z-50 animate-fadeInDown overflow-hidden">
                     {/* Header */}
-                    <div className="border-b border-border/30 px-4 py-4 bg-gradient-to-r from-teal-600/10 to-cyan-600/10">
+                    <div className="border-b border-border/30 px-4 py-4 bg-linear-to-r from-teal-600/10 to-cyan-600/10">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-cyan-500 text-white font-bold text-sm shadow-lg shadow-teal-500/30">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-teal-500 to-cyan-500 text-white font-bold text-sm shadow-lg shadow-teal-500/30">
                           {getUserInitials()}
                         </div>
                         <div>
@@ -310,18 +309,24 @@ export default function DashboardPage() {
 
                     {/* Menu Items */}
                     <div className="px-2 py-3 space-y-1">
-                      <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-slate-800/60 hover:text-white transition-all">
+                      {user?.role === 'ADMIN' && (
+                        <Link href="/admin" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 transition-all font-bold">
+                          <Briefcase className="h-4 w-4" />
+                          <span>Admin Dashboard</span>
+                        </Link>
+                      )}
+                      <Link href="/dashboard/profile" onClick={() => setAccountMenuOpen(false)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-slate-800/60 hover:text-white transition-all">
                         <User className="h-4 w-4" />
                         <span>My Profile</span>
-                      </button>
-                      <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-slate-800/60 hover:text-white transition-all">
+                      </Link>
+                      <Link href="/dashboard/profile" onClick={() => setAccountMenuOpen(false)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-slate-800/60 hover:text-white transition-all">
                         <Sparkles className="h-4 w-4" />
                         <span>Preferences</span>
-                      </button>
-                      <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-slate-800/60 hover:text-white transition-all">
+                      </Link>
+                      <Link href="/dashboard/roadmaps" onClick={() => setAccountMenuOpen(false)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-slate-800/60 hover:text-white transition-all">
                         <Heart className="h-4 w-4" />
                         <span>Saved Recommendations</span>
-                      </button>
+                      </Link>
                     </div>
 
                     {/* Divider */}
@@ -354,23 +359,23 @@ export default function DashboardPage() {
         {/* GREETING ROW */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
           <div className="space-y-0.5">
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground leading-tight">
-              Hey {user?.name?.split(" ")[0] || "Brian"}! 👋
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground leading-tight flex items-center gap-2">
+              Hey {user?.name?.split(" ")[0] || "Brian"}! <Smile className="h-6 w-6 text-teal-400" />
             </h2>
             <p className="text-xs sm:text-sm font-semibold text-muted-foreground">
               Ready to build your perfect career?
             </p>
           </div>
           <div className="border border-border/50 flex items-center gap-1.5 rounded-full bg-muted/40 px-3 py-1.5 text-xs sm:text-sm font-bold text-muted-foreground shadow-md hover:shadow-lg hover:bg-slate-800/60 transition-all cursor-pointer w-fit">
-            <span>🇰🇪</span>
-            <span className="truncate">{user?.location || "Nairobi"}</span>
+            <MapPin className="h-4 w-4 text-teal-400" />
+            <span className="truncate">{user?.location || "Add Location"}</span>
           </div>
         </div>
 
         {/* ASK PATHFINDER AI CARD - Mobile Optimized */}
         <Link
           href="/dashboard/ai-chat"
-          className="group relative block min-h-36 sm:min-h-40 overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-teal-600/80 to-teal-700/80 px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4 shadow-xl shadow-teal-600/20 hover:shadow-2xl hover:shadow-teal-600/30 transition-all duration-300 border border-teal-500/20"
+          className="group relative block min-h-36 sm:min-h-40 overflow-hidden rounded-2xl sm:rounded-3xl bg-linear-to-br from-teal-600/80 to-teal-700/80 px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4 shadow-xl shadow-teal-600/20 hover:shadow-2xl hover:shadow-teal-600/30 transition-all duration-300 border border-teal-500/20"
         >
           <div className="absolute top-0 right-0 -mt-16 -mr-16 h-48 w-48 rounded-full bg-white/5 blur-3xl" />
 
@@ -380,6 +385,7 @@ export default function DashboardPage() {
               src="/bot.png"
               alt="Pathfinder AI"
               fill
+              sizes="(max-width: 768px) 144px, 160px"
               className="object-contain object-bottom"
               priority
             />
@@ -410,13 +416,13 @@ export default function DashboardPage() {
             {/* Pills - responsive text size */}
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
               <span className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 sm:px-3 py-1 text-[8px] sm:text-[9px] font-medium text-white hover:bg-white/20 transition-colors">
-                <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" /> Best for me
+                <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" /> Best for me
               </span>
               <span className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 sm:px-3 py-1 text-[8px] sm:text-[9px] font-medium text-white hover:bg-white/20 transition-colors">
-                <BarChart2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" /> Skills needed
+                <BarChart2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" /> Skills needed
               </span>
               <span className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 sm:px-3 py-1 text-[8px] sm:text-[9px] font-medium text-white hover:bg-white/20 transition-colors">
-                <BookOpen className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" /> Courses
+                <BookOpen className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" /> Courses
               </span>
             </div>
           </div>
@@ -599,10 +605,10 @@ export default function DashboardPage() {
                       {career.salary ? (
                         <span
                           className={`text-[9px] sm:text-xs font-black ${career.accentColor === "teal"
-                            ? "text-teal-650"
+                            ? "text-teal-600"
                             : career.accentColor === "indigo"
-                              ? "text-indigo-650"
-                              : "text-amber-650"
+                              ? "text-indigo-600"
+                              : "text-amber-600"
                             }`}
                         >
                           {career.salary}
@@ -683,7 +689,10 @@ export default function DashboardPage() {
             </Link>
 
             {/* Tool 2 */}
-            <div className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-emerald-600/30 bg-emerald-500/15 backdrop-blur-sm p-3 sm:p-4 text-left transition-all hover:bg-emerald-500/20 hover:shadow-lg hover:shadow-emerald-600/20 hover:border-emerald-500/50">
+            <Link
+              href="/dashboard/skill-gap"
+              className="flex flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-emerald-600/30 bg-emerald-500/15 backdrop-blur-sm p-3 sm:p-4 text-left transition-all hover:bg-emerald-500/20 hover:shadow-lg hover:shadow-emerald-600/20 hover:border-emerald-500/50"
+            >
               <div className="text-emerald-400 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-muted/50 shadow-md">
                 <Zap className="h-4 sm:h-5 w-4 sm:w-5 fill-emerald-400/20 text-emerald-400" />
               </div>
@@ -695,10 +704,10 @@ export default function DashboardPage() {
                   Find & fix your gaps
                 </p>
               </div>
-            </div>
+            </Link>
 
             {/* Tool 3 */}
-            <div className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-amber-600/30 bg-amber-500/15 backdrop-blur-sm p-3 sm:p-4 text-left transition-all hover:bg-amber-500/20 hover:shadow-lg hover:shadow-amber-600/20 hover:border-amber-500/50">
+            <Link href="/dashboard/roadmaps" className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-amber-600/30 bg-amber-500/15 backdrop-blur-sm p-3 sm:p-4 text-left transition-all hover:bg-amber-500/20 hover:shadow-lg hover:shadow-amber-600/20 hover:border-amber-500/50">
               <div className="text-amber-400 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-muted/50 shadow-md">
                 <Map className="h-4 sm:h-5 w-4 sm:w-5 text-amber-400" />
               </div>
@@ -710,10 +719,10 @@ export default function DashboardPage() {
                   Step-by-step guides
                 </p>
               </div>
-            </div>
+            </Link>
 
             {/* Tool 4 */}
-            <div className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-indigo-600/30 bg-indigo-500/15 backdrop-blur-sm p-3 sm:p-4 text-left transition-all hover:bg-indigo-500/20 hover:shadow-lg hover:shadow-indigo-600/20 hover:border-indigo-500/50">
+            <Link href="/dashboard/discover" className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-indigo-600/30 bg-indigo-500/15 backdrop-blur-sm p-3 sm:p-4 text-left transition-all hover:bg-indigo-500/20 hover:shadow-lg hover:shadow-indigo-600/20 hover:border-indigo-500/50">
               <div className="text-indigo-400 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-muted/50 shadow-md">
                 <BookOpen className="h-4 sm:h-5 w-4 sm:w-5 text-indigo-400" />
               </div>
@@ -725,26 +734,26 @@ export default function DashboardPage() {
                   Find opportunities
                 </p>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
 
         {/* BOTTOM KEEP GOING CTA BANNER */}
-        <div className="group relative flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-teal-600/20 to-cyan-600/15 p-3 sm:p-5 shadow-lg shadow-teal-600/10 border border-teal-500/20 hover:border-teal-500/40 hover:shadow-lg hover:shadow-teal-600/20 transition-all">
+        <div className="group relative flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 overflow-hidden rounded-2xl sm:rounded-3xl bg-linear-to-br from-teal-600/20 to-cyan-600/15 p-3 sm:p-5 shadow-lg shadow-teal-600/10 border border-teal-500/20 hover:border-teal-500/40 hover:shadow-lg hover:shadow-teal-600/20 transition-all">
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="flex-shrink-0 text-2xl sm:text-3xl drop-shadow-sm filter select-none">
-              🏆
-            </span>
+            <div className="shrink-0 flex items-center justify-center p-2 bg-amber-500/20 rounded-xl border border-amber-500/30">
+              <Trophy className="h-6 w-6 text-amber-400" />
+            </div>
             <div>
-              <h3 className="text-[10px] sm:text-xs leading-tight font-extrabold text-foreground">
-                Keep going, {user?.name?.split(" ")[0] || "Brian"}! 🎯
+              <h3 className="text-[10px] sm:text-xs leading-tight font-extrabold text-foreground flex items-center gap-2">
+                Keep going, {user?.name?.split(" ")[0] || "Brian"}! <TargetIcon className="h-4 w-4 text-teal-400" />
               </h3>
               <p className="mt-0.5 text-[8px] sm:text-[9px] font-medium text-muted-foreground">
-                You're {progress?.overallProgress || 68}% closer to your career goal.
+                You&apos;re {progress?.overallProgress || 68}% closer to your career goal.
               </p>
             </div>
           </div>
-          <button className="relative z-10 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 px-4 sm:px-5 py-2 sm:py-2.5 text-[8px] sm:text-[9px] font-black whitespace-nowrap text-white shadow-lg shadow-teal-500/30 transition-all active:scale-95">
+          <button className="relative z-10 rounded-full bg-linear-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 px-4 sm:px-5 py-2 sm:py-2.5 text-[8px] sm:text-[9px] font-black whitespace-nowrap text-white shadow-lg shadow-teal-500/30 transition-all active:scale-95">
             Continue Learning →
           </button>
         </div>
@@ -776,14 +785,14 @@ export default function DashboardPage() {
 }
 
 interface NavItemProps {
-  icon: any
+  icon: React.ComponentType<{ className?: string }>
   label: string
   active?: boolean
   href?: string
   theme?: "dark"
 }
 
-function NavItem({ icon: Icon, label, active, href, theme = "dark" }: NavItemProps) {
+function NavItem({ icon: Icon, label, active, href }: NavItemProps) {
   const content = (
     <button
       className={`flex flex-col items-center justify-center min-h-11 min-w-11 rounded-xl px-2 py-1.5 sm:px-3 sm:py-2 transition-all duration-300 ${active

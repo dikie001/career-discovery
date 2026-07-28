@@ -127,10 +127,8 @@ export function RoadmapViewer({ roadmap, userProgress, onNodeSelect }: ViewerPro
     });
 
     // Determine availability based on DB edges
-    validEdges.forEach(edge => {
-      if (localProgress[edge.sourceId] === 'completed' && !localProgress[edge.targetId]) {
-        localProgress[edge.targetId] = 'available';
-      }
+    validNodes.forEach(n => {
+      if (!localProgress[n.id]) localProgress[n.id] = 'available';
     });
 
     const rNodes: FlowNode[] = validNodes.map((n) => ({
@@ -143,8 +141,8 @@ export function RoadmapViewer({ roadmap, userProgress, onNodeSelect }: ViewerPro
 
     const rEdges: FlowEdge[] = validEdges.map((e, idx) => {
       const sourceCompleted = localProgress[e.sourceId] === 'completed';
-      const targetStatus = localProgress[e.targetId] || 'locked';
-      const color = targetStatus === 'locked' ? '#cbd5e1' : '#3b82f6';
+      const targetStatus = localProgress[e.targetId] || 'available';
+      const color = '#3b82f6'; // Always use active color since nothing is locked
       
       return {
         id: e.id || `e-${e.sourceId}-${e.targetId}-${idx}`,

@@ -7,11 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id              String             @id @default(cuid())
   email           String             @unique
   password        String
   name            String
+  role            Role               @default(USER)
   location        String?
   avatar          String?
   createdAt       DateTime           @default(now())
@@ -24,6 +30,7 @@ model User {
   consent         UserConsent?
   recommendations AIRecommendation[]
   userRoadmaps    UserRoadmap[]
+  applications    OpportunityApplication[]
 }
 
 model UserProfile {
@@ -174,6 +181,12 @@ model RoadmapNode {
   edgesIn      RoadmapEdge[]     @relation("NodeTarget")
   userProgress UserRoadmapNode[]
   
+  // New Join Relations for Admin Dashboard and AI matching
+  skills        RoadmapNodeSkill[]
+  resources     RoadmapNodeResource[]
+  projects      RoadmapNodeProject[]
+  certifications RoadmapNodeCertification[]
+  
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 }
@@ -216,4 +229,121 @@ model UserRoadmapNode {
   completedAt   DateTime?
   
   @@unique([userRoadmapId, nodeId])
+}
+
+// ---- New Models for Admin Dashboard & AI Integration ----
+
+model Skill {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?  @db.Text
+  category    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roadmapNodes RoadmapNodeSkill[]
+}
+
+model LearningResource {
+  id          String   @id @default(cuid())
+  title       String
+  url         String
+  type        String   // e.g. video, article, documentation
+  provider    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roadmapNodes RoadmapNodeResource[]
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  difficulty  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roadmapNodes RoadmapNodeProject[]
+}
+
+model Certification {
+  id          String   @id @default(cuid())
+  name        String
+  provider    String
+  url         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roadmapNodes RoadmapNodeCertification[]
+}
+
+model Opportunity {
+  id          String   @id @default(cuid())
+  title       String
+  company     String
+  location    String?
+  type        String   // e.g. job, internship, scholarship
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  applications OpportunityApplication[]
+}
+
+model OpportunityApplication {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  status        String      @default("pending") // pending, reviewed, accepted, rejected
+  appliedAt     DateTime    @default(now())
+
+  @@unique([userId, opportunityId])
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  updatedAt   DateTime @updatedAt
+}
+
+// Join tables for RoadmapNode
+
+model RoadmapNodeSkill {
+  nodeId   String
+  skillId  String
+  node     RoadmapNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  skill    Skill       @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  
+  @@id([nodeId, skillId])
+}
+
+model RoadmapNodeResource {
+  nodeId     String
+  resourceId String
+  node       RoadmapNode       @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  resource   LearningResource  @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  
+  @@id([nodeId, resourceId])
+}
+
+model RoadmapNodeProject {
+  nodeId    String
+  projectId String
+  node      RoadmapNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@id([nodeId, projectId])
+}
+
+model RoadmapNodeCertification {
+  nodeId          String
+  certificationId String
+  node            RoadmapNode    @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  certification   Certification  @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+  
+  @@id([nodeId, certificationId])
 }

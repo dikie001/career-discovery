@@ -13,6 +13,11 @@ import {
   ArrowLeft,
   Check,
   Target,
+  Building,
+  Leaf,
+  Search,
+  Map,
+  Zap,
 } from "lucide-react";
 
 type Step = "level" | "intent" | "profile";
@@ -21,25 +26,25 @@ const EDUCATION_LEVELS = [
   {
     id: "high_school",
     label: "High School",
-    emoji: "🏫",
+    icon: Building,
     desc: "Exploring future paths before university",
   },
   {
     id: "university",
     label: "University / College",
-    emoji: "🎓",
+    icon: GraduationCap,
     desc: "Currently studying, planning my career",
   },
   {
     id: "working",
     label: "Already Working",
-    emoji: "💼",
+    icon: Briefcase,
     desc: "I have a job and want to grow or pivot",
   },
   {
     id: "other",
     label: "Other",
-    emoji: "🌱",
+    icon: Leaf,
     desc: "My situation is different from the above",
   },
 ];
@@ -48,16 +53,14 @@ const INTENTS = [
   {
     id: "discover_new",
     label: "Discover my best career fit",
-    emoji: "🔍",
     desc: "Help me find which career suits my interests and strengths",
-    icon: Compass,
+    icon: Search,
   },
   {
     id: "guided_existing",
     label: "Guide me on my current path",
-    emoji: "🗺️",
     desc: "I know my direction — help me grow and fill skill gaps",
-    icon: Target,
+    icon: Map,
   },
 ];
 
@@ -188,29 +191,34 @@ export default function OnboardingPage() {
             </div>
 
             <div className="space-y-3">
-              {EDUCATION_LEVELS.map((level) => (
-                <button
-                  key={level.id}
-                  id={`level-${level.id}`}
-                  onClick={() => setEducationLevel(level.id)}
-                  className={`w-full flex items-center gap-4 rounded-2xl border p-4 text-left transition-all duration-200 ${
-                    educationLevel === level.id
-                      ? "border-teal-500/70 bg-teal-500/15 shadow-lg shadow-teal-500/10"
-                      : "border-slate-700/50 bg-slate-800/40 hover:border-slate-600 hover:bg-slate-800/60"
-                  }`}
-                >
-                  <span className="text-2xl">{level.emoji}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-white text-sm">{level.label}</p>
-                    <p className="text-xs text-slate-400 mt-0.5 leading-snug">{level.desc}</p>
-                  </div>
-                  {educationLevel === level.id && (
-                    <div className="flex-shrink-0 h-5 w-5 rounded-full bg-teal-500 flex items-center justify-center">
-                      <Check className="h-3 w-3 text-white" />
+              {EDUCATION_LEVELS.map((level) => {
+                const Icon = level.icon;
+                return (
+                  <button
+                    key={level.id}
+                    id={`level-${level.id}`}
+                    onClick={() => setEducationLevel(level.id)}
+                    className={`w-full flex items-center gap-4 rounded-2xl border p-4 text-left transition-all duration-200 ${
+                      educationLevel === level.id
+                        ? "border-teal-500/70 bg-teal-500/15 shadow-lg shadow-teal-500/10"
+                        : "border-slate-700/50 bg-slate-800/40 hover:border-slate-600 hover:bg-slate-800/60"
+                    }`}
+                  >
+                    <div className={`p-2 rounded-xl ${educationLevel === level.id ? "bg-teal-500/20 text-teal-400" : "bg-slate-700/50 text-slate-400"}`}>
+                      <Icon className="h-6 w-6" />
                     </div>
-                  )}
-                </button>
-              ))}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-white text-sm">{level.label}</p>
+                      <p className="text-xs text-slate-400 mt-0.5 leading-snug">{level.desc}</p>
+                    </div>
+                    {educationLevel === level.id && (
+                      <div className="flex-shrink-0 h-5 w-5 rounded-full bg-teal-500 flex items-center justify-center">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             <button
@@ -262,7 +270,6 @@ export default function OnboardingPage() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-lg">{item.emoji}</span>
                         <p className="font-bold text-white text-sm">{item.label}</p>
                       </div>
                       <p className="text-xs text-slate-400 leading-snug">{item.desc}</p>
@@ -305,8 +312,8 @@ export default function OnboardingPage() {
 
             {/* Interests */}
             <div className="mb-6">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-                🎯 Your Interests
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+                <Target className="h-4 w-4" /> Your Interests
               </p>
               <div className="flex flex-wrap gap-2">
                 {COMMON_INTERESTS.map((item) => (
@@ -328,8 +335,8 @@ export default function OnboardingPage() {
 
             {/* Skills */}
             <div className="mb-6">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-                ⚡ Skills You Have
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+                <Zap className="h-4 w-4" /> Skills You Have
               </p>
               <div className="flex flex-wrap gap-2">
                 {COMMON_SKILLS.map((item) => (
@@ -352,8 +359,8 @@ export default function OnboardingPage() {
             {/* Target Role (optional) */}
             {intent === "guided_existing" && (
               <div className="mb-6">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                  🎯 What career are you in or pursuing?
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-2">
+                  <Target className="h-4 w-4" /> What career are you in or pursuing?
                 </p>
                 <input
                   type="text"

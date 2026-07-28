@@ -80,14 +80,14 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-background via-card to-background flex flex-col items-center justify-center px-4 py-8 sm:px-6">
       {/* Background decoration */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
       </div>
 
       <div className="w-full max-w-sm space-y-8 relative z-10">
         {/* Header */}
         <div className="text-center space-y-3">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 mx-auto shadow-lg shadow-teal-500/50">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 mx-auto shadow-lg shadow-emerald-500/50">
             <span className="text-xl font-bold text-white">P</span>
           </div>
           <div className="space-y-1">
@@ -224,7 +224,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold rounded-xl transition-all disabled:opacity-60 shadow-lg shadow-teal-500/20"
+              className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all disabled:opacity-60 shadow-lg shadow-emerald-500/20"
             >
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
@@ -233,7 +233,7 @@ export default function LoginPage() {
             <div className="pt-4 text-center space-y-4">
               <p className="text-sm text-muted-foreground">
                 Don't have an account?{" "}
-                <Link href="/auth/signup" className="text-teal-400 hover:text-teal-300 font-semibold transition-colors">
+                <Link href="/auth/signup" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-semibold transition-colors">
                   Sign up
                 </Link>
               </p>

@@ -25,7 +25,14 @@ export async function GET(
       where: { id: roadmapId },
       include: {
         career: true,
-        nodes: true,
+        nodes: {
+          include: {
+            resources: { include: { resource: true } },
+            skills: { include: { skill: true } },
+            projects: { include: { project: true } },
+            certifications: { include: { certification: true } }
+          }
+        },
       },
     });
 
