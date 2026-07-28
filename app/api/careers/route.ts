@@ -1,0 +1,57 @@
+import { prisma } from "@/lib/prisma"
+import { verifyToken } from "@/lib/auth-prisma"
+import { ApiResponse, Career } from "@/lib/types"
+import { NextRequest, NextResponse } from "next/server"
+
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  try {
+    const authHeader = request.headers.get("authorization")
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" } as ApiResponse<null>,
+        { status: 401 }
+      )
+    }
+
+    const token = authHeader.substring(7)
+    const userId = verifyToken(token)
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "Invalid token" } as ApiResponse<null>,
+        { status: 401 }
+      )
+    }
+
+    const careers = await prisma.career.findMany({ take: 10 })
+
+    const mappedCareers: Career[] = careers.map((c) => ({
+      id: c.id,
+      title: c.title,
+      description: c.description,
+      matchPercentage: c.matchPercentage,
+      category: c.category,
+      salary: {
+        min: c.salaryMin,
+        max: c.salaryMax,
+        currency: c.salaryCurrency,
+      },
+      icon: c.icon ?? undefined,
+      color: c.color ?? undefined,
+      createdAt: c.createdAt,
+    }))
+
+    return NextResponse.json(
+      { success: true, data: mappedCareers } as ApiResponse<Career[]>,
+      { status: 200 }
+    )
+  } catch (error) {
+    console.error("Get careers error:", error)
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to get careers",
+      } as ApiResponse<null>,
+      { status: 500 }
+    )
+  }
+}

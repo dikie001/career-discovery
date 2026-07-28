@@ -1,0 +1,349 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id              String             @id @default(cuid())
+  email           String             @unique
+  password        String
+  name            String
+  role            Role               @default(USER)
+  location        String?
+  avatar          String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  profile         UserProfile?
+  messages        ChatMessage[]
+  favorites       Favorite[]
+  progress        CareerProgress?
+  consent         UserConsent?
+  recommendations AIRecommendation[]
+  userRoadmaps    UserRoadmap[]
+  applications    OpportunityApplication[]
+}
+
+model UserProfile {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interests           String[]
+  skills              String[]
+  certificates        String[]
+  projects            String[]
+  achievements        String[]
+  bio                 String?  @db.Text
+  experienceLevel     String   @default("beginner")
+  targetRole          String?
+  careerGoal          String?
+  
+  // Onboarding tracking fields
+  educationLevel      String?  
+  onboardingIntent    String?  
+  onboardingCompleted Boolean  @default(false)
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Career {
+  id              String             @id @default(cuid())
+  title           String
+  description     String             @db.Text
+  category        String
+  salaryMin       Int
+  salaryMax       Int
+  salaryCurrency  String             @default("KSH")
+  matchPercentage Int                @default(0)
+  icon            String?
+  color           String?
+  createdAt       DateTime           @default(now())
+
+  favorites       Favorite[]
+  roadmaps        Roadmap[]
+  recommendations AIRecommendation[]
+}
+
+model Course {
+  id          String     @id @default(cuid())
+  title       String
+  description String     @db.Text
+  category    String
+  level       String
+  duration    Int
+  price       Int?
+  provider    String?
+  matchScore  Int?
+  skills      String[]
+  createdAt   DateTime   @default(now())
+
+  favorites   Favorite[]
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String
+  content   String   @db.Text
+  timestamp DateTime @default(now())
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  careerId  String?
+  career    Career?  @relation(fields: [careerId], references: [id], onDelete: Cascade)
+  courseId  String?
+  course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, careerId, courseId])
+}
+
+model CareerProgress {
+  id              String          @id @default(cuid())
+  userId          String          @unique
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  overallProgress Int             @default(0)
+  stages          ProgressStage[]
+  lastUpdated     DateTime        @updatedAt
+}
+
+model ProgressStage {
+  id          String         @id @default(cuid())
+  progressId  String
+  progress    CareerProgress @relation(fields: [progressId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  status      String
+  order       Int
+}
+
+model UserConsent {
+  id                  String    @id @default(cuid())
+  userId              String    @unique
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  useProfileDataForAI Boolean   @default(false)
+  consentedAt         DateTime?
+  updatedAt           DateTime  @updatedAt
+}
+
+model AIRecommendation {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  careerId        String?
+  career          Career?  @relation(fields: [careerId], references: [id], onDelete: SetNull)
+  title           String
+  description     String   @db.Text
+  category        String   @default("General")
+  matchPercentage Int      @default(0)
+  salaryRange     String   @default("")
+  reason          String   @db.Text @default("")
+  createdAt       DateTime @default(now())
+}
+
+model Roadmap {
+  id           String        @id @default(cuid())
+  title        String
+  description  String        @db.Text
+  careerId     String?  
+  career       Career?       @relation(fields: [careerId], references: [id], onDelete: SetNull)
+  nodes        RoadmapNode[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  userRoadmaps UserRoadmap[]
+}
+
+model RoadmapNode {
+  id          String            @id @default(cuid())
+  roadmapId   String
+  roadmap     Roadmap           @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  title       String
+  description String?           @db.Text
+  type        String            @default("milestone")
+  content     String?           @db.Text
+  isRoot      Boolean           @default(false)
+  
+  edgesOut     RoadmapEdge[]     @relation("NodeSource")
+  edgesIn      RoadmapEdge[]     @relation("NodeTarget")
+  userProgress UserRoadmapNode[]
+  
+  // New Join Relations for Admin Dashboard and AI matching
+  skills        RoadmapNodeSkill[]
+  resources     RoadmapNodeResource[]
+  projects      RoadmapNodeProject[]
+  certifications RoadmapNodeCertification[]
+  
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model RoadmapEdge {
+  id        String      @id @default(cuid())
+  sourceId  String
+  source    RoadmapNode @relation("NodeSource", fields: [sourceId], references: [id], onDelete: Cascade)
+  targetId  String
+  target    RoadmapNode @relation("NodeTarget", fields: [targetId], references: [id], onDelete: Cascade)
+  condition String?  
+  label     String?  
+
+  @@unique([sourceId, targetId])
+}
+
+model UserRoadmap {
+  id        String            @id @default(cuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roadmapId String
+  roadmap   Roadmap           @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  status    String            @default("in_progress")
+  
+  progress  UserRoadmapNode[]
+  
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  
+  @@unique([userId, roadmapId])
+}
+
+model UserRoadmapNode {
+  id            String      @id @default(cuid())
+  userRoadmapId String
+  userRoadmap   UserRoadmap @relation(fields: [userRoadmapId], references: [id], onDelete: Cascade)
+  nodeId        String
+  node          RoadmapNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  status        String      @default("locked")
+  completedAt   DateTime?
+  
+  @@unique([userRoadmapId, nodeId])
+}
+
+// ---- New Models for Admin Dashboard & AI Integration ----
+
+model Skill {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?  @db.Text
+  category    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roadmapNodes RoadmapNodeSkill[]
+}
+
+model LearningResource {
+  id          String   @id @default(cuid())
+  title       String
+  url         String
+  type        String   // e.g. video, article, documentation
+  provider    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roadmapNodes RoadmapNodeResource[]
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  difficulty  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roadmapNodes RoadmapNodeProject[]
+}
+
+model Certification {
+  id          String   @id @default(cuid())
+  name        String
+  provider    String
+  url         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roadmapNodes RoadmapNodeCertification[]
+}
+
+model Opportunity {
+  id          String   @id @default(cuid())
+  title       String
+  company     String
+  location    String?
+  type        String   // e.g. job, internship, scholarship
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  applications OpportunityApplication[]
+}
+
+model OpportunityApplication {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  status        String      @default("pending") // pending, reviewed, accepted, rejected
+  appliedAt     DateTime    @default(now())
+
+  @@unique([userId, opportunityId])
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  updatedAt   DateTime @updatedAt
+}
+
+// Join tables for RoadmapNode
+
+model RoadmapNodeSkill {
+  nodeId   String
+  skillId  String
+  node     RoadmapNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  skill    Skill       @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  
+  @@id([nodeId, skillId])
+}
+
+model RoadmapNodeResource {
+  nodeId     String
+  resourceId String
+  node       RoadmapNode       @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  resource   LearningResource  @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  
+  @@id([nodeId, resourceId])
+}
+
+model RoadmapNodeProject {
+  nodeId    String
+  projectId String
+  node      RoadmapNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@id([nodeId, projectId])
+}
+
+model RoadmapNodeCertification {
+  nodeId          String
+  certificationId String
+  node            RoadmapNode    @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  certification   Certification  @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+  
+  @@id([nodeId, certificationId])
+}
