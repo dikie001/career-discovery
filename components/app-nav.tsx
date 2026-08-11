@@ -23,10 +23,10 @@ export function AppNav() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-600 shadow-lg shadow-teal-500/20 group-hover:shadow-teal-500/40 transition-all">
-                <span className="text-sm font-bold text-white">P</span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white p-1 border border-slate-200 dark:border-slate-800 shadow-md shadow-teal-500/10 group-hover:shadow-teal-500/25 transition-all overflow-hidden">
+                <img src="/logo.png" alt="Pathfinder Logo" className="h-full w-full object-contain rounded-lg" />
               </div>
-              <span className="font-bold text-foreground text-lg group-hover:text-white transition-colors">Pathfinder</span>
+              <span className="font-bold text-foreground text-lg group-hover:text-teal-600 dark:group-hover:text-white transition-colors">Pathfinder</span>
             </Link>
 
             {/* Theme Toggle */}

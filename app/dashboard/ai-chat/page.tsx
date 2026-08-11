@@ -18,10 +18,12 @@ export default function AIChatPage() {
   };
 
   return (
-    <AiChat
-      onSendMessage={sendChatMessage}
-      userConsent={consent?.useProfileDataForAI ?? null}
-      onConsentChange={handleConsentChange}
-    />
+    <div className="h-[calc(100vh-4rem)] md:h-[calc(100vh-1rem)] w-full overflow-hidden flex flex-col pb-1">
+      <AiChat
+        onSendMessage={sendChatMessage}
+        userConsent={consent?.useProfileDataForAI ?? null}
+        onConsentChange={handleConsentChange}
+      />
+    </div>
   );
 }

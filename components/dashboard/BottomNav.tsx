@@ -16,8 +16,12 @@ export function BottomNav() {
     { name: "Profile", href: "/dashboard/profile", icon: User },
   ];
 
+  if (pathname?.startsWith("/dashboard/ai-chat")) {
+    return null;
+  }
+
   return (
-  <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between border-t border-border/50 bg-background/80 px-2 pb-safe pt-2 backdrop-blur-xl">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between border-t border-border/50 bg-background/80 px-2 pb-safe pt-2 backdrop-blur-xl">
       {tabs.map((tab) => {
         const isActive = pathname === tab.href;
         const Icon = tab.icon;

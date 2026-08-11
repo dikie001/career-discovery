@@ -24,10 +24,16 @@ import {
   Trophy,
   Briefcase,
   Target as TargetIcon,
+  LifeBuoy,
+  Trash2
 } from "lucide-react"
 import Link from "next/link"
+import { KenyaFlag } from "@/components/ui/kenya-flag"
+import { useDeviceMode } from "@/contexts/device-mode-context"
 
 export default function DashboardPage() {
+  const { viewMode, isRealMobile } = useDeviceMode()
+  const isMobileView = viewMode === "mobile" || isRealMobile
   const router = useRouter()
   const { user, token, logout } = useAuth()
   const {
@@ -62,6 +68,7 @@ export default function DashboardPage() {
   const [recommendationsLoading, setRecommendationsLoading] = useState(false)
   const [savedRecs, setSavedRecs] = useState<string[]>([])
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
+  const [notificationsMenuOpen, setNotificationsMenuOpen] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -93,7 +100,9 @@ export default function DashboardPage() {
         })
 
         if (!response.ok) {
-          throw new Error("Failed to fetch recommendations")
+          console.warn("Failed to fetch recommendations, status:", response.status)
+          setRecommendations([])
+          return
         }
 
         const data = await response.json()
@@ -150,6 +159,19 @@ export default function DashboardPage() {
       }
       return next
     })
+  }
+
+  const handleDeleteRecommendation = async (id: string) => {
+    if (!token) return
+    setRecommendations((prev) => prev.filter((r) => r.id !== id))
+    try {
+      await fetch(`/api/recommendations?id=${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    } catch (e) {
+      console.error("Failed to delete recommendation", e)
+    }
   }
 
   const recommendationCards = useMemo(() => {
@@ -266,12 +288,61 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <button className="relative rounded-lg sm:rounded-xl p-2 text-muted-foreground hover:text-card-foreground hover:bg-muted/50 transition-all">
-              <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-red-500 ring-2 ring-slate-950 shadow-lg shadow-red-500/50"></span>
-            </button>
+            {/* Notifications Button with Dropdown */}
+            <div className="relative">
+              <button 
+                onClick={() => setNotificationsMenuOpen(!notificationsMenuOpen)}
+                className="relative rounded-lg sm:rounded-xl p-2 text-muted-foreground hover:text-card-foreground hover:bg-muted/50 transition-all"
+              >
+                <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-red-500 ring-2 ring-slate-950 shadow-lg shadow-red-500/50"></span>
+              </button>
 
-            {/* Account Button with Dropdown */}
+              {notificationsMenuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setNotificationsMenuOpen(false)}
+                  />
+                  <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl border border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl shadow-black/10 dark:shadow-black/50 z-50 animate-fadeInDown overflow-hidden">
+                    <div className="border-b border-border/30 px-4 py-3 bg-linear-to-r from-teal-600/10 to-cyan-600/10 flex justify-between items-center">
+                      <h3 className="font-bold text-sm text-foreground">Notifications</h3>
+                      <span className="text-[10px] bg-teal-500/20 text-teal-400 px-2 py-0.5 rounded-full font-bold">2 New</span>
+                    </div>
+                    <div className="max-h-64 overflow-y-auto px-2 py-2">
+                      <div className="p-3 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer border-b border-border/30 last:border-0">
+                        <div className="flex items-start gap-3">
+                          <div className="mt-0.5 rounded-full bg-teal-500/20 p-1.5 text-teal-400">
+                            <TargetIcon className="h-3.5 w-3.5" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-foreground leading-tight">Keep going, {user?.name?.split(" ")[0] || "Brian"}!</p>
+                            <p className="text-[10px] text-muted-foreground mt-1 leading-tight">
+                              You're {progress?.overallProgress || 0}% closer to your career goal. Start a roadmap to close the gap!
+                            </p>
+                            <p className="text-[8px] text-muted-foreground mt-1 font-semibold">Just now</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-3 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer border-b border-border/30 last:border-0">
+                        <div className="flex items-start gap-3">
+                          <div className="mt-0.5 rounded-full bg-amber-500/20 p-1.5 text-amber-400">
+                            <Sparkles className="h-3.5 w-3.5" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-foreground leading-tight">New Career Matches</p>
+                            <p className="text-[10px] text-muted-foreground mt-1 leading-tight">
+                              Pathfinder AI has generated new career recommendations for you based on your profile.
+                            </p>
+                            <p className="text-[8px] text-muted-foreground mt-1 font-semibold">2 hours ago</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
             <div className="relative">
               <button
                 onClick={() => setAccountMenuOpen(!accountMenuOpen)}
@@ -366,9 +437,12 @@ export default function DashboardPage() {
               Ready to build your perfect career?
             </p>
           </div>
-          <div className="border border-border/50 flex items-center gap-1.5 rounded-full bg-muted/40 px-3 py-1.5 text-xs sm:text-sm font-bold text-muted-foreground shadow-md hover:shadow-lg hover:bg-slate-800/60 transition-all cursor-pointer w-fit">
+          <div className="border border-border/50 flex items-center gap-2 rounded-full bg-muted/40 px-3.5 py-1.5 text-xs sm:text-sm font-bold text-muted-foreground shadow-md hover:shadow-lg hover:bg-slate-800/60 transition-all cursor-pointer w-fit">
             <MapPin className="h-4 w-4 text-teal-400" />
-            <span className="truncate">{user?.location || "Add Location"}</span>
+            <span className="truncate">{(user?.location || "Nairobi, Kenya").replace(/🇰🇪|KE/g, "").trim()}</span>
+            {((user?.location || "Nairobi, Kenya").toLowerCase().includes("kenya")) && (
+              <KenyaFlag className="h-3.5 w-5 rounded-xs inline-block shadow-xs" />
+            )}
           </div>
         </div>
 
@@ -422,7 +496,7 @@ export default function DashboardPage() {
                 <BarChart2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" /> Skills needed
               </span>
               <span className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 sm:px-3 py-1 text-[8px] sm:text-[9px] font-medium text-white hover:bg-white/20 transition-colors">
-                <BookOpen className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" /> Courses
+                <Briefcase className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" /> Opportunities
               </span>
             </div>
           </div>
@@ -435,7 +509,7 @@ export default function DashboardPage() {
               Your Career Progress
             </h3>
             <Link
-              href="#"
+              href="/dashboard/reports"
               className="text-teal-400 hover:text-teal-300 text-[10px] sm:text-xs font-bold transition-colors"
             >
               View full report
@@ -542,7 +616,7 @@ export default function DashboardPage() {
               Recommended for you
             </h3>
             <Link
-              href="#"
+              href="/dashboard/discover"
               className="text-teal-400 hover:text-teal-300 text-[10px] sm:text-xs font-bold transition-colors"
             >
               See all
@@ -550,7 +624,11 @@ export default function DashboardPage() {
           </div>
 
           {/* Cards carousel - horizontal scrolling on mobile, grid on desktop */}
-          <div className="custom-scrollbar -mx-1 flex snap-x snap-mandatory gap-3 sm:gap-4 overflow-x-auto scroll-smooth px-1 pt-1 pb-3 md:mx-0 md:grid md:grid-cols-2 md:gap-3 md:overflow-x-visible md:pb-0">
+          <div
+            className={`custom-scrollbar -mx-1 flex snap-x snap-mandatory gap-3 sm:gap-4 overflow-x-auto scroll-smooth px-1 pt-1 pb-3 ${
+              !isMobileView ? "md:mx-0 md:grid md:grid-cols-2 md:gap-3 md:overflow-x-visible md:pb-0" : ""
+            }`}
+          >
             {recommendationsLoading && recommendations.length === 0 ? (
               <div className="w-full rounded-2xl sm:rounded-3xl border border-border/50 bg-card/40 p-4 sm:p-5 text-xs sm:text-sm text-muted-foreground shadow-lg md:col-span-2">
                 Loading your latest recommendations...
@@ -559,7 +637,9 @@ export default function DashboardPage() {
               activeCareers.map((career) => (
                 <div
                   key={career.id}
-                  className="flex w-72 sm:w-80 shrink-0 snap-start flex-col justify-between space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl border border-border/50 bg-card/40 backdrop-blur-sm p-3 sm:p-4 shadow-lg shadow-black/5 dark:shadow-black/20 transition-all duration-300 hover:shadow-xl hover:bg-slate-900/60 hover:border-border/50 md:w-auto"
+                  className={`flex w-72 sm:w-80 shrink-0 snap-start flex-col justify-between space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl border border-border/50 bg-card/40 backdrop-blur-sm p-3 sm:p-4 shadow-lg shadow-black/5 dark:shadow-black/20 transition-all duration-300 hover:shadow-xl hover:bg-slate-900/60 hover:border-border/50 ${
+                    !isMobileView ? "md:w-auto" : ""
+                  }`}
                 >
                   {/* Header elements */}
                   <div className="space-y-2 sm:space-y-3">
@@ -574,13 +654,24 @@ export default function DashboardPage() {
                       >
                         {career.badge}
                       </span>
-                      <button
-                        className="text-muted-foreground transition-colors hover:text-red-400"
-                        aria-label="Save recommendation"
-                        onClick={() => toggleSaveRecommendation(career.id)}
-                      >
-                        <Heart className={`h-4 w-4 ${career.isSaved ? 'fill-red-400 text-red-400' : ''}`} />
-                      </button>
+                      <div className="flex items-center gap-1">
+                        <button
+                          className="text-muted-foreground transition-colors hover:text-red-400 p-1"
+                          aria-label="Save recommendation"
+                          title="Save recommendation"
+                          onClick={() => toggleSaveRecommendation(career.id)}
+                        >
+                          <Heart className={`h-4 w-4 ${career.isSaved ? 'fill-red-400 text-red-400' : ''}`} />
+                        </button>
+                        <button
+                          className="text-muted-foreground transition-colors hover:text-rose-500 p-1"
+                          aria-label="Delete recommendation"
+                          title="Remove recommendation"
+                          onClick={() => handleDeleteRecommendation(career.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
 
                     {/* Recommendation preview */}
@@ -669,7 +760,13 @@ export default function DashboardPage() {
             Your Tools
           </h3>
 
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div
+            className={
+              isMobileView
+                ? "grid grid-cols-2 gap-3.5"
+                : "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
+            }
+          >
             {/* Tool 1 */}
             <Link
               href="/dashboard/ai-chat"
@@ -722,16 +819,31 @@ export default function DashboardPage() {
             </Link>
 
             {/* Tool 4 */}
-            <Link href="/dashboard/discover" className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-indigo-600/30 bg-indigo-500/15 backdrop-blur-sm p-3 sm:p-4 text-left transition-all hover:bg-indigo-500/20 hover:shadow-lg hover:shadow-indigo-600/20 hover:border-indigo-500/50">
+            <Link href="/dashboard/opportunities" className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-indigo-600/30 bg-indigo-500/15 backdrop-blur-sm p-3 sm:p-4 text-left transition-all hover:bg-indigo-500/20 hover:shadow-lg hover:shadow-indigo-600/20 hover:border-indigo-500/50">
               <div className="text-indigo-400 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-muted/50 shadow-md">
-                <BookOpen className="h-4 sm:h-5 w-4 sm:w-5 text-indigo-400" />
+                <Briefcase className="h-4 sm:h-5 w-4 sm:w-5 text-indigo-400" />
               </div>
               <div>
                 <h4 className="text-[10px] sm:text-xs leading-tight font-black text-foreground">
-                  Courses & Scholarships
+                  Opportunities
                 </h4>
                 <p className="text-muted-foreground mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
-                  Find opportunities
+                  Jobs, events & news
+                </p>
+              </div>
+            </Link>
+
+            {/* Tool 5 */}
+            <Link href="/dashboard/support" className="flex cursor-pointer flex-col space-y-2 sm:space-y-3 rounded-2xl sm:rounded-3xl border border-purple-600/30 bg-purple-500/15 backdrop-blur-sm p-3 sm:p-4 text-left transition-all hover:bg-purple-500/20 hover:shadow-lg hover:shadow-purple-600/20 hover:border-purple-500/50 col-span-2 sm:col-span-1">
+              <div className="text-purple-400 flex h-9 sm:h-10 w-9 sm:w-10 items-center justify-center rounded-2xl bg-muted/50 shadow-md">
+                <LifeBuoy className="h-4 sm:h-5 w-4 sm:w-5 text-purple-400" />
+              </div>
+              <div>
+                <h4 className="text-[10px] sm:text-xs leading-tight font-black text-foreground">
+                  Help & Mentorship
+                </h4>
+                <p className="text-muted-foreground mt-0.5 text-[8px] sm:text-[9px] leading-tight font-bold">
+                  Support & mentors
                 </p>
               </div>
             </Link>
@@ -753,9 +865,12 @@ export default function DashboardPage() {
               </p>
             </div>
           </div>
-          <button className="relative z-10 rounded-full bg-linear-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 px-4 sm:px-5 py-2 sm:py-2.5 text-[8px] sm:text-[9px] font-black whitespace-nowrap text-white shadow-lg shadow-teal-500/30 transition-all active:scale-95">
+          <Link 
+            href={progress?.activeRoadmapId ? `/dashboard/roadmaps/${progress.activeRoadmapId}` : "/dashboard/roadmaps"}
+            className="relative z-10 rounded-full bg-linear-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 px-4 sm:px-5 py-2 sm:py-2.5 text-[8px] sm:text-[9px] font-black whitespace-nowrap text-white shadow-lg shadow-teal-500/30 transition-all active:scale-95"
+          >
             Continue Learning →
-          </button>
+          </Link>
         </div>
       </main>
 

@@ -19,6 +19,7 @@ import {
   ArrowLeft,
   Check,
 } from "lucide-react"
+import { KenyaFlag } from "@/components/ui/kenya-flag"
 
 interface ProfileData {
   name: string
@@ -34,7 +35,7 @@ interface ProfileData {
 
 export default function ProfilePage() {
   const router = useRouter()
-  const { user, logout, token } = useAuth()
+  const { user, logout, token, updateUser } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -46,7 +47,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileData>({
     name: user?.name || "",
     email: user?.email || "",
-    location: user?.location || "",
+    location: (user?.location || "Nairobi, Kenya").replace(/🇰🇪|KE/g, "").trim(),
     avatar: user?.avatar || "",
     interests: [],
     skills: [],
@@ -150,6 +151,11 @@ export default function ProfilePage() {
       const data = await response.json()
       setProfile(data.data)
       setFormData(data.data)
+      updateUser({
+        name: data.data.name,
+        location: data.data.location,
+        avatar: data.data.avatar,
+      })
       setIsEditing(false)
       setSuccessMessage("Profile updated successfully!")
       setTimeout(() => setSuccessMessage(null), 3000)
@@ -285,8 +291,11 @@ export default function ProfilePage() {
             {/* Location */}
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-muted-foreground mb-1.5 flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                Location
+                <MapPin className="h-4 w-4 text-teal-400" />
+                <span>Location</span>
+                {(formData.location.toLowerCase().includes("kenya")) && (
+                  <KenyaFlag className="w-5 h-3.5 rounded-xs inline-block ml-1 shadow-xs" />
+                )}
               </label>
               <input
                 type="text"

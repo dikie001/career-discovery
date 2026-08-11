@@ -3,8 +3,9 @@
 import React from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { DashboardProvider } from "@/contexts/dashboard-context";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { BottomNav } from "@/components/dashboard/BottomNav";
+import SplashScreen from "@/components/ui/splash-screen";
 
 export default function DashboardLayout({
   children,
@@ -13,6 +14,7 @@ export default function DashboardLayout({
 }) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   React.useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -20,26 +22,15 @@ export default function DashboardLayout({
     }
   }, [isAuthenticated, isLoading, router]);
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-border border-t-teal-500 mx-auto mb-4"></div>
-          <p className="text-muted-foreground mt-4">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return null;
+  if (isLoading || !isAuthenticated) {
+    return <SplashScreen message="Preparing your career dashboard..." />;
   }
 
   return (
     <DashboardProvider>
       <div className="relative min-h-screen bg-background">
         {/* Main Content Area: Padding bottom ensures the nav doesn't cover content */}
-        <div className="pb-24 sm:pb-8">
+        <div className={pathname?.startsWith("/dashboard/ai-chat") ? "pb-0" : "pb-24"}>
           {children}
         </div>
 

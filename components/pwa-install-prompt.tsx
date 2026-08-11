@@ -105,8 +105,8 @@ export function PWAInstallPrompt() {
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 flex-1">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-cyan-600">
-              <span className="text-lg font-black text-white">P</span>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white p-1 border border-slate-700 shadow-md overflow-hidden">
+              <img src="/logo.png" alt="Pathfinder Logo" className="h-full w-full object-contain rounded-lg" />
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-bold text-foreground">

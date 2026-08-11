@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { User, UserProfile, Career, Course, CareerProgress } from "@/lib/types";
 import { useAuth } from "./auth-context";
+import { apiFetch } from "@/lib/api-client";
 
 interface UserConsent {
   id: string;
@@ -49,11 +50,11 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [profileRes, careersRes, coursesRes, progressRes, consentRes] = await Promise.all([
-        fetch("/api/user/profile", { headers }),
-        fetch("/api/recommendations", { headers }),
-        fetch("/api/courses", { headers }),
-        fetch("/api/user/progress", { headers }),
-        fetch("/api/user/consent", { headers }),
+        apiFetch("/api/user/profile", { headers }),
+        apiFetch("/api/recommendations", { headers }),
+        apiFetch("/api/courses", { headers }),
+        apiFetch("/api/user/progress", { headers }),
+        apiFetch("/api/user/consent", { headers }),
       ]);
 
       if (profileRes.ok) {
@@ -92,7 +93,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     async (updates: Partial<UserProfile>) => {
       if (!token || !profile) return;
       try {
-        const response = await fetch("/api/user/profile", {
+        const response = await apiFetch("/api/user/profile", {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -117,7 +118,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     async (useProfileDataForAI: boolean) => {
       if (!token) return;
       try {
-        const response = await fetch("/api/user/consent", {
+        const response = await apiFetch("/api/user/consent", {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -142,7 +143,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     async (message: string, personality?: string): Promise<string> => {
       if (!token) throw new Error("Not authenticated");
 
-      const response = await fetch("/api/ai/chat", {
+      const response = await apiFetch("/api/ai/chat", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

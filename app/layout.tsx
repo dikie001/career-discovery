@@ -6,6 +6,9 @@ import { AuthProvider } from "@/contexts/auth-context"
 import { PWARegister } from "@/components/pwa-register"
 import { AppNav } from "@/components/app-nav"
 import { cn } from "@/lib/utils";
+import { DeviceModeProvider } from "@/contexts/device-mode-context"
+import { DeviceFrame } from "@/components/ui/device-frame"
+import { ViewSwitcher } from "@/components/ui/view-switcher"
 
 const figtree = Figtree({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -52,8 +55,13 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <AuthProvider>
-            <AppNav />
-            {children}
+            <DeviceModeProvider>
+              <DeviceFrame>
+                <AppNav />
+                {children}
+              </DeviceFrame>
+              <ViewSwitcher />
+            </DeviceModeProvider>
           </AuthProvider>
         </ThemeProvider>
         <PWARegister />

@@ -8,6 +8,7 @@ import { Bell, Settings, LogOut, Menu } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 import Image from "next/image";
+import { KenyaFlag } from "@/components/ui/kenya-flag";
 
 export function Header() {
   const { user, logout } = useAuth();
@@ -25,17 +26,21 @@ export function Header() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-600 shadow-lg shadow-teal-500/20 group-hover:shadow-teal-500/40 transition-all">
-              <span className="text-sm font-bold text-white">P</span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white p-1 border border-slate-200 dark:border-slate-800 shadow-md shadow-teal-500/10 group-hover:shadow-teal-500/25 transition-all overflow-hidden">
+              <img src="/logo.png" alt="Pathfinder Logo" className="h-full w-full object-contain rounded-lg" />
             </div>
-            <span className="font-bold text-foreground text-lg group-hover:text-white transition-colors">Pathfinder</span>
+            <span className="font-bold text-foreground text-lg group-hover:text-teal-600 dark:group-hover:text-white transition-colors">Pathfinder</span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden gap-1 md:flex">
             <NavLink href="/dashboard">Dashboard</NavLink>
-            <NavLink href="/dashboard/explore">Explore</NavLink>
-            <NavLink href="/dashboard/progress">Progress</NavLink>
+            <NavLink href="/dashboard/discover">Explore</NavLink>
+            <NavLink href="/dashboard/roadmaps">Roadmaps</NavLink>
+            <NavLink href="/dashboard/reports">Reports</NavLink>
+            {user?.role === "ADMIN" && (
+              <NavLink href="/admin/reports">Admin</NavLink>
+            )}
           </nav>
 
           {/* Right Side Actions */}
@@ -55,8 +60,11 @@ export function Header() {
               </div>
               <div className="text-sm">
                 <p className="font-semibold text-foreground">{user?.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {user?.location || "Nairobi, Kenya"}
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
+                  <span>{(user?.location || "Nairobi, Kenya").replace(/🇰🇪|KE/g, "").trim()}</span>
+                  {((user?.location || "Nairobi, Kenya").toLowerCase().includes("kenya")) && (
+                    <KenyaFlag className="w-4 h-2.5 rounded-[1px] shadow-xs" />
+                  )}
                 </p>
               </div>
             </div>
@@ -87,8 +95,12 @@ export function Header() {
         {mobileMenuOpen && (
           <div className="mt-3 space-y-2 border-t border-border/50 pt-3 md:hidden">
             <MobileNavLink href="/dashboard">Dashboard</MobileNavLink>
-            <MobileNavLink href="/dashboard/explore">Explore</MobileNavLink>
-            <MobileNavLink href="/dashboard/progress">Progress</MobileNavLink>
+            <MobileNavLink href="/dashboard/discover">Explore</MobileNavLink>
+            <MobileNavLink href="/dashboard/roadmaps">Roadmaps</MobileNavLink>
+            <MobileNavLink href="/dashboard/reports">Reports</MobileNavLink>
+            {user?.role === "ADMIN" && (
+              <MobileNavLink href="/admin/reports">Admin</MobileNavLink>
+            )}
             <Button
               onClick={handleLogout}
               className="w-full justify-start bg-muted/50 hover:bg-muted text-card-foreground border border-border/50"
