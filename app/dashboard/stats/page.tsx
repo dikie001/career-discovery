@@ -20,6 +20,7 @@ interface SkillGapData {
   gaps: Array<{ skill: string; status: string; source?: string }>;
   userSkills: string[];
   completedFromRoadmap: string[];
+  activeRoadmapId?: string;
 }
 
 export default function DashboardStatsPage() {
@@ -163,7 +164,7 @@ export default function DashboardStatsPage() {
               )}
 
               <Link
-                href="/dashboard/roadmaps"
+                href={skillGap.activeRoadmapId ? `/dashboard/roadmaps/${skillGap.activeRoadmapId}` : "/dashboard/roadmaps"}
                 className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-teal-700"
               >
                 <Map className="h-4 w-4" />

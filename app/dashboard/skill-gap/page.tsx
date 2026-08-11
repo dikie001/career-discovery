@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { Zap, AlertTriangle, ArrowRight, BookOpen, Award, CheckCircle2, Loader2, Target } from "lucide-react";
+import { apiFetch } from "@/lib/api-client";
 
 // Strictly typed interfaces replacing 'any'
 interface RecommendedCourse {
@@ -43,7 +44,7 @@ export default function SkillGapPage() {
 
     const fetchAnalysis = async () => {
       try {
-        const res = await fetch("/api/skill-gap", {
+        const res = await apiFetch("/api/skill-gap", {
           headers: { Authorization: `Bearer ${token}` }
         });
         const json = await res.json();

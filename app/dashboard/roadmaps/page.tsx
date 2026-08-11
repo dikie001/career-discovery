@@ -1,9 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { Loader2, BookOpen, Compass, Briefcase, Code, Palette, Calculator, Stethoscope } from "lucide-react";
+import { Loader2, BookOpen, Compass, Briefcase, Code, Palette, Calculator, Stethoscope, Sparkles, ArrowRight, CheckCircle2 } from "lucide-react";
+import { apiFetch } from "@/lib/api-client";
+import { useDeviceMode } from "@/contexts/device-mode-context";
+
+interface EnrolledRoadmap {
+  id: string;
+  roadmapId: string;
+  status: string;
+  roadmap: {
+    id: string;
+    title: string;
+    description?: string;
+  };
+  progress?: {
+    completedNodes?: string[];
+  };
+}
 
 // Educational Content based on the Career Wheel Pathways
 const CAREER_PATHWAYS = [
@@ -93,9 +109,44 @@ const CAREER_PATHWAYS = [
 ];
 
 export default function CareerExplorerPage() {
+  const { viewMode, isRealMobile } = useDeviceMode();
+  const isMobileView = viewMode === "mobile" || isRealMobile;
   const { token } = useAuth();
   const router = useRouter();
   const [generatingTitle, setGeneratingTitle] = useState<string | null>(null);
+  const [enrolledRoadmaps, setEnrolledRoadmaps] = useState<EnrolledRoadmap[]>([]);
+  const [targetRole, setTargetRole] = useState<string>("");
+  const [loadingMyRoadmaps, setLoadingMyRoadmaps] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchMyData = async () => {
+      if (!token) return;
+      setLoadingMyRoadmaps(true);
+      try {
+        const [roadmapsRes, profileRes] = await Promise.all([
+          apiFetch("/api/user/roadmaps", { headers: { Authorization: `Bearer ${token}` } }),
+          apiFetch("/api/user/profile", { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
+        if (roadmapsRes.ok) {
+          const data = await roadmapsRes.json();
+          if (Array.isArray(data)) {
+            setEnrolledRoadmaps(data);
+          }
+        }
+        if (profileRes.ok) {
+          const data = await profileRes.json();
+          if (data.data?.targetRole) {
+            setTargetRole(data.data.targetRole);
+          }
+        }
+      } catch (e) {
+        console.error("Error fetching roadmaps/profile:", e);
+      } finally {
+        setLoadingMyRoadmaps(false);
+      }
+    };
+    fetchMyData();
+  }, [token]);
 
   // Added category parameter
   const handleGenerateRoadmap = async (careerTitle: string, category: string) => {
@@ -103,21 +154,17 @@ export default function CareerExplorerPage() {
     setGeneratingTitle(careerTitle);
     
     try {
-      const res = await fetch("/api/roadmaps/generate", {
+      const res = await apiFetch("/api/roadmaps/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        // Sending category along with the title
         body: JSON.stringify({ careerTitle, category }),
       });
       
       if (res.ok) {
         const data = await res.json();
-        console.log("API Success Response:", data); // Helpful for debugging
-        
-        // Safely capture ID
         const correctId = data.roadmapId || data.id;
 
         if (!correctId) {
@@ -125,9 +172,6 @@ export default function CareerExplorerPage() {
           return;
         }
 
-    
-
-        // Route to the correct category folder and ID
         router.push(`/dashboard/roadmaps/${correctId}`);
       } else {
         console.error("Failed to generate roadmap via API. Status:", res.status);
@@ -140,86 +184,205 @@ export default function CareerExplorerPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 pb-24">
+    <div className={`max-w-6xl mx-auto ${isMobileView ? "py-4 px-3.5 pb-20" : "py-8 px-4 sm:px-6 lg:px-8 pb-24"}`}>
       {/* Header Section */}
-     <div className="mb-10 rounded-3xl bg-linear-to-br from-slate-900 to-slate-800 p-8 text-white shadow-xl">
-        <div className="flex items-start gap-5">
-          <div className="rounded-2xl bg-teal-500/20 p-4 backdrop-blur-md">
-            <Compass className="h-10 w-10 text-teal-400" />
+      <div className={isMobileView ? "mb-5 rounded-2xl bg-slate-900 p-4 text-white shadow-md" : "mb-10 rounded-3xl bg-linear-to-br from-slate-900 to-slate-800 p-8 text-white shadow-xl"}>
+        <div className={`flex items-center ${isMobileView ? "gap-3.5" : "gap-5"}`}>
+          <div className={`rounded-2xl bg-teal-500/20 backdrop-blur-md shrink-0 ${isMobileView ? "p-2.5" : "p-4"}`}>
+            <Compass className={isMobileView ? "h-6 w-6 text-teal-400" : "h-10 w-10 text-teal-400"} />
           </div>
           <div>
-            <h1 className="text-3xl font-black tracking-tight">
-              Career Knowledge Hub
+            <h1 className={`${isMobileView ? "text-lg" : "text-3xl"} font-black tracking-tight leading-tight`}>
+              Career Roadmaps
             </h1>
-            <p className="mt-2 text-slate-300 max-w-2xl text-sm leading-relaxed">
-              Explore different educational pathways. Understand the core requirements of various industries, discover what roles entail, and let AI generate a customized learning roadmap when you find your calling.
-            </p>
+            {!isMobileView && (
+              <p className="mt-2 text-slate-300 max-w-2xl text-sm leading-relaxed">
+                Dive directly into your chosen specialty roadmap or explore educational pathways across various industries to discover what roles entail.
+              </p>
+            )}
           </div>
         </div>
       </div>
 
+      {/* Personalized Active Roadmap Section (Top Priority) */}
+      {(enrolledRoadmaps.length > 0 || (targetRole && targetRole !== "General Career")) && (
+        <section className="mb-8 space-y-3">
+          <div className="flex items-center justify-between border-b border-border/50 pb-2.5">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-teal-400 fill-teal-400/20 animate-pulse" />
+              <h2 className={`${isMobileView ? "text-lg" : "text-2xl"} font-black text-slate-900 dark:text-white tracking-tight`}>
+                My Career Roadmap
+              </h2>
+            </div>
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20">
+              Specialized Track
+            </span>
+          </div>
+
+          {loadingMyRoadmaps ? (
+            <div className="flex items-center justify-center p-8 bg-card/30 rounded-3xl border border-border/40">
+              <Loader2 className="h-6 w-6 animate-spin text-teal-400" />
+            </div>
+          ) : (
+            <div className={isMobileView ? "grid grid-cols-1 gap-4" : "grid gap-6 md:grid-cols-2"}>
+              {enrolledRoadmaps.map((ur) => (
+                <div
+                  key={ur.id}
+                  onClick={() => router.push(`/dashboard/roadmaps/${ur.roadmapId}`)}
+                  className="group relative cursor-pointer overflow-hidden rounded-3xl border border-teal-500/40 bg-gradient-to-br from-card to-card/90 p-6 shadow-xl shadow-teal-500/5 hover:border-teal-500 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-500/10"
+                >
+                  <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-teal-500/10 blur-2xl group-hover:bg-teal-500/20 transition-all" />
+                  
+                  <div className="relative z-10 flex flex-col h-full justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full">
+                          <CheckCircle2 className="h-3 w-3" /> Active & Enrolled
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-black text-slate-900 dark:text-white group-hover:text-teal-500 transition-colors">
+                        {ur.roadmap?.title || "Specialized Roadmap"}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+                        {ur.roadmap?.description || "Your interactive learning curriculum and industry assessments."}
+                      </p>
+                    </div>
+
+                    <div className="mt-6 pt-4 border-t border-border/40 flex items-center justify-between">
+                      <span className="text-xs font-semibold text-muted-foreground">
+                        Status: <span className="text-teal-500 font-bold capitalize">{ur.status}</span>
+                      </span>
+                      <div className="inline-flex items-center gap-1 text-xs font-bold text-teal-500 group-hover:translate-x-1 transition-transform">
+                        Continue Journey <ArrowRight className="h-4 w-4" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* If user selected a career but hasn't started its roadmap yet */}
+              {enrolledRoadmaps.length === 0 && targetRole && (
+                <div className="relative overflow-hidden rounded-3xl border border-teal-500/40 bg-gradient-to-br from-teal-950/40 to-card p-6 shadow-xl">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-teal-500/20 text-teal-300 px-2.5 py-0.5 rounded-full">
+                        Selected Target Career
+                      </span>
+                      <h3 className="text-xl font-black text-slate-900 dark:text-white mt-2">
+                        {targetRole}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-1 max-w-md">
+                        You picked this career during your AI discovery. Let&apos;s build your dynamic step-by-step roadmap and industry-ready assessments.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleGenerateRoadmap(targetRole, "AI Generated")}
+                      disabled={generatingTitle === targetRole}
+                      className="shrink-0 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-teal-500/20 hover:from-teal-600 hover:to-emerald-600 disabled:opacity-50 transition-all"
+                    >
+                      {generatingTitle === targetRole ? (
+                        <><Loader2 className="h-4 w-4 animate-spin" /> Preparing...</>
+                      ) : (
+                        <><Sparkles className="h-4 w-4" /> Start My Roadmap</>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* General Knowledge Hub Section Title */}
+      <div className="mb-5 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <h2 className={`${isMobileView ? "text-lg" : "text-2xl"} font-black text-slate-800 dark:text-slate-200 tracking-tight`}>
+          General Career Knowledge Hub
+        </h2>
+        {!isMobileView && (
+          <p className="text-sm text-muted-foreground mt-1 mb-6">
+            Explore alternative pathways, industry fundamentals, and skill requirements below.
+          </p>
+        )}
+      </div>
+
       {/* Pathways Grid */}
-      <div className="space-y-12">
+      <div className="space-y-8">
         {CAREER_PATHWAYS.map((pathway) => (
-          <section key={pathway.category} className="space-y-6">
-            <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
-              <div className={`p-2 rounded-xl border ${pathway.color}`}>
+          <section key={pathway.category} className="space-y-4">
+            <div className="flex items-center gap-2.5 border-b border-slate-200 dark:border-slate-800 pb-2">
+              <div className={`p-1.5 rounded-lg border ${pathway.color}`}>
                 {pathway.icon}
               </div>
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+              <h2 className={`${isMobileView ? "text-base" : "text-2xl"} font-black text-slate-900 dark:text-white`}>
                 {pathway.category}
               </h2>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className={isMobileView ? "grid grid-cols-1 gap-3" : "grid gap-6 md:grid-cols-2 xl:grid-cols-3"}>
               {pathway.careers.map((career) => (
                 <div 
                   key={career.title}
-                  className="flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/50"
+                  className={`flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 bg-white shadow-xs sm:shadow-sm transition-all hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/50 ${
+                    isMobileView ? "p-4" : "p-6"
+                  }`}
                 >
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Briefcase className="h-5 w-5 text-slate-400" />
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                    <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                      <Briefcase className="h-4 w-4 sm:h-5 sm:w-5 text-teal-600 dark:text-teal-400 shrink-0" />
+                      <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">
                         {career.title}
                       </h3>
                     </div>
                     
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">
+                    <p className={`text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-4 leading-relaxed ${
+                      isMobileView ? "line-clamp-2" : ""
+                    }`}>
                       {career.description}
                     </p>
 
-                    <div className="space-y-2 mb-6">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                        Key Requirements
+                    <div className="space-y-2 mb-4">
+                      <h4 className="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-400">
+                        Key Skills & Focus Areas
                       </h4>
-                      <ul className="space-y-1.5">
+                      <div className={isMobileView ? "flex flex-wrap gap-1.5" : "space-y-1.5"}>
                         {career.requirements.map((req, idx) => (
-                          <li key={idx} className="flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
-                            <BookOpen className="h-3.5 w-3.5 text-teal-500" />
-                            {req}
-                          </li>
+                          isMobileView ? (
+                            <span key={idx} className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                              {req}
+                            </span>
+                          ) : (
+                            <li key={idx} className="flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300 list-none">
+                              <BookOpen className="h-3.5 w-3.5 text-teal-500 shrink-0" />
+                              <span>{req}</span>
+                            </li>
+                          )
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   </div>
 
-                  {/* AI Generation Button */}
-                  <button
-                    // Updated to pass both title and category
-                    onClick={() => handleGenerateRoadmap(career.title, pathway.category)}
-                    disabled={generatingTitle === career.title}
-                    className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white transition-all hover:bg-slate-800 disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500 flex items-center justify-center gap-2"
-                  >
-                    {generatingTitle === career.title ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Engineering Roadmap...
-                      </>
-                    ) : (
-                      <>Generate AI Roadmap</>
-                    )}
-                  </button>
+                  <div className={`pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 ${
+                    isMobileView ? "mt-3" : "mt-6"
+                  }`}>
+                    <span className="text-[11px] sm:text-xs text-slate-400 font-bold">Explore Path</span>
+                    <button
+                      onClick={() => handleGenerateRoadmap(career.title, pathway.category)}
+                      disabled={generatingTitle === career.title}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-black transition-all shadow-md shadow-teal-600/20 active:scale-95 disabled:opacity-50 shrink-0"
+                    >
+                      {generatingTitle === career.title ? (
+                        <>
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          Building...
+                        </>
+                      ) : (
+                        <>
+                          Generate Roadmap
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

@@ -64,10 +64,10 @@ const CustomNode = ({ data }: { data: ViewerNodeData & { onSelect: (id: string) 
         </div>
         <div>
           <h3 className={cn("font-semibold text-sm", isLocked ? "text-slate-500" : "text-slate-900 dark:text-slate-100")}>
-            {title}
+            {title.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '')}
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
-            {description}
+            {description?.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '')}
           </p>
         </div>
       </div>
