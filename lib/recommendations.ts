@@ -75,7 +75,16 @@ function isLikelyCareerTitle(title: string): boolean {
   if (normalized.length < 5) return false
 
   if (
-    /^(salary|growth|timeline|summary|why it matches|why it fits|key skills|gap analysis|course|learning|roadmap|insight|recommendation)s?$/i.test(
+    /^(salary|growth|timeline|summary|why it matches|why it fits|key skills|gap analysis|course|learning|roadmap|insight|recommendation|show another option|show another|next option|next career|next suggestion|show more|return to hub|ask ai|career assessment|ai chat)s?$/i.test(
+      normalized
+    ) ||
+    /^(show|click|view|open|see|try|return|back|next|previous|select|choose)\b/i.test(
+      normalized
+    ) ||
+    /\b(option|options|button|buttons|link|links|hub|chat|menu|tab|programming languages|technology interest|soft skills|computer science|fundamental|fundamentals|basics)\b/i.test(
+      normalized
+    ) ||
+    /\b(languages?|interest|interests|competencies|qualifications?|education|market|trends?|overview|conclusion|introduction)\b/i.test(
       normalized
     )
   ) {
@@ -87,7 +96,18 @@ function isLikelyCareerTitle(title: string): boolean {
   )
   if (hasCareerKeyword) return true
 
-  return /^[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,4}$/.test(normalized)
+  const explicitCareers = [
+    "DevOps",
+    "Cybersecurity",
+    "Quality Assurance",
+    "Scrum Master",
+    "Product Owner",
+    "Cloud Practitioner",
+    "Full-Stack Developer",
+    "Frontend Developer",
+    "Backend Developer",
+  ]
+  return explicitCareers.some((c) => new RegExp(`\\b${c}\\b`, "i").test(normalized))
 }
 
 function cleanTitle(raw: string): string {
@@ -186,8 +206,11 @@ export function extractRecommendationMetadata(
     /[Kk][Ss][Hh]\s*[\d,]+[Kk]?\s*[-–]?\s*[\d,]*[Kk]?/
   )
   const salaryRange = salaryMatch ? salaryMatch[0] : ""
-  const matchMatch = text.match(/(\d{1,3})%\s*match/i)
-  const matchPercentage = matchMatch ? parseInt(matchMatch[1], 10) : 0
+  const matchMatch = text.match(/(\d{1,3})%\s*match/i) || text.match(/match[\s:=-]+(\d{1,3})%/i) || text.match(/(\d{1,3})%/);
+  let matchPercentage = matchMatch ? parseInt(matchMatch[1], 10) : 88;
+  if (matchPercentage <= 0 || matchPercentage > 100 || isNaN(matchPercentage)) {
+    matchPercentage = 88;
+  }
   const summary = cleanSummary(text)
 
   return {

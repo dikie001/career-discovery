@@ -13,6 +13,7 @@ export interface SkillGapAnalysis {
   completedFromRoadmap: string[];
   gaps: SkillGapItem[];
   coveragePercent: number;
+  activeRoadmapId?: string;
 }
 
 function normalizeSkill(skill: string): string {
@@ -62,7 +63,16 @@ export async function analyzeSkillGap(userId: string): Promise<SkillGapAnalysis>
         .map((node) => node.title)
     ) ?? [];
 
-  const requiredSkills = uniqueSkills(roadmapSkillNodes);
+  const isTechRole = /software|developer|engineer|full stack|web|it|tech|cloud|devops|data|systems/i.test(targetCareer);
+  const coreTechMustKnows = isTechRole ? [
+    "Computer Hardware & System Fundamentals",
+    "Computer Networking & DNS/HTTP Protocols",
+    "IT Infrastructure & Cloud Architecture",
+    "IT Support Basics & Systems Troubleshooting",
+    "Version Control & Git Enterprise Workflows"
+  ] : [];
+
+  const requiredSkills = uniqueSkills([...roadmapSkillNodes, ...coreTechMustKnows]);
 
   const userRoadmaps = await prisma.userRoadmap.findMany({
     where: { userId },
@@ -72,6 +82,7 @@ export async function analyzeSkillGap(userId: string): Promise<SkillGapAnalysis>
         include: { nodes: true },
       },
     },
+    orderBy: { createdAt: "desc" },
   });
 
   const completedFromRoadmap = uniqueSkills(
@@ -153,5 +164,6 @@ export async function analyzeSkillGap(userId: string): Promise<SkillGapAnalysis>
     completedFromRoadmap,
     gaps,
     coveragePercent,
+    activeRoadmapId: userRoadmaps[0]?.roadmapId,
   };
 }

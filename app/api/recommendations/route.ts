@@ -15,11 +15,29 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 })
     }
 
-    const recommendations = await prisma.aIRecommendation.findMany({
+    const invalidPattern = /^(show|click|view|open|see|try|return|back|next|previous|select|choose)\b/i
+    const optionPattern = /\b(option|options|button|buttons)\b/i
+
+    const rawRecommendations = await prisma.aIRecommendation.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
-      take: 5,
+      take: 10,
     })
+
+    const recommendations = rawRecommendations
+      .filter((rec) => !invalidPattern.test(rec.title) && !optionPattern.test(rec.title))
+      .slice(0, 5)
+
+    // Clean up any invalid recommendations from database asynchronously
+    const invalidIds = rawRecommendations
+      .filter((rec) => invalidPattern.test(rec.title) || optionPattern.test(rec.title))
+      .map((rec) => rec.id)
+
+    if (invalidIds.length > 0) {
+      prisma.aIRecommendation.deleteMany({
+        where: { id: { in: invalidIds } },
+      }).catch((err: unknown) => console.error("Failed to clean up invalid recommendations:", err))
+    }
 
     return NextResponse.json({ success: true, data: recommendations }, { status: 200 })
   } catch (error) {
@@ -49,6 +67,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     if (!title) {
       return NextResponse.json({ success: false, error: "Title is required" }, { status: 400 })
+    }
+
+    const invalidPattern = /^(show|click|view|open|see|try|return|back|next|previous|select|choose)\b/i
+    const optionPattern = /\b(option|options|button|buttons)\b/i
+
+    if (invalidPattern.test(title) || optionPattern.test(title)) {
+      return NextResponse.json({ success: false, error: "Invalid career title" }, { status: 400 })
     }
 
     // Avoid duplicates — upsert based on userId + title within the last 24 hours
@@ -81,6 +106,45 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     console.error("Save recommendation error:", error)
     return NextResponse.json(
       { success: false, error: error instanceof Error ? error.message : "Failed to save recommendation" },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE — remove an AI recommendation by id
+export async function DELETE(request: NextRequest): Promise<NextResponse> {
+  try {
+    const authHeader = request.headers.get("authorization")
+    if (!authHeader?.startsWith("Bearer ")) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    }
+
+    const userId = verifyToken(authHeader.substring(7))
+    if (!userId) {
+      return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get("id")
+    if (!id) {
+      return NextResponse.json({ success: false, error: "ID required" }, { status: 400 })
+    }
+
+    // Ensure the recommendation belongs to this user before deleting
+    const existing = await prisma.aIRecommendation.findFirst({
+      where: { id, userId },
+    })
+    if (!existing) {
+      return NextResponse.json({ success: false, error: "Recommendation not found or unauthorized" }, { status: 404 })
+    }
+
+    await prisma.aIRecommendation.delete({ where: { id } })
+
+    return NextResponse.json({ success: true }, { status: 200 })
+  } catch (error) {
+    console.error("Delete recommendation error:", error)
+    return NextResponse.json(
+      { success: false, error: error instanceof Error ? error.message : "Failed to delete recommendation" },
       { status: 500 }
     )
   }

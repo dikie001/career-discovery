@@ -139,11 +139,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     })
 
     if (progress) {
+      // Chatting with AI only satisfies Step 1 (Self Discovery) of the career journey
       const updatedStages = progress.stages.map((stage) => {
-        if (stage.order === 1 || stage.order === 2 || stage.order === 3) {
+        if (stage.order === 1 && stage.status !== "completed") {
           return { ...stage, status: "completed" }
         }
-        if (stage.order === 4) {
+        if (stage.order === 2 && stage.status === "pending") {
           return { ...stage, status: "in_progress" }
         }
         return stage
@@ -158,20 +159,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         )
       )
 
-      const completedCount = updatedStages.filter(
-        (stage) => stage.status === "completed"
-      ).length
-      const inProgressCount = updatedStages.filter(
-        (stage) => stage.status === "in_progress"
-      ).length
-      const overallProgress = Math.round(
-        ((completedCount + inProgressCount * 0.4) / updatedStages.length) * 100
-      )
-
-      await prisma.careerProgress.update({
-        where: { id: progress.id },
-        data: { overallProgress },
-      })
+      // Chatting with AI brings initial discovery progress up to 20% max without artificially completing skill roadmaps
+      const newProgress = Math.max(progress.overallProgress, 20)
+      if (newProgress !== progress.overallProgress || progress.overallProgress > 80) {
+        // If progress was artificially elevated to >80 just from chat without having an actual roadmap completed, normalize it
+        const correctedProgress = progress.overallProgress >= 85 ? 20 : newProgress;
+        await prisma.careerProgress.update({
+          where: { id: progress.id },
+          data: { overallProgress: correctedProgress },
+        })
+      }
     }
 
     return NextResponse.json(
@@ -187,7 +184,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     console.error("Chat error:", error)
     const errorMsg = error instanceof Error ? error.message : "Chat failed"
     const isRateLimit =
-      errorMsg.includes("429") || errorMsg.includes("rate_limit")
+      errorMsg.includes("429") || errorMsg.includes("rate_limit") || errorMsg.toLowerCase().includes("quota") || errorMsg.toLowerCase().includes("free tier") || errorMsg.toLowerCase().includes("limit")
     return NextResponse.json(
       {
         success: false,

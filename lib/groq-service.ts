@@ -18,9 +18,13 @@ interface GroqResponse {
 class GroqService {
   private apiKey: string
   private baseURL: string = "https://api.groq.com/openai/v1"
-  private model: string = "openai/gpt-oss-20b"
+  private model: string = "llama-3.3-70b-versatile"
 
   private systemPrompt = `You are Pathfinder AI, an expert career guidance and mentoring assistant. Your role is to help Kenyan users discover suitable careers, develop skills, and create actionable learning paths.
+  
+STRICT REQUIREMENTS:
+- You must ground all advice, salary estimates, and industry realities in the Kenyan job market context.
+- When generating match percentages, BE REALISTIC and STRICT. Do NOT hallucinate high match percentages unless the user's specific skills strongly align with local market realities. A beginner with no skills should have a low match percentage (e.g. 10-30%).
 
 KEY PERSONALITY TRAITS:
 - Encouraging and supportive: Celebrate user progress and potential
@@ -73,21 +77,21 @@ INSTRUCTIONS ON PRESENTING SUGGESTIONS (CRITICAL):
      - Key skills needed and gap analysis
      - Salary range (KES if Kenya, USD otherwise) and timeline
      - The first action-oriented step
-   - Ask the user to click the "Next Career" button to see the next suggestion.
+   - Ask the user to click the "Show Another Option" button to see the next suggestion.
    - Append a JSON options block at the very end of your response to render the "Next" button:
      \`\`\`json
      {
        "options": [
          {
            "id": "next_career",
-           "label": "Next Career",
-           "description": "View the next career recommendation"
+           "label": "Show Another Option",
+           "description": "View another career recommendation"
          }
        ]
      }
      \`\`\`
-   - When the user asks for the next suggestion (e.g., sends "Next Career" or "Next"), check the conversation history to see which careers you already suggested, and suggest the NEXT matching career path.
-   - Recommend a maximum of 5 careers. On the 5th (final) career suggestion, do not include the "Next Career" button or ask the user to click it. Instead, conclude the list and ask if they would like to see course/learning path recommendations for any of these.
+   - When the user asks for the next suggestion (e.g., sends "Show Another Option" or "Next"), check the conversation history to see which careers you already suggested, and suggest the NEXT matching career path.
+   - Recommend a maximum of 5 careers. On the 5th (final) career suggestion, do not include the "Show Another Option" button or ask the user to click it. Instead, conclude the list and ask if they would like to see course/learning path recommendations for any of these.
 
 2. WHEN SUGGESTING COURSES OR LEARNING ROADS (including in response to "Create a personalized learning roadmap" or similar):
    - You MUST NOT list or suggest multiple courses/milestones at once.
@@ -139,7 +143,8 @@ INSTRUCTIONS ON PRESENTING SUGGESTIONS (CRITICAL):
 
   async chat(
     messages: GroqMessage[],
-    personality: string = "mentor"
+    personality: string = "mentor",
+    maxTokens: number = 1024
   ): Promise<string> {
     try {
       if (!this.apiKey) {
@@ -158,42 +163,66 @@ INSTRUCTIONS ON PRESENTING SUGGESTIONS (CRITICAL):
         personalityPrompts.mentor
       const fullSystemPrompt = `${this.systemPrompt}\n\n${selectedPersonalityPrompt}`
 
-      const payload = {
-        model: this.model,
-        messages: [
-          {
-            role: "system" as const,
-            content: fullSystemPrompt,
-          },
-          ...messages,
-        ],
-        temperature: 0.7,
-        max_tokens: 1024,
+      const modelsToTry = [
+        this.model,
+        "llama3-8b-8192",
+        "mixtral-8x7b-32768",
+        "gemma2-9b-it"
+      ].filter((v, i, a) => a.indexOf(v) === i);
+
+      let lastError: any = null;
+
+      for (const currentModel of modelsToTry) {
+        try {
+          const payload = {
+            model: currentModel,
+            messages: [
+              {
+                role: "system" as const,
+                content: fullSystemPrompt,
+              },
+              ...messages,
+            ],
+            temperature: 0.7,
+            max_tokens: maxTokens,
+          };
+
+          const response = await fetch(`${this.baseURL}/chat/completions`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${this.apiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const responseText = await response.text();
+
+          if (response.ok) {
+            const data: GroqResponse = JSON.parse(responseText);
+            return data.choices[0]?.message.content || "Unable to generate response";
+          }
+
+          if (response.status === 429 || responseText.toLowerCase().includes("rate limit") || responseText.toLowerCase().includes("quota") || responseText.toLowerCase().includes("model")) {
+            console.warn(`Groq model ${currentModel} returned ${response.status}. Attempting fallback model...`);
+            lastError = { status: response.status, text: responseText };
+            continue;
+          }
+
+          throw new Error(
+            `Groq API error: ${response.status} - ${responseText || response.statusText}`
+          );
+        } catch (err) {
+          lastError = err;
+          console.warn(`Attempt with ${currentModel} failed:`, err);
+        }
       }
 
-      console.log("Sending request to Groq API with model:", this.model)
-
-      const response = await fetch(`${this.baseURL}/chat/completions`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      })
-
-      const responseText = await response.text()
-
-      if (!response.ok) {
-        console.error("Groq API error response:", responseText)
-        console.error("Response status:", response.status)
-        throw new Error(
-          `Groq API error: ${response.status} - ${responseText || response.statusText}`
-        )
+      if (lastError && (lastError.status === 429 || String(lastError.text || lastError.message || "").toLowerCase().includes("rate limit") || String(lastError.text || lastError.message || "").toLowerCase().includes("quota"))) {
+        throw new Error("AI Free Tier Quota Reached: You have reached your daily trial limit for live AI generations. Please try again later or upgrade to Pathfinder Pro. (429 rate_limit)");
       }
 
-      const data: GroqResponse = JSON.parse(responseText)
-      return data.choices[0]?.message.content || "Unable to generate response"
+      throw new Error(`Failed to generate response: ${lastError instanceof Error ? lastError.message : JSON.stringify(lastError)}`);
     } catch (error) {
       console.error("Error calling Groq API:", error)
       throw error
@@ -332,8 +361,8 @@ Keep it conversational, warm, brief, and action-oriented.`
     let userMessageContent = `${userContext}\n\nUser's question: ${question}`
 
     const lowerQuestion = question.toLowerCase()
-    if (lowerQuestion === "next career") {
-      userMessageContent += `\n\n(System: The user has clicked "Next Career". Please identify the careers suggested so far from the chat history. Provide the next (second or third) career recommendation from their matches in the exact same format, ask the user to click "Next Career", and include the "Next Career" JSON block. If this is the 3rd career path, it will be the last one, so do not include a "Next Career" option or ask the user to click Next. Instead, conclude and offer to help them with courses/roadmaps.)`
+    if (lowerQuestion === "show another option" || lowerQuestion === "next career") {
+      userMessageContent += `\n\n(System: The user has clicked "Show Another Option". Please identify the careers suggested so far from the chat history. Provide the next (second or third) career recommendation from their matches in the exact same format, ask the user to click "Show Another Option", and include the "Show Another Option" JSON block. If this is the 3rd career path, it will be the last one, so do not include a "Show Another Option" option or ask the user to click Next. Instead, conclude and offer to help them with courses/roadmaps.)`
     } else if (lowerQuestion === "next course") {
       userMessageContent += `\n\n(System: The user has clicked "Next Course". Please identify the courses suggested so far from the chat history. Provide the next recommended course in their learning roadmap in the exact same format, ask the user to click "Next Course", and include the "Next Course" JSON block. If this is the 4th course, it is the last one, so do not include a "Next Course" option or ask the user to click Next. Instead, conclude.)`
     } else if (
@@ -343,7 +372,7 @@ Keep it conversational, warm, brief, and action-oriented.`
       lowerQuestion.includes("top career paths") ||
       (lowerQuestion.includes("career") && lowerQuestion.includes("recommend"))
     ) {
-      userMessageContent += `\n\n(System: The user is requesting career matches/suggestions. Suggest ONLY the FIRST career recommendation right now. Do not list multiple careers. Provide details, ask them to click "Next Career" to see more, and append the "Next Career" JSON options block.)`
+      userMessageContent += `\n\n(System: The user is requesting career matches/suggestions. Suggest ONLY the FIRST career recommendation right now. Do not list multiple careers. Provide details, ask them to click "Show Another Option" to see more, and append the "Show Another Option" JSON options block.)`
     } else if (
       lowerQuestion.includes("learning roadmap") ||
       lowerQuestion.includes("courses to study") ||
@@ -433,6 +462,50 @@ Include:
     const prompt = `The user "${userName}" is starting their career discovery journey. You have access to their profile data. Greet them warmly and invite them to ask questions or explore career opportunities. Keep it conversational and minimal.`
 
     return this.chat([{ role: "user", content: prompt }])
+  }
+
+  async generateAssessment(skillTitle: string, skillDescription: string): Promise<any> {
+    const prompt = `Create a 15-question multiple choice assessment exam for the skill: "${skillTitle}".
+Description: ${skillDescription}
+Context: Kenyan job market expectations for this skill.
+
+Respond ONLY with a valid JSON object matching this schema, no markdown blocks, no other text:
+{
+  "title": "Assessment: ${skillTitle}",
+  "timeLimitMinutes": 20,
+  "passMarkPercentage": 60,
+  "questions": [
+    {
+      "id": "q1",
+      "text": "Question text here (must be related to industry/job expected skills in Kenya)",
+      "options": [
+        { "id": "a", "text": "Option A" },
+        { "id": "b", "text": "Option B" },
+        { "id": "c", "text": "Option C" },
+        { "id": "d", "text": "Option D" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "Explanation of why C is correct."
+    }
+  ]
+}
+Make sure there are exactly 15 questions.`
+
+    const resultText = await this.chat([{ role: "user", content: prompt }], "mentor", 4096)
+    
+    // Attempt to parse JSON safely
+    try {
+      // Find JSON block if it got wrapped in markdown
+      const jsonMatch = resultText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      if (jsonMatch && jsonMatch[1]) {
+        return JSON.parse(jsonMatch[1]);
+      }
+      return JSON.parse(resultText);
+    } catch (e) {
+      console.error("Failed to parse assessment JSON:", e);
+      console.log("Raw output:", resultText);
+      throw new Error("Failed to generate valid assessment format.");
+    }
   }
 }
 

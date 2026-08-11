@@ -45,24 +45,23 @@ const STARTER_PROMPTS: ChatStarterButton[] = [
 
 export function ChatStarters({ onSelect, isLoading = false }: ChatStartersProps) {
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-2 mt-4 text-center">
-      {/* <p className="text-xs font-semibold text-muted-foreground tracking-wider uppercase mb-3">Suggested Topics</p> */}
-      <div className="flex flex-col sm:flex-row gap-2.5 justify-center items-stretch">
+    <div className="w-full max-w-2xl mx-auto space-y-3 mt-4 px-2 sm:px-4 text-center">
+      <div className="flex flex-col gap-2.5 justify-center items-stretch">
         {STARTER_PROMPTS.map((starter) => (
           <button
             key={starter.id}
             onClick={() => onSelect(starter.prompt)}
             disabled={isLoading}
-            className="flex-1 group relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/30 hover:bg-slate-900/60 p-3 text-left transition-all duration-200 hover:border-teal-500/50 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-start gap-2.5"
+            className="group relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/60 hover:bg-slate-50 dark:hover:bg-slate-800 p-3 sm:p-4 text-left transition-all duration-200 hover:border-teal-500 shadow-xs hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3.5"
           >
-            <div className="relative text-teal-400 group-hover:text-teal-300 transition-colors p-1.5 rounded-lg bg-teal-500/10 flex-shrink-0">
+            <div className="relative text-teal-600 dark:text-teal-400 p-2.5 rounded-xl bg-teal-500/15 dark:bg-teal-500/20 shrink-0">
               {starter.icon}
             </div>
-            <div className="space-y-0.5 min-w-0">
-              <span className="block text-sm font-bold text-card-foreground group-hover:text-white transition-colors truncate">
+            <div className="space-y-0.5 min-w-0 flex-1">
+              <span className="block text-sm font-black text-slate-900 dark:text-white transition-colors">
                 {starter.label}
               </span>
-              <p className="text-sm text-muted-foreground group-hover:text-muted-foreground transition-colors line-clamp-1 leading-normal">
+              <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
                 {starter.description}
               </p>
             </div>

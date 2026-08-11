@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Loader } from "lucide-react";
+import { Send, Loader, Target, BarChart2, BookOpen } from "lucide-react";
 import Image from "next/image";
 import { MarkdownRenderer } from "./markdown-renderer";
 import { SelectionCards, SelectionOption } from "./selection-cards";
@@ -38,19 +38,19 @@ export function AiPathfinderCard({
           id: "best-careers",
           label: "Best careers for me",
           description: "Get personalized career recommendations",
-          icon: "🎯",
+          icon: <Target className="h-4 w-4 text-teal-600 dark:text-teal-400" />,
         },
         {
           id: "skills-needed",
           label: "Skills I need",
           description: "Identify skill gaps for your goals",
-          icon: "📊",
+          icon: <BarChart2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
         },
         {
           id: "courses-study",
           label: "Courses to study",
           description: "Find relevant learning resources",
-          icon: "📚",
+          icon: <BookOpen className="h-4 w-4 text-amber-600 dark:text-amber-400" />,
         },
       ],
     },
@@ -225,12 +225,12 @@ export function AiPathfinderCard({
                     key={option.id}
                     onClick={() => handleSendSelection(option.id)}
                     disabled={sending || externalLoading}
-                    className="w-full rounded-lg border border-input bg-slate-800/80 hover:bg-accent px-2.5 py-2 text-left text-xs font-medium text-white backdrop-blur-sm transition-all hover:border-teal-400 disabled:opacity-50"
+                    className="w-full rounded-xl border border-border bg-muted/40 hover:bg-muted px-3 py-2.5 text-left text-xs font-medium text-foreground transition-all hover:border-teal-500/50 disabled:opacity-50 shadow-xs"
                   >
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-base flex-shrink-0">{option.icon}</span>
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex-shrink-0 p-1.5 rounded-lg bg-card border border-border/60 shadow-2xs">{option.icon}</span>
                       <div className="min-w-0">
-                        <p className="font-semibold truncate">{option.label}</p>
+                        <p className="font-bold truncate text-foreground">{option.label}</p>
                         {option.description && (
                           <p className="text-xs text-muted-foreground opacity-85 truncate">
                             {option.description}
