@@ -30,6 +30,13 @@ export default function DynamicAdminEntityPage() {
           { key: "title", label: "Roadmap Name" },
           { key: "description", label: "Description" },
         ];
+      case "opportunities":
+        return [
+          { key: "title", label: "Title" },
+          { key: "company", label: "Company" },
+          { key: "type", label: "Type" },
+          { key: "location", label: "Location" },
+        ];
       default:
         // Fallback for any other table
         return [

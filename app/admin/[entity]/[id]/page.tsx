@@ -46,6 +46,24 @@ export default function AdminEntityActionPage() {
           { name: "title", label: "Roadmap Title", type: "text" as const, required: true },
           { name: "description", label: "Overview Description", type: "textarea" as const },
         ];
+      case "opportunities":
+        return [
+          { name: "title", label: "Opportunity Title", type: "text" as const, required: true },
+          { name: "company", label: "Company/Organization", type: "text" as const, required: true },
+          { name: "location", label: "Location", type: "text" as const },
+          {
+            name: "type",
+            label: "Opportunity Type",
+            type: "select" as const,
+            options: [
+              { label: "Job", value: "job" },
+              { label: "Internship", value: "internship" },
+              { label: "Scholarship", value: "scholarship" }
+            ],
+            required: true
+          },
+          { name: "url", label: "Application URL", type: "text" as const, required: true },
+        ];
       default:
         // Generic fallback form
         return [

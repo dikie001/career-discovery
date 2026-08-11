@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import SplashScreen from "@/components/ui/splash-screen";
 import {
   Users,
   Map,
@@ -17,11 +18,15 @@ import {
   LogOut,
   Menu,
   X,
-  LayoutDashboard
+  LayoutDashboard,
+  BarChart2,
+  LifeBuoy
 } from "lucide-react";
 
 const ADMIN_NAV = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "Analytics & Reports", href: "/admin/reports", icon: BarChart2 },
+  { name: "Mentors & Help Desk", href: "/admin/support", icon: LifeBuoy },
   { name: "Users", href: "/admin/users", icon: Users },
   { name: "Careers", href: "/admin/careers", icon: Briefcase },
   { name: "Roadmaps", href: "/admin/roadmaps", icon: Map },
@@ -29,7 +34,7 @@ const ADMIN_NAV = [
   { name: "Resources", href: "/admin/resources", icon: BookOpen },
   { name: "Projects", href: "/admin/projects", icon: FolderDot },
   { name: "Certifications", href: "/admin/certifications", icon: Award },
-  { name: "Opportunities", href: "/admin/opportunities", icon: Globe },
+  { name: "Opportunities & News", href: "/admin/opportunities", icon: Globe },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
@@ -54,11 +59,7 @@ export default function AdminLayout({
   }, [isAuthenticated, isLoading, user, router]);
 
   if (isLoading || !isAuthenticated || user?.role !== "ADMIN") {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-900">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-300 border-t-indigo-600"></div>
-      </div>
-    );
+    return <SplashScreen message="Entering Admin Console..." />;
   }
 
   return (
@@ -78,9 +79,9 @@ export default function AdminLayout({
         }`}
       >
         <div className="flex h-16 items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800">
-          <Link href="/admin" className="flex items-center gap-2 font-bold text-lg">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
-              P
+          <Link href="/admin" className="flex items-center gap-2.5 font-bold text-lg">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white p-0.5 border border-slate-200 dark:border-slate-700 shadow-xs overflow-hidden">
+              <img src="/logo.png" alt="Pathfinder Admin" className="h-full w-full object-contain rounded-md" />
             </div>
             <span>Admin Panel</span>
           </Link>
