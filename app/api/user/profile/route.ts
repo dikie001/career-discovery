@@ -66,7 +66,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const profileData: ProfileResponse = {
       name: user.name,
       email: user.email,
-      location: user.location || "",
+      location: user.location || "Nairobi, Kenya",
       avatar: user.avatar || "",
       interests: userProfile?.interests || [],
       skills: userProfile?.skills || [],
@@ -150,7 +150,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
     const profileData: ProfileResponse = {
       name: updatedUser.name,
       email: updatedUser.email,
-      location: updatedUser.location || "",
+      location: updatedUser.location || "Nairobi, Kenya",
       avatar: updatedUser.avatar || "",
       interests: updatedProfile.interests,
       skills: updatedProfile.skills,

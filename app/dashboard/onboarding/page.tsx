@@ -131,28 +131,27 @@ export default function OnboardingPage() {
   const stepIndex = { level: 0, intent: 1, profile: 2 }[step];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 flex flex-col font-sans text-foreground antialiased">
-      {/* Background blobs */}
+    <div className="min-h-screen bg-[#F3F9FA] dark:bg-slate-950 flex flex-col font-sans antialiased text-slate-900 dark:text-white transition-colors duration-300">
+      {/* Subtle Ambient Glows (only prominent in dark mode) */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-teal-600/10 blur-3xl" />
-        <div className="absolute top-1/2 -right-40 h-80 w-80 rounded-full bg-cyan-600/10 blur-3xl" />
-        <div className="absolute -bottom-20 left-1/3 h-64 w-64 rounded-full bg-indigo-600/8 blur-3xl" />
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-teal-500/5 dark:bg-teal-600/10 blur-3xl" />
+        <div className="absolute top-1/2 -right-40 h-80 w-80 rounded-full bg-cyan-500/5 dark:bg-cyan-600/10 blur-3xl" />
       </div>
 
-      {/* Header */}
-      <header className="relative z-10 flex items-center justify-between px-5 pt-12 pb-6">
+      {/* Header & Step Indicator */}
+      <header className="relative z-10 flex items-center justify-between px-6 pt-10 pb-4 max-w-2xl mx-auto w-full">
         {step !== "level" ? (
           <button
             onClick={() =>
-              setStep(step === "intent" ? "level" : "intent")
+              setStep(step === "profile" ? "intent" : "level")
             }
-            className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-sm font-extrabold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors py-1 px-3 rounded-xl hover:bg-slate-200/50 dark:hover:bg-slate-800/50"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back
+            <span>Back</span>
           </button>
         ) : (
-          <div />
+          <div className="w-20" />
         )}
 
         {/* Step dots */}
@@ -160,60 +159,68 @@ export default function OnboardingPage() {
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
+              className={`h-2 rounded-full transition-all duration-300 ${
                 i === stepIndex
-                  ? "w-6 bg-teal-400"
+                  ? "w-8 bg-[#00A8A8] dark:bg-teal-400 shadow-xs"
                   : i < stepIndex
-                  ? "w-3 bg-teal-600/60"
-                  : "w-3 bg-slate-700"
+                  ? "w-2 bg-[#00A8A8]/50 dark:bg-teal-600/60"
+                  : "w-2 bg-slate-200 dark:bg-slate-700"
               }`}
             />
           ))}
         </div>
-        <div className="w-12" />
+        <div className="w-20" />
       </header>
 
-      {/* Content */}
-      <main className="relative z-10 flex-1 px-5 pb-10 max-w-lg mx-auto w-full">
-        {/* STEP 1 — Education Level */}
+      {/* Content Area */}
+      <main className="relative z-10 flex-1 px-5 pt-4 pb-16 max-w-xl mx-auto w-full flex flex-col justify-center">
+        
+        {/* STEP 1 — Education Level (Matching User Screenshot Exactly) */}
         {step === "level" && (
-          <div className="animate-fadeInUp">
-            <div className="mb-8">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-600 mb-5 shadow-lg shadow-teal-500/30">
-                <GraduationCap className="h-7 w-7 text-white" />
+          <div className="animate-fadeInUp space-y-6">
+            <div className="space-y-2">
+              <div className="flex h-14 w-14 items-center justify-center rounded-[18px] bg-[#00A8A8] text-white shadow-sm shadow-teal-600/15 dark:shadow-teal-500/25 mb-4">
+                <GraduationCap className="h-7 w-7 stroke-[2.2]" />
               </div>
-              <h1 className="text-2xl font-black text-white leading-tight mb-2">
+              <h1 className="text-3xl font-black text-[#0D1C2E] dark:text-white tracking-tight">
                 Where are you right now?
               </h1>
-              <p className="text-slate-400 text-sm">
+              <p className="text-[#66778C] dark:text-slate-400 text-sm font-semibold">
                 This helps Pathfinder AI personalize everything for you.
               </p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 pt-2">
               {EDUCATION_LEVELS.map((level) => {
                 const Icon = level.icon;
+                const isSelected = educationLevel === level.id;
                 return (
                   <button
                     key={level.id}
                     id={`level-${level.id}`}
                     onClick={() => setEducationLevel(level.id)}
-                    className={`w-full flex items-center gap-4 rounded-2xl border p-4 text-left transition-all duration-200 ${
-                      educationLevel === level.id
-                        ? "border-teal-500/70 bg-teal-500/15 shadow-lg shadow-teal-500/10"
-                        : "border-slate-700/50 bg-slate-800/40 hover:border-slate-600 hover:bg-slate-800/60"
+                    className={`w-full flex items-center p-5 rounded-2xl text-left transition-all duration-200 ${
+                      isSelected
+                        ? "bg-white dark:bg-slate-800 border-2 border-[#00A8A8] dark:border-teal-400 shadow-[0_4px_16px_rgba(0,168,168,0.12)]"
+                        : "bg-white dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/70 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-slate-200 dark:hover:border-slate-600 hover:shadow-sm"
                     }`}
                   >
-                    <div className={`p-2 rounded-xl ${educationLevel === level.id ? "bg-teal-500/20 text-teal-400" : "bg-slate-700/50 text-slate-400"}`}>
-                      <Icon className="h-6 w-6" />
+                    <div
+                      className={`flex-shrink-0 flex h-12 w-12 items-center justify-center rounded-2xl mr-4 ${
+                        isSelected
+                          ? "bg-[#00A8A8]/10 text-[#00A8A8] dark:bg-teal-400/20 dark:text-teal-400"
+                          : "bg-[#EDF2F6] text-[#4E6278] dark:bg-slate-700 dark:text-slate-300"
+                      }`}
+                    >
+                      <Icon className="h-6 w-6 stroke-[2]" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-white text-sm">{level.label}</p>
-                      <p className="text-xs text-slate-400 mt-0.5 leading-snug">{level.desc}</p>
+                      <p className="font-black text-[#0D1C2E] dark:text-white text-base leading-tight mb-1">{level.label}</p>
+                      <p className="text-xs font-semibold text-[#66778C] dark:text-slate-400 leading-normal">{level.desc}</p>
                     </div>
-                    {educationLevel === level.id && (
-                      <div className="flex-shrink-0 h-5 w-5 rounded-full bg-teal-500 flex items-center justify-center">
-                        <Check className="h-3 w-3 text-white" />
+                    {isSelected && (
+                      <div className="flex-shrink-0 h-6 w-6 rounded-full bg-[#00A8A8] dark:bg-teal-400 flex items-center justify-center ml-3 shadow-xs">
+                        <Check className="h-3.5 w-3.5 text-white dark:text-slate-950 stroke-[3]" />
                       </div>
                     )}
                   </button>
@@ -221,62 +228,66 @@ export default function OnboardingPage() {
               })}
             </div>
 
-            <button
-              id="btn-next-level"
-              onClick={() => setStep("intent")}
-              disabled={!educationLevel}
-              className="mt-8 w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-600 py-4 font-bold text-white shadow-lg shadow-teal-500/30 transition-all hover:from-teal-500 hover:to-cyan-500 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
-            >
-              Continue <ChevronRight className="h-5 w-5" />
-            </button>
+            <div className="pt-4">
+              <button
+                id="btn-next-level"
+                onClick={() => setStep("intent")}
+                disabled={!educationLevel}
+                className="w-full flex items-center justify-center gap-2.5 rounded-2xl bg-[#00A8A8] hover:bg-[#009292] dark:bg-teal-500 dark:hover:bg-teal-400 py-4 font-black text-white dark:text-slate-950 shadow-md shadow-teal-700/15 dark:shadow-teal-500/20 transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-[0.99] text-base"
+              >
+                <span>Continue</span>
+                <ChevronRight className="h-5 w-5 stroke-[2.5]" />
+              </button>
+            </div>
           </div>
         )}
 
         {/* STEP 2 — Intent */}
         {step === "intent" && (
-          <div className="animate-fadeInUp">
-            <div className="mb-8">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 mb-5 shadow-lg shadow-indigo-500/30">
-                <Sparkles className="h-7 w-7 text-white" />
+          <div className="animate-fadeInUp space-y-6">
+            <div className="space-y-2">
+              <div className="flex h-14 w-14 items-center justify-center rounded-[18px] bg-indigo-600 text-white shadow-sm shadow-indigo-600/15 dark:shadow-indigo-500/25 mb-4">
+                <Sparkles className="h-7 w-7 stroke-[2.2]" />
               </div>
-              <h1 className="text-2xl font-black text-white leading-tight mb-2">
+              <h1 className="text-3xl font-black text-[#0D1C2E] dark:text-white tracking-tight">
                 What brings you here?
               </h1>
-              <p className="text-slate-400 text-sm">
+              <p className="text-[#66778C] dark:text-slate-400 text-sm font-semibold">
                 Pathfinder AI adapts entirely to your goal.
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 pt-2">
               {INTENTS.map((item) => {
                 const Icon = item.icon;
+                const isSelected = intent === item.id;
                 return (
                   <button
                     key={item.id}
                     id={`intent-${item.id}`}
                     onClick={() => setIntent(item.id)}
-                    className={`w-full flex items-start gap-4 rounded-2xl border p-5 text-left transition-all duration-200 ${
-                      intent === item.id
-                        ? "border-indigo-500/70 bg-indigo-500/15 shadow-lg shadow-indigo-500/10"
-                        : "border-slate-700/50 bg-slate-800/40 hover:border-slate-600 hover:bg-slate-800/60"
+                    className={`w-full flex items-center p-5 rounded-2xl text-left transition-all duration-200 ${
+                      isSelected
+                        ? "bg-white dark:bg-slate-800 border-2 border-indigo-600 dark:border-indigo-400 shadow-[0_4px_16px_rgba(79,70,229,0.12)]"
+                        : "bg-white dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/70 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-slate-200 dark:hover:border-slate-600 hover:shadow-sm"
                     }`}
                   >
                     <div
-                      className={`flex-shrink-0 flex h-11 w-11 items-center justify-center rounded-xl ${
-                        intent === item.id ? "bg-indigo-500/30" : "bg-slate-700/50"
+                      className={`flex-shrink-0 flex h-12 w-12 items-center justify-center rounded-2xl mr-4 ${
+                        isSelected
+                          ? "bg-indigo-600/10 text-indigo-600 dark:bg-indigo-400/20 dark:text-indigo-400"
+                          : "bg-[#EDF2F6] text-[#4E6278] dark:bg-slate-700 dark:text-slate-300"
                       }`}
                     >
-                      <Icon className={`h-5 w-5 ${intent === item.id ? "text-indigo-300" : "text-slate-400"}`} />
+                      <Icon className="h-6 w-6 stroke-[2]" />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="font-bold text-white text-sm">{item.label}</p>
-                      </div>
-                      <p className="text-xs text-slate-400 leading-snug">{item.desc}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-black text-[#0D1C2E] dark:text-white text-base leading-tight mb-1">{item.label}</p>
+                      <p className="text-xs font-semibold text-[#66778C] dark:text-slate-400 leading-normal">{item.desc}</p>
                     </div>
-                    {intent === item.id && (
-                      <div className="flex-shrink-0 h-5 w-5 rounded-full bg-indigo-500 flex items-center justify-center mt-0.5">
-                        <Check className="h-3 w-3 text-white" />
+                    {isSelected && (
+                      <div className="flex-shrink-0 h-6 w-6 rounded-full bg-indigo-600 dark:bg-indigo-400 flex items-center justify-center ml-3 shadow-xs">
+                        <Check className="h-3.5 w-3.5 text-white dark:text-slate-950 stroke-[3]" />
                       </div>
                     )}
                   </button>
@@ -284,116 +295,133 @@ export default function OnboardingPage() {
               })}
             </div>
 
-            <button
-              id="btn-next-intent"
-              onClick={() => setStep("profile")}
-              disabled={!intent}
-              className="mt-8 w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 py-4 font-bold text-white shadow-lg shadow-indigo-500/30 transition-all hover:from-indigo-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
-            >
-              Continue <ChevronRight className="h-5 w-5" />
-            </button>
+            <div className="pt-4">
+              <button
+                id="btn-next-intent"
+                onClick={() => setStep("profile")}
+                disabled={!intent}
+                className="w-full flex items-center justify-center gap-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400 py-4 font-black text-white dark:text-slate-950 shadow-md shadow-indigo-600/15 dark:shadow-indigo-500/20 transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-[0.99] text-base"
+              >
+                <span>Continue</span>
+                <ChevronRight className="h-5 w-5 stroke-[2.5]" />
+              </button>
+            </div>
           </div>
         )}
 
         {/* STEP 3 — Profile Setup */}
         {step === "profile" && (
-          <div className="animate-fadeInUp">
-            <div className="mb-6">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 mb-5 shadow-lg shadow-amber-500/30">
-                <BookOpen className="h-7 w-7 text-white" />
+          <div className="animate-fadeInUp space-y-6">
+            <div className="space-y-2">
+              <div className="flex h-14 w-14 items-center justify-center rounded-[18px] bg-amber-500 text-white shadow-sm shadow-amber-500/15 dark:shadow-amber-500/25 mb-4">
+                <BookOpen className="h-7 w-7 stroke-[2.2]" />
               </div>
-              <h1 className="text-2xl font-black text-white leading-tight mb-2">
+              <h1 className="text-3xl font-black text-[#0D1C2E] dark:text-white tracking-tight">
                 Tell us about yourself
               </h1>
-              <p className="text-slate-400 text-sm">
+              <p className="text-[#66778C] dark:text-slate-400 text-sm font-semibold">
                 Pick what resonates — you can always update this later.
               </p>
             </div>
 
-            {/* Interests */}
-            <div className="mb-6">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-                <Target className="h-4 w-4" /> Your Interests
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {COMMON_INTERESTS.map((item) => (
-                  <button
-                    key={item}
-                    id={`interest-${item.toLowerCase().replace(/\s+/g, "-")}`}
-                    onClick={() => toggleItem(item, selectedInterests, setSelectedInterests)}
-                    className={`rounded-full px-3 py-1.5 text-xs font-bold transition-all duration-200 border ${
-                      selectedInterests.includes(item)
-                        ? "bg-teal-500/20 border-teal-500/60 text-teal-300 shadow-sm shadow-teal-500/10"
-                        : "bg-slate-800/50 border-slate-700/50 text-slate-400 hover:border-slate-500 hover:text-slate-200"
-                    }`}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Skills */}
-            <div className="mb-6">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-                <Zap className="h-4 w-4" /> Skills You Have
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {COMMON_SKILLS.map((item) => (
-                  <button
-                    key={item}
-                    id={`skill-${item.toLowerCase().replace(/\s+/g, "-")}`}
-                    onClick={() => toggleItem(item, selectedSkills, setSelectedSkills)}
-                    className={`rounded-full px-3 py-1.5 text-xs font-bold transition-all duration-200 border ${
-                      selectedSkills.includes(item)
-                        ? "bg-cyan-500/20 border-cyan-500/60 text-cyan-300 shadow-sm shadow-cyan-500/10"
-                        : "bg-slate-800/50 border-slate-700/50 text-slate-400 hover:border-slate-500 hover:text-slate-200"
-                    }`}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Target Role (optional) */}
-            {intent === "guided_existing" && (
-              <div className="mb-6">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-2">
-                  <Target className="h-4 w-4" /> What career are you in or pursuing?
+            <div className="space-y-6 pt-2">
+              {/* Interests */}
+              <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/70 shadow-[0_2px_8px_rgba(0,0,0,0.03)] space-y-3">
+                <p className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 flex items-center gap-2">
+                  <Target className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                  <span>Select Your Interests</span>
                 </p>
-                <input
-                  type="text"
-                  id="input-target-role"
-                  value={targetRole}
-                  onChange={(e) => setTargetRole(e.target.value)}
-                  placeholder="e.g. Software Engineer, Nurse, UX Designer..."
-                  className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-teal-500/60 focus:ring-2 focus:ring-teal-500/20 focus:outline-none transition-all"
-                />
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {COMMON_INTERESTS.map((item) => {
+                    const isSelected = selectedInterests.includes(item);
+                    return (
+                      <button
+                        key={item}
+                        id={`interest-${item.toLowerCase().replace(/\s+/g, "-")}`}
+                        onClick={() => toggleItem(item, selectedInterests, setSelectedInterests)}
+                        className={`rounded-full px-3.5 py-2 text-xs transition-all duration-200 border ${
+                          isSelected
+                            ? "bg-[#00A8A8] border-[#00A8A8] text-white font-black shadow-xs"
+                            : "bg-slate-50 border-slate-200/80 text-slate-600 hover:border-slate-300 hover:bg-slate-100/70 dark:bg-slate-700/50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 font-bold"
+                        }`}
+                      >
+                        {item}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            )}
 
-            <button
-              id="btn-finish-onboarding"
-              onClick={handleFinish}
-              disabled={saving}
-              className="mt-2 w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-600 py-4 font-bold text-white shadow-lg shadow-teal-500/30 transition-all hover:from-teal-500 hover:to-cyan-500 disabled:opacity-60 active:scale-[0.98]"
-            >
-              {saving ? (
-                <>
-                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Setting up your journey...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-5 w-5" />
-                  Launch Pathfinder →
-                </>
+              {/* Skills */}
+              <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/70 shadow-[0_2px_8px_rgba(0,0,0,0.03)] space-y-3">
+                <p className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+                  <span>Select Skills You Have</span>
+                </p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {COMMON_SKILLS.map((item) => {
+                    const isSelected = selectedSkills.includes(item);
+                    return (
+                      <button
+                        key={item}
+                        id={`skill-${item.toLowerCase().replace(/\s+/g, "-")}`}
+                        onClick={() => toggleItem(item, selectedSkills, setSelectedSkills)}
+                        className={`rounded-full px-3.5 py-2 text-xs transition-all duration-200 border ${
+                          isSelected
+                            ? "bg-indigo-600 border-indigo-600 text-white font-black shadow-xs"
+                            : "bg-slate-50 border-slate-200/80 text-slate-600 hover:border-slate-300 hover:bg-slate-100/70 dark:bg-slate-700/50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 font-bold"
+                        }`}
+                      >
+                        {item}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Target Role (optional) */}
+              {intent === "guided_existing" && (
+                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/70 shadow-[0_2px_8px_rgba(0,0,0,0.03)] space-y-2">
+                  <p className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                    <Target className="h-4 w-4 text-indigo-500" />
+                    <span>What career are you in or pursuing?</span>
+                  </p>
+                  <input
+                    type="text"
+                    id="input-target-role"
+                    value={targetRole}
+                    onChange={(e) => setTargetRole(e.target.value)}
+                    placeholder="e.g. Software Engineer, Nurse, UX Designer..."
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:border-[#00A8A8] focus:ring-2 focus:ring-teal-500/20 focus:outline-none transition-all"
+                  />
+                </div>
               )}
-            </button>
-            <p className="text-center text-xs text-slate-600 mt-3">
-              You can update everything in your Profile settings
-            </p>
+            </div>
+
+            <div className="pt-2 space-y-3">
+              <button
+                id="btn-finish-onboarding"
+                onClick={handleFinish}
+                disabled={saving}
+                className="w-full flex items-center justify-center gap-2.5 rounded-2xl bg-[#00A8A8] hover:bg-[#009292] dark:bg-teal-500 dark:hover:bg-teal-400 py-4 font-black text-white dark:text-slate-950 shadow-md shadow-teal-700/15 dark:shadow-teal-500/20 transition-all disabled:opacity-60 active:scale-[0.99] text-base"
+              >
+                {saving ? (
+                  <>
+                    <div className="h-5 w-5 border-2 border-white/30 border-t-white dark:border-slate-950/30 dark:border-t-slate-950 rounded-full animate-spin" />
+                    <span>Setting up your journey...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-5 w-5" />
+                    <span>Launch Pathfinder</span>
+                    <ChevronRight className="h-5 w-5" />
+                  </>
+                )}
+              </button>
+              <p className="text-center text-xs font-semibold text-[#66778C] dark:text-slate-500">
+                You can update everything in your Profile settings later
+              </p>
+            </div>
           </div>
         )}
       </main>

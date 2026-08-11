@@ -18,6 +18,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const {
       educationLevel,
+      experienceLevel,
       onboardingIntent,
       onboardingCompleted,
       interests,
@@ -29,26 +30,31 @@ export async function PUT(request: NextRequest) {
       where: { userId },
       update: {
         ...(educationLevel !== undefined && { educationLevel }),
+        ...(experienceLevel !== undefined && { experienceLevel }),
         ...(onboardingIntent !== undefined && { onboardingIntent }),
         ...(onboardingCompleted !== undefined && { onboardingCompleted }),
         ...(interests !== undefined && { interests }),
         ...(skills !== undefined && { skills }),
-        ...(targetRole !== undefined && { targetRole }),
+        ...(targetRole !== undefined && { targetRole: targetRole || "" }),
       },
       create: {
         userId,
         interests: interests || [],
         skills: skills || [],
-        educationLevel: educationLevel || "other",
-        onboardingIntent: onboardingIntent || "discover_new",
+        educationLevel: educationLevel || "university",
+        experienceLevel: experienceLevel || "beginner",
+        onboardingIntent: onboardingIntent || "mentorship_requested",
         onboardingCompleted: onboardingCompleted ?? false,
-        targetRole: targetRole || null,
+        targetRole: targetRole || "",
       },
     });
 
     return NextResponse.json({ success: true, data: profile });
   } catch (error) {
-    console.error("Onboarding save error:", error);
-    return NextResponse.json({ error: "Failed to save onboarding data" }, { status: 500 });
+    console.error("Error updating onboarding profile:", error);
+    return NextResponse.json(
+      { error: "Failed to save profile setup" },
+      { status: 500 }
+    );
   }
 }
