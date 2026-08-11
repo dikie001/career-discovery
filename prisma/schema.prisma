@@ -226,6 +226,8 @@ model UserRoadmapNode {
   nodeId        String
   node          RoadmapNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
   status        String      @default("locked")
+  validated     Boolean     @default(false)
+  assessmentScore Int?
   completedAt   DateTime?
   
   @@unique([userRoadmapId, nodeId])
@@ -346,4 +348,12 @@ model RoadmapNodeCertification {
   certification   Certification  @relation(fields: [certificationId], references: [id], onDelete: Cascade)
   
   @@id([nodeId, certificationId])
+}
+
+model AssessmentCache {
+  id          String   @id @default(cuid())
+  skillTitle  String   @unique
+  data        Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

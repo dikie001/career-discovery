@@ -16,6 +16,7 @@ export interface UserProfile {
   userId: string;
   interests: string[];
   skills: string[];
+  missingSkills?: string[];
   experienceLevel: "beginner" | "intermediate" | "advanced";
   targetRole?: string;
   careerGoal?: string;
@@ -60,6 +61,7 @@ export interface CareerProgress {
   stages: ProgressStage[];
   overallProgress: number;
   lastUpdated: Date;
+  activeRoadmapId?: string;
 }
 
 export interface ProgressStage {
